@@ -65,6 +65,7 @@ We are always looking for more contributors!
 
 ## Inspiration / History
 The `infoset-ng` project originally took inspiration from the SourceForge based `switchmap` project. `switchmap` was written in PERL and designed to create tabular representations of network topologies. Early versions of `infoset` eventually had expanded features which included the polling of network devices for real time performance data. This data was presented via a web interface. The code became cumbersome and the original `infoset` was split into three componet parts.
+
 1. `infoset-ng`: An API for storing and retrieving real time data.
 2. `garnet`: A network / server performance charting web application that uses various types of agents for collecting real time data. `garnet` uses `infoset-ng` to store its data.
 3. `switchmap-ng` A python 3 based feature equivalent version of `switchmap`.
@@ -150,6 +151,7 @@ $ ./server.py
 It is important to have a valid configuration file in the `etc/` directory before starting data collection. See the `Configuration` section of this document.
 
 You can test whether your configuration works by:
+
 1. Starting the API (Important, see the `Operation` section of this document)
 2. Running the `bin/tools/test_installation.py` script
 
@@ -181,6 +183,7 @@ Instructions on how to operate `infoset-ng` follow.
 
 ## Operation
 `infoset-ng` has two major components. These are:
+
 1. **The API**: Stores and retrieves data from the database via REST API calls. Received data is placed in the cache directory defined in the configuration.
 1. **The Ingester**: Periodically retrieves data from the cache files and places it in the database.
 
@@ -191,6 +194,7 @@ Explanations of how run each component will be given next.
 ### Ingester Operation
 
 The steps for running the ingester are as follows.
+
 1. Make sure you have a valid configuration file in the `etc/` directory
 3. Start the `bin/ingestd.py` script
 
