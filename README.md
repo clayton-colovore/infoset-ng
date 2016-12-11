@@ -115,7 +115,7 @@ mysql> exit;
 ```
 Now clone the repository and copy the sample configuration file to its final location.
 ```
-$ git clone https://github.com/UWICompSociety/infoset-ng
+$ git clone https://github.com/PalisadoesFoundation/infoset-ng
 $ cd infoset-ng
 $ export PYTHONPATH=`pwd`
 $ cp examples/etc/* etc/
@@ -675,13 +675,13 @@ There are many dragons to slay and kingdoms to conquer!
 Here are a few things to know.
 
 1. Contributions are always welcome. Contact our team for more.
-2. View our contributor guidelines here: https://github.com/UWICompSociety/infoset-ng/blob/master/CONTRIBUTING.md
-3. View our guidelines for committing code here: https://github.com/UWICompSociety/infoset-ng/blob/master/COMMITTERS.md
+2. View our contributor guidelines here: https://github.com/PalisadoesFoundation/infoset-ng/blob/master/CONTRIBUTING.md
+3. View our guidelines for committing code here: https://github.com/PalisadoesFoundation/infoset-ng/blob/master/COMMITTERS.md
 
 ## Mailing list
 Our current mailing list is: https://groups.google.com/forum/#!forum/gdg-jamaica
 ## New Features
-Visit our GitHub issues for a full list of features and bug fixes. https://github.com/UWICompSociety/infoset-ng/issues
+Visit our GitHub issues for a full list of features and bug fixes. https://github.com/PalisadoesFoundation/infoset-ng/issues
 ## Design Overview
 Visit our wiki's `infoset-ng` document for the rationale of the design. http://wiki.palisadoes.org/index.php/infoset-ng
 ## Sample Output
