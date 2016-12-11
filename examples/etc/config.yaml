@@ -1,0 +1,20 @@
+main:
+    log_file: /opt/infoset-ng/log/infoset-ng.log
+    log_level: debug
+    ingest_cache_directory: /opt/infoset-ng/cache
+    ingest_pool_size: 20
+    listen_address: 0.0.0.0
+    bind_port: 6000
+    interval: 300
+    sqlalchemy_pool_size: 10
+    sqlalchemy_max_overflow: 10
+    db_hostname: localhost
+    db_username: infoset
+    db_password: PASSWORD
+    db_name: infoset
+
+agents:
+    - agent_name: ingestd
+      agent_enabled: True
+      agent_filename: bin/ingestd.py
+      monitor_agent_pid: True
