@@ -2,8 +2,6 @@
 """Test the general module."""
 
 # Standard imports
-import random
-import string
 
 # PIP3 imports
 from sqlalchemy_utils.functions import database_exists
@@ -69,7 +67,7 @@ def validate():
             'Test database not found in configuration. '
             'Try setting your "INFOSET_CONFIGDIR" environment '
             'variable to a directory with a test configuration')
-        log.log2die(1000, log_message)
+        log.log2die(1017, log_message)
 
 
 def setup_db_agent():
@@ -93,7 +91,7 @@ def setup_db_agent():
     expected = {
         'id_agent': id_agent,
         'last_timestamp': last_timestamp,
-        'name': general.hashstring(_random()),
+        'name': general.hashstring(general.randomstring()),
         'idx_agent': idx_agent,
         'enabled': 1
     }
@@ -111,7 +109,7 @@ def setup_db_agent():
         enabled=expected['enabled'],
         last_timestamp=expected['last_timestamp'])
     database = db.Database()
-    database.add_all([data], 1000)
+    database.add_all([data], 1018)
 
     # Return
     return(id_agent, expected)
@@ -132,8 +130,8 @@ def setup_db_device():
 
     # Create a dict of all the expected values
     expected = {
-        'devicename': general.hashstring(_random()),
-        'description': general.hashstring(_random()),
+        'devicename': general.hashstring(general.randomstring()),
+        'description': general.hashstring(general.randomstring()),
         'ip_address': general.hashstring('100.100.100.100'),
         'idx_device': idx_device,
         'enabled': 1
@@ -152,27 +150,7 @@ def setup_db_device():
         ip_address=general.encode(expected['ip_address']),
         enabled=expected['enabled'])
     database = db.Database()
-    database.add_all([data], 1000)
+    database.add_all([data], 1019)
 
     # Return
     return expected
-
-
-def _random():
-    """Create a random string.
-
-    Args:
-        None
-
-    Returns:
-        result
-
-    """
-    # Initialize key variables.
-    size = 20
-
-    # Return
-    result = ''.join(
-        random.SystemRandom().choice(
-            string.ascii_uppercase + string.digits) for _ in range(size))
-    return result

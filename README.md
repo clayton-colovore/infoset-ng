@@ -52,7 +52,7 @@ We strongly recommend that you read everything on this page before installing `i
 1. Open source.
 2. Written in python, a modern language.
 3. Easy configuration.
-4. Usee the well known Flask webserver for accepting data and responding to requests.
+4. Uses the well known Flask webserver for accepting data and responding to requests.
 7. `infoset-ng` has a number of fault tolerant features aimed at making it resilient in unstable computing environemnts.
  1. MariaDB / MySQL database backend
  2. Database connection pooling to reduce database load.
