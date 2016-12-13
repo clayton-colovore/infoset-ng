@@ -69,34 +69,6 @@ class TestCheckData(unittest.TestCase):
         pass
 
 
-class TestCheckMainKeys(unittest.TestCase):
-    """Checks all functions and methods."""
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
-
-    def test__timestamp(self):
-        """Testing function _timestamp."""
-        pass
-
-    def test__id_agent(self):
-        """Testing function _id_agent."""
-        pass
-
-    def test__agent(self):
-        """Testing function _agent."""
-        pass
-
-    def test__devicename(self):
-        """Testing function _devicename."""
-        pass
-
-    def test_valid(self):
-        """Testing function valid."""
-        pass
-
-
 if __name__ == '__main__':
     # Test the configuration variables
     db_unittest.validate()
