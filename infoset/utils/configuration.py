@@ -34,8 +34,12 @@ class Config(object):
             None
 
         """
+        #####################################################################
         # Update the configuration directory
-        # 'INFOSET_CONFIGDIR' is used for unittesting
+        # 'INFOSET_CONFIGDIR' is used for setting a non-default config
+        # directory location. A good example of this is using a new config
+        # directory for unit testing
+        #####################################################################
         if 'INFOSET_CONFIGDIR' in os.environ:
             config_directory = os.environ['INFOSET_CONFIGDIR']
         else:

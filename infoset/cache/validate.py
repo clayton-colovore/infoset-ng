@@ -260,11 +260,14 @@ class _CheckData(object):
                 # Skip if data type isn't in the data
                 if data_type in self.data:
                     valid = True
+                else:
+                    valid = False
+                    break
 
         # Log error
         if valid is False:
             log_message = (
-                'Ingest data does not contain data keys.')
+                'Ingest data does not contain all data keys.')
             log.log2warning(1003, log_message)
 
         # Return
@@ -331,7 +334,7 @@ class _CheckData(object):
         # Return
         return valid
 
-    def _charable_data_ok(self):
+    def _timeseries_data_ok(self):
         """Check if timeseries data is OK.
 
         Args:
@@ -411,8 +414,8 @@ class _CheckData(object):
         valid = False
         valid_list = [self._valid]
 
-        # All other tests need to pass for _charable_data_ok to pass
-        valid_list.append(self._charable_data_ok())
+        # All other tests need to pass for _timeseries_data_ok to pass
+        valid_list.append(self._timeseries_data_ok())
 
         # Return
         if len(valid_list) == valid_list.count(True):
