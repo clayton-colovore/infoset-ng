@@ -70,11 +70,12 @@ class TestValidateCache(unittest.TestCase):
 
         # Do the same with a file
         directory = tempfile.mkdtemp()
-        timestamp = general.normalized_timestamp()
+        timestamp = self.data['timestamp']
+        id_agent = self.data['agent']
         filename = ('%s/%s_%s_%s.json') % (
             directory,
             timestamp,
-            general.hashstring(general.randomstring()),
+            id_agent,
             general.hashstring(general.randomstring()))
 
         # Write good data to file and test
