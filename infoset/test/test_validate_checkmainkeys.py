@@ -29,7 +29,9 @@ class TestCheckMainKeys(unittest.TestCase):
 
     def test___init__(self):
         """Testing function __init__."""
-        pass
+        # Test with value that is not a dict
+        result = validate._CheckMainKeys('string')
+        self.assertEqual(result.valid(), False)
 
     def test__timestamp(self):
         """Testing function _timestamp."""

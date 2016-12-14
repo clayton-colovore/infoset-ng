@@ -45,30 +45,6 @@ class TestCheckDuplicates(unittest.TestCase):
         pass
 
 
-class TestCheckData(unittest.TestCase):
-    """Checks all functions and methods."""
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
-
-    def test__data_keys_ok(self):
-        """Testing function _data_keys_ok."""
-        pass
-
-    def test__agent_label_keys_ok(self):
-        """Testing function _agent_label_keys_ok."""
-        pass
-
-    def test__charable_data_ok(self):
-        """Testing function _charable_data_ok."""
-        pass
-
-    def test_valid(self):
-        """Testing function valid."""
-        pass
-
-
 if __name__ == '__main__':
     # Test the configuration variables
     db_unittest.validate()
