@@ -66,9 +66,11 @@ class ValidateCache(object):
                 # Data read from file has already gone through this process.
                 contents = _CheckMainKeys(data)
                 if contents.valid() is True:
-                    self.information = check.contents()
+                    self.information = data
                 else:
                     self._valid = False
+            else:
+                self._valid = False
 
     def getinfo(self):
         """Provide validated information when valid.
@@ -176,6 +178,13 @@ class _CheckDuplicates(object):
         """
         # Initialize key variables
         valid = True
+
+        # Return if instantiation tests have failed
+        if self._valid is False:
+            valid = False
+            return valid
+
+        # Assign other values
         timestamp = int(self.data['timestamp'])
         id_agent = self.data['id_agent']
         devicename = self.data['devicename']

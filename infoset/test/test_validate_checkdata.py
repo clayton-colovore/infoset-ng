@@ -3,12 +3,10 @@
 
 # Standard imports
 import unittest
-import time
 import copy
 
 # Infoset imports
 from infoset.cache import validate
-from infoset.utils import general
 from infoset.test import db_unittest
 
 
@@ -115,11 +113,60 @@ class TestCheckData(unittest.TestCase):
 
     def test__timeseries_data_ok(self):
         """Testing function _timeseries_data_ok."""
-        pass
+        # Test with good data
+        data_dict = copy.deepcopy(self.data)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._timeseries_data_ok(), True)
+
+        # Test with bad data (base_type is non-numeric string)
+        data_dict = copy.deepcopy(self.data)
+        for agent_label, _ in data_dict['timeseries'].items():
+            data_dict['timeseries'][agent_label]['base_type'] = 'string'
+            break
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._timeseries_data_ok(), False)
+
+        # Test with bad data ('data' value is non numeric)
+        data_dict = copy.deepcopy(self.data)
+        for agent_label, _ in data_dict['timeseries'].items():
+            data_dict['timeseries'][agent_label]['data'][0][1] = 'string'
+            break
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._timeseries_data_ok(), False)
+
+        # Test with bad data (no timeseries key)
+        data_dict = copy.deepcopy(self.data)
+        data_dict.pop('timeseries', None)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._timeseries_data_ok(), False)
+
+        # Test with bad data (no keys under agent_label)
+        data_dict = copy.deepcopy(self.data)
+        for _, sub_dict in data_dict['timeseries'].items():
+            sub_dict.pop('base_type', None)
+            result = validate._CheckData(sub_dict)
+            self.assertEqual(result._timeseries_data_ok(), False)
+
+        data_dict = copy.deepcopy(self.data)
+        for _, sub_dict in data_dict['timeseries'].items():
+            sub_dict.pop('data', None)
+            result = validate._CheckData(sub_dict)
+            self.assertEqual(result._timeseries_data_ok(), False)
 
     def test_valid(self):
         """Testing function valid."""
-        pass
+        # Test with good data
+        data_dict = copy.deepcopy(self.data)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result.valid(), True)
+
+        # Test with bad data (base_type is non-numeric string)
+        data_dict = copy.deepcopy(self.data)
+        for agent_label, _ in data_dict['timeseries'].items():
+            data_dict['timeseries'][agent_label]['base_type'] = 'string'
+            break
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result.valid(), False)
 
 
 if __name__ == '__main__':

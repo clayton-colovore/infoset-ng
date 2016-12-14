@@ -115,6 +115,23 @@ def setup_db_agent():
     return(id_agent, expected)
 
 
+def initialize_db():
+    """Create the database for validating ingest cache files.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Drop the database and create tables
+    setup_database = TestDatabase()
+    setup_database.drop()
+    setup_database.create()
+    setup_database.populate()
+
+
 def setup_db_device():
     """Create the database for Device table testing.
 
