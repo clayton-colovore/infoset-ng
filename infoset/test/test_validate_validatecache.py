@@ -6,6 +6,7 @@ import unittest
 import tempfile
 import json
 import copy
+import os
 
 # Infoset imports
 from infoset.cache import validate
