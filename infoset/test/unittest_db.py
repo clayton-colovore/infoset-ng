@@ -6,14 +6,18 @@
 # PIP3 imports
 from sqlalchemy_utils.functions import database_exists
 from sqlalchemy_utils.functions import create_database, drop_database
+from sqlalchemy import and_
 
 # Import infoset libraries
 from infoset.utils import configuration
 from infoset.utils import log
 from infoset.utils import general
-from infoset.db.db_orm import BASE, Agent, Device
+from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent
 from infoset.db import URL, TEST_ENGINE
 from infoset.db import db
+from infoset.db import db_agent
+from infoset.db import db_device
+from infoset.db import db_deviceagent as hagent
 
 
 class TestDatabase(object):
@@ -70,6 +74,60 @@ def validate():
         log.log2die(1017, log_message)
 
 
+def setup_db_deviceagent(data):
+    """Create the database for DeviceAgent table testing.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    devicename = data['devicename']
+    id_agent = data['id_agent']
+    agent_name = data['agent']
+    last_timestamp = data['timestamp']
+
+    # Add record to the database
+    record = Agent(
+        id_agent=general.encode(id_agent),
+        name=general.encode(agent_name))
+    database = db.Database()
+    database.add(record, 1081)
+
+    # Get idx_agent value from database
+    agent_info = db_agent.GetIDAgent(id_agent)
+    idx_agent = agent_info.idx_agent()
+
+    # Add record to the database
+    record = Device(devicename=general.encode(devicename))
+    database = db.Database()
+    database.add(record, 1080)
+
+    # Get idx of newly added device
+    device_info = db_device.GetDevice(devicename)
+    idx_device = device_info.idx_device()
+
+    # Update DeviceAgent table
+    if hagent.device_agent_exists(idx_device, idx_agent) is False:
+        # Add to DeviceAgent table
+        record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
+        database = db.Database()
+        database.add(record, 1038)
+
+    # Update DeviceAgent table with timestamp
+    database = db.Database()
+    session = database.session()
+    record = session.query(DeviceAgent).filter(
+        and_(
+            DeviceAgent.idx_device == idx_device,
+            DeviceAgent.idx_agent == idx_agent)).one()
+    record.last_timestamp = last_timestamp
+    database.commit(session, 1124)
+
+
 def setup_db_agent():
     """Create the database for Agent table testing.
 
@@ -97,10 +155,7 @@ def setup_db_agent():
     }
 
     # Drop the database and create tables
-    setup_database = TestDatabase()
-    setup_database.drop()
-    setup_database.create()
-    setup_database.populate()
+    initialize_db()
 
     # Insert data into database
     data = Agent(
@@ -155,10 +210,7 @@ def setup_db_device():
     }
 
     # Drop the database and create tables
-    setup_database = TestDatabase()
-    setup_database.drop()
-    setup_database.create()
-    setup_database.populate()
+    initialize_db()
 
     # Insert data into database
     data = Device(

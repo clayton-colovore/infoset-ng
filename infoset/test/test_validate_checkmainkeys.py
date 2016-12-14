@@ -8,24 +8,14 @@ import copy
 # Infoset imports
 from infoset.cache import validate
 from infoset.utils import general
-from infoset.test import db_unittest
+from infoset.test import unittest_db
+from infoset.test import unittest_variables
 
 
 class TestCheckMainKeys(unittest.TestCase):
     """Checks all functions and methods."""
     # Initialize key variables
-    devicename = general.hashstring(general.randomstring())
-    id_agent = general.hashstring(general.randomstring())
-    agent_name = general.hashstring(general.randomstring())
-    timestamp = general.normalized_timestamp()
-
-    # Test with good data
-    data = {
-        'id_agent': id_agent,
-        'agent': agent_name,
-        'devicename': devicename,
-        'timestamp': timestamp
-    }
+    data = unittest_variables.TestVariables().cache_data()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -126,7 +116,7 @@ class TestCheckMainKeys(unittest.TestCase):
 
 if __name__ == '__main__':
     # Test the configuration variables
-    db_unittest.validate()
+    unittest_db.validate()
 
     # Do the unit test
     unittest.main()

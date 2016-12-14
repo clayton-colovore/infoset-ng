@@ -5,7 +5,7 @@ import unittest
 
 # Import infoset stuff
 from infoset.db import db_device
-from infoset.test import db_unittest
+from infoset.test import unittest_db
 
 
 class TestGetIDXDevice(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestGetIDXDevice(unittest.TestCase):
 
     # Intstantiate a good agent
     idx_device_good = 1
-    expected = db_unittest.setup_db_device()
+    expected = unittest_db.setup_db_device()
 
     # Create device object
     good_device = db_device.GetIDXDevice(idx_device_good)
@@ -88,7 +88,7 @@ class TestGetDevice(unittest.TestCase):
 
     # Intstantiate a good agent
     idx_device_good = 1
-    expected = db_unittest.setup_db_device()
+    expected = unittest_db.setup_db_device()
 
     # Create device object
     good_device = db_device.GetIDXDevice(idx_device_good)

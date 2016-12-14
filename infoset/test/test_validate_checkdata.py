@@ -7,39 +7,14 @@ import copy
 
 # Infoset imports
 from infoset.cache import validate
-from infoset.test import db_unittest
+from infoset.test import unittest_db
+from infoset.test import unittest_variables
 
 
 class TestCheckData(unittest.TestCase):
     """Checks all functions and methods."""
     # Initialize key variables
-    data = {
-        'agent': 'unittest',
-        'timeseries': {'cpu_count': {'base_type': 1,
-                                     'data': [[0, 2, None]],
-                                     'description': 'CPU Count'},
-                       'packets_recv': {'base_type': 64,
-                                        'data': [['lo', 304495689, 'lo'],
-                                                 ['p10p1', 84319802, 'p10p1']],
-                                        'description': 'Packets (In)'},
-                       'packets_sent': {'base_type': 64,
-                                        'data': [['lo', 304495689, 'lo'],
-                                                 ['p10p1',
-                                                  123705549, 'p10p1']],
-                                        'description': 'Packets (Out)'},
-                       'swap_used': {'base_type': 1,
-                                     'data': [[None, 363606016, None]],
-                                     'description': 'Swap Used'}},
-        'devicename': 'unittest_device',
-        'id_agent': 'a0810e3e36c59ea3cbdab599dcdb824fb468314b7340543493271ad',
-        'timefixed': {'distribution': {'base_type': None,
-                                       'data': [[0,
-                                                 'Ubuntu 16.04 xenial', None]],
-                                       'description': 'Linux Distribution'},
-                      'version': {'base_type': None,
-                                  'data': [[0, '#62-Ubuntu SMP', None]],
-                                  'description': 'Kernel Type'}},
-        'timestamp': 1481561700}
+    data = unittest_variables.TestVariables().cache_data()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -171,7 +146,7 @@ class TestCheckData(unittest.TestCase):
 
 if __name__ == '__main__':
     # Test the configuration variables
-    db_unittest.validate()
+    unittest_db.validate()
 
     # Do the unit test
     unittest.main()
