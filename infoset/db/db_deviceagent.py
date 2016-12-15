@@ -40,7 +40,7 @@ class GetDeviceAgent(object):
         """
         # Initialize key variables
         self.data_dict = defaultdict(dict)
-        keys = ['last_timestamp', 'idx_deviceagent']
+        keys = ['last_timestamp', 'idx_deviceagent', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -57,6 +57,7 @@ class GetDeviceAgent(object):
             for instance in result:
                 self.data_dict['last_timestamp'] = instance.last_timestamp
                 self.data_dict['idx_deviceagent'] = instance.idx_deviceagent
+                self.data_dict['enabled'] = instance.enabled
                 self.data_dict['exists'] = True
                 break
 
@@ -75,6 +76,20 @@ class GetDeviceAgent(object):
         """
         # Initialize key variables
         value = self.data_dict['exists']
+        return value
+
+    def enabled(self):
+        """Get enabled value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
         return value
 
     def last_timestamp(self):

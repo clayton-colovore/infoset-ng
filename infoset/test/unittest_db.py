@@ -96,7 +96,7 @@ def setup_db_deviceagent(data):
         None
 
     Returns:
-        None
+        result: Tuple of (idx_device, idx_agent)
 
     """
     # Initialize key variables
@@ -141,6 +141,10 @@ def setup_db_deviceagent(data):
             DeviceAgent.idx_agent == idx_agent)).one()
     record.last_timestamp = last_timestamp
     database.commit(session, 1124)
+
+    # Return
+    result = (idx_agent, idx_device)
+    return result
 
 
 def setup_db_agent():
