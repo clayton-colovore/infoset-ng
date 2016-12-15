@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""Class used to set global variables used by unittests."""
 
 
 class TestVariables(object):

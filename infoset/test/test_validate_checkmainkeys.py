@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""Test the CheckMainKeys class in the infoset.cache.validate module."""
 
 # Standard imports
 import unittest
@@ -7,7 +7,6 @@ import copy
 
 # Infoset imports
 from infoset.cache import validate
-from infoset.utils import general
 from infoset.test import unittest_db
 from infoset.test import unittest_variables
 

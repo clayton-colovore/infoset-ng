@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-
-"""Demonstration Script that extracts agent data from cache directory files.
-
-This could be a modified to be a daemon
-
-"""
+"""Code to validate agent data read by the ingester from cache files."""
 
 # Standard libraries
 import os
@@ -21,18 +16,23 @@ from infoset.db import db_device
 
 
 class ValidateCache(object):
-    """Infoset class that ingests agent data.
+    """Primary class that reads and validates agent data from the cache.
 
-    Args:
-        None
+    The following validations are done:
 
-    Returns:
-        None
+    class _CheckFile: Makes sure the file has the correct
+        1) naming convention
 
-    Methods:
-        __init__:
-        populate:
-        post:
+    class _CheckMainKeys: Makes sure the file has the correct
+        1) first level keys in the json contents of the cache file
+
+    class _CheckData: Makes sure the file has the correct
+        1) second level keys in the json contents of the cache file
+        2) values for the 'data' key for each agent label in the data
+
+    class _CheckDuplicates: Makes sure the data in the json cache file
+        hasn't already been inserted into the database
+
     """
 
     def __init__(self, filepath=None, data=None):
@@ -136,13 +136,10 @@ class ValidateCache(object):
 
 
 class _CheckDuplicates(object):
-    """Checks whether data for this agent has already been entered.
+    """Checks for duplicate data entries.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Verifies whether data for this agent, hostname and timestamp
+    has already been entered in the database.
 
     """
 
@@ -221,11 +218,9 @@ class _CheckDuplicates(object):
 class _CheckData(object):
     """Validates timeseries data in ingested data.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Makes sure the file has the correct
+        1) second level keys in the json contents of the cache file
+        2) values for the 'data' key for each agent label in the data
 
     """
 
@@ -438,11 +433,8 @@ class _CheckData(object):
 class _CheckMainKeys(object):
     """Validates main keys in ingested data.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Makes sure the file has the correct first level keys in the json
+    contents of the cache file
 
     """
 
@@ -586,11 +578,7 @@ class _CheckMainKeys(object):
 class _CheckFile(object):
     """Validate file.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Makes sure the file has the correct naming convention
 
     """
 

@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""This module sets up the database for specific unittests.
+
+The TestDatabase class can create, drop a configured database. It can also
+create empty tables for the database.
+
+There are related functions for populating specific tables for unittests.
+
+There are also functions for validating that the configured database
+is a test database.
+
+"""
 
 # Standard imports
 
@@ -21,7 +31,12 @@ from infoset.db import db_deviceagent as hagent
 
 
 class TestDatabase(object):
-    """Checks all functions and methods."""
+    """Manage the basic operations of database setup for unittests.
+
+    This includes methods for creating and dropping the database.
+    This class also has the ability to create empty tables.
+
+    """
 
     def __init__(self):
         """Method initializing the class."""

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""Test the db_device library in the infoset.db module."""
 
 import unittest
 

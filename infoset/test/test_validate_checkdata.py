@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""Test the CheckData class in the infoset.cache.validate module."""
 
 # Standard imports
 import unittest

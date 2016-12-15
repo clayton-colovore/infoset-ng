@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
-"""Test all the infoset-ng modules.
+"""Script to test all the infoset-ng unittests.
 
-This is a test
+1)  This script runs each unittest script in infoset-ng's
+    infoset.test module.
+
+2)  The only scripts run in the module are those whose names
+    start with 'test_'
+
+3)  The unittests will only run on a test database whose name
+    starts with 'test_'
+
+4)  All unittest scripts must be able to successfully run independently
+    of all others.
 
 """
 

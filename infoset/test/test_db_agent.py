@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""Test the db_agent library in the infoset.db module."""
 
 import unittest
 
@@ -80,7 +80,7 @@ class TestGetIDX(unittest.TestCase):
         """Testing method everything."""
         # Testing with known good value
         result = self.good_agent.everything()
-        for key in self.expected.keys():
+        for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
 
@@ -153,7 +153,7 @@ class TestGetIdentifier(unittest.TestCase):
         """Testing method everything."""
         # Testing with known good value
         result = self.good_agent.everything()
-        for key in self.expected.keys():
+        for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
 
