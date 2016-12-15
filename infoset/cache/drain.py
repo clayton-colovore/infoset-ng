@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-
-"""Demonstration Script that extracts agent data from cache directory files.
-
-This could be a modified to be a daemon
-
-"""
+"""Convert JSON data in cache files into formats suitable for ingesting."""
 
 # Standard libraries
 import os
@@ -17,18 +12,24 @@ from infoset.cache import validate
 
 
 class Drain(object):
-    """Infoset class that ingests agent data.
+    """Convert JSON data from cache files to formats for database update.
 
-    Args:
-        None
+    Methodology:
 
-    Returns:
-        None
+    1)  Data in files is assumed to be pre-validated by the classes in the
+        infoset.cache.validate library
 
-    Methods:
-        __init__:
-        populate:
-        post:
+    2)  The main JSON keys (timestamp, id_agent, devicename, agent) are
+        extracted and made available through methods
+
+    3)  Datapoint IDs are are created for each datapoint
+
+    4)  TimeSeries and TimeFixed data is extracted to lists of dicts of data.
+        This information is made available through methods.
+
+    5)  Each source of TimeSeries and TimeFixed data is extracted to lists
+        of dicts of data. This information is made available through methods.
+
     """
 
     def __init__(self, filename):
@@ -439,7 +440,7 @@ def _base_type(data):
     """
     # Initialize key variables
     if bool(data) is False:
-        value = 'NULL'
+        value = None
     else:
         value = data
 
