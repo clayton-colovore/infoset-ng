@@ -22,7 +22,8 @@ from sqlalchemy import and_
 from infoset.utils import configuration
 from infoset.utils import log
 from infoset.utils import general
-from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent
+from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent, Billcode, Department
+from infoset.db.db_orm import Department
 from infoset.db import URL, TEST_ENGINE
 from infoset.db import db
 from infoset.db import db_agent
@@ -225,6 +226,7 @@ def setup_db_device():
         'description': general.hashstring(general.randomstring()),
         'ip_address': general.hashstring('100.100.100.100'),
         'idx_device': idx_device,
+        'exists': True,
         'enabled': 1
     }
 
@@ -239,6 +241,78 @@ def setup_db_device():
         enabled=expected['enabled'])
     database = db.Database()
     database.add_all([data], 1019)
+
+    # Return
+    return expected
+
+
+def setup_db_billcode():
+    """Create the database for Billcode table testing.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    idx_billcode = 1
+
+    # Create a dict of all the expected values
+    expected = {
+        'enabled': True,
+        'name': general.hashstring(general.randomstring()),
+        'idx_billcode': idx_billcode,
+        'code': general.hashstring(general.randomstring()),
+        'enabled': 1
+    }
+
+    # Drop the database and create tables
+    initialize_db()
+
+    # Insert data into database
+    data = Billcode(
+        code=general.encode(expected['code']),
+        name=general.encode(expected['name']))
+    database = db.Database()
+    database.add_all([data], 1018)
+
+    # Return
+    return expected
+
+
+def setup_db_department():
+    """Create the database for Department table testing.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    idx_department = 1
+
+    # Create a dict of all the expected values
+    expected = {
+        'enabled': True,
+        'name': general.hashstring(general.randomstring()),
+        'idx_department': idx_department,
+        'code': general.hashstring(general.randomstring()),
+        'enabled': 1
+    }
+
+    # Drop the database and create tables
+    initialize_db()
+
+    # Insert data into database
+    data = Department(
+        code=general.encode(expected['code']),
+        name=general.encode(expected['name']))
+    database = db.Database()
+    database.add_all([data], 1018)
 
     # Return
     return expected

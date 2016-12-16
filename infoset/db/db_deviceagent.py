@@ -45,6 +45,12 @@ class GetDeviceAgent(object):
             self.data_dict[key] = None
         self.data_dict['exists'] = False
 
+        # Fix values passed
+        if isinstance(idx_device, int) is False:
+            idx_device = None
+        if isinstance(idx_agent, int) is False:
+            idx_agent = None
+
         # Establish a database session
         database = db.Database()
         session = database.session()
@@ -57,7 +63,7 @@ class GetDeviceAgent(object):
             for instance in result:
                 self.data_dict['last_timestamp'] = instance.last_timestamp
                 self.data_dict['idx_deviceagent'] = instance.idx_deviceagent
-                self.data_dict['enabled'] = instance.enabled
+                self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['exists'] = True
                 break
 
@@ -135,6 +141,12 @@ def device_agent_exists(idx_device, idx_agent):
     # Initialize key variables
     exists = False
 
+    # Fix values passed
+    if isinstance(idx_device, int) is False:
+        idx_device = None
+    if isinstance(idx_agent, int) is False:
+        idx_agent = None
+
     # Get information on agent from database
     data = GetDeviceAgent(idx_device, idx_agent)
     if data.exists() is True:
@@ -184,6 +196,10 @@ def device_indices(idx_agent):
     """
     idx_list = []
 
+    # Fix values passed
+    if isinstance(idx_agent, int) is False:
+        idx_agent = None
+
     # Establish a database session
     database = db.Database()
     session = database.session()
@@ -212,6 +228,10 @@ def agent_indices(idx_device):
 
     """
     idx_list = []
+
+    # Fix values passed
+    if isinstance(idx_device, int) is False:
+        idx_device = None
 
     # Establish a database session
     database = db.Database()

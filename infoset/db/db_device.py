@@ -387,6 +387,10 @@ def idx_device_exists(idx_device):
     # Initialize key variables
     exists = False
 
+    # Fix values passed
+    if isinstance(idx_device, int) is False:
+        idx_device = None
+
     # Get information on agent from database
     data = GetIDXDevice(idx_device)
     if data.exists() is True:

@@ -25,6 +25,7 @@ class TestGetDeviceAgent(unittest.TestCase):
     data['timestamp'] = int(time.time())
 
     # Setup database
+    unittest_db.initialize_db()
     (idx_device_good, idx_agent_good) = unittest_db.setup_db_deviceagent(data)
 
     # Create device object
@@ -42,6 +43,11 @@ class TestGetDeviceAgent(unittest.TestCase):
         # Testing with known good value
         result = self.good_device.exists()
         self.assertEqual(result, True)
+
+        # Test with known bad value
+        expected = db_deviceagent.GetDeviceAgent(None, None)
+        result = expected.exists()
+        self.assertEqual(result, False)
 
     def test_enabled(self):
         """Testing method enabled."""
@@ -77,6 +83,7 @@ class TestFunctions(unittest.TestCase):
     data['timestamp'] = int(time.time())
 
     # Setup database
+    unittest_db.initialize_db()
     (idx_device_good, idx_agent_good) = unittest_db.setup_db_deviceagent(data)
 
     def test_device_agent_exists(self):
@@ -85,6 +92,10 @@ class TestFunctions(unittest.TestCase):
         result = db_deviceagent.device_agent_exists(
             self.idx_device_good, self.idx_agent_good)
         self.assertEqual(result, True)
+
+        # Testing with known good value
+        result = db_deviceagent.device_agent_exists(None, None)
+        self.assertEqual(result, False)
 
     def test_all_device_indices(self):
         """Testing function all_device_indices."""

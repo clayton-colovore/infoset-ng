@@ -150,8 +150,8 @@ class TestGetDevice(unittest.TestCase):
         self.assertNotEqual(result, expected)
 
 
-class TestOther(unittest.TestCase):
-    """Checks all functions and methods."""
+class TestFunctions(unittest.TestCase):
+    """Checks all functions."""
 
     #########################################################################
     # General object setup
@@ -159,19 +159,35 @@ class TestOther(unittest.TestCase):
 
     # Intstantiate a good agent
     idx_device_good = 1
-    good_device = db_device.GetIDXDevice(idx_device_good)
+    expected = unittest_db.setup_db_device()
 
     def test_all_devices(self):
         """Testing function all_devices."""
-        pass
+        # Test known working value
+        results = db_device.all_devices()
+        for result in results:
+            for key, _ in result.items():
+                self.assertEqual(result[key], self.expected[key])
 
     def test_devicename_exists(self):
         """Testing function devicename_exists."""
-        pass
+        # Test known working value
+        result = db_device.devicename_exists(self.expected['devicename'])
+        self.assertEqual(result, True)
 
-    def test_idx_exists(self):
+        # Test known false value
+        result = db_device.devicename_exists(False)
+        self.assertEqual(result, False)
+
+    def test_idx_device_exists(self):
         """Testing function idx_exists."""
-        pass
+        # Test known working value
+        result = db_device.idx_device_exists(1)
+        self.assertEqual(result, True)
+
+        # Test known false value
+        result = db_device.idx_device_exists(-1)
+        self.assertEqual(result, False)
 
 if __name__ == '__main__':
 
