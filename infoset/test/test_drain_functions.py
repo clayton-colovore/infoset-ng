@@ -3,14 +3,9 @@
 
 # Standard imports
 import unittest
-import tempfile
-import json
-import time
-import os
 
 # Infoset imports
 from infoset.cache import drain
-from infoset.utils import general
 from infoset.test import unittest_db
 from infoset.test import unittest_variables
 
