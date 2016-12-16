@@ -26,7 +26,7 @@ class TestVariables(object):
                                           ['p10p1',
                                            123705549, 'p10p1']],
                                  'description': 'Packets (Out)'},
-                'swap_used': {'base_type': 1,
+                'swap_used': {'base_type': 32,
                               'data': [[None, 363606016, None]],
                               'description': 'Swap Used'}},
             'devicename': 'unittest_device',
