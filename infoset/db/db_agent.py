@@ -42,6 +42,10 @@ class GetIDXAgent(object):
             self.data_dict[key] = None
         self.data_dict['exists'] = False
 
+        # Fix values passed
+        if isinstance(idx_agent, int) is False:
+            idx_agent = None
+
         # Only work if the value is an integer
         if isinstance(idx_agent, int) is True and idx_agent is not None:
             # Get the result
@@ -353,6 +357,10 @@ def idx_agent_exists(idx_agent):
     """
     # Initialize key variables
     exists = False
+
+    # Fix values passed
+    if isinstance(idx_agent, int) is False:
+        idx_agent = None
 
     # Get information on agent from database
     data = GetIDXAgent(idx_agent)

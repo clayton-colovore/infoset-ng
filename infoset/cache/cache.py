@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-
-"""Demonstration Script that extracts agent data from cache directory files.
-
-This could be a modified to be a daemon
-
-"""
+"""Classes and functions to insert cache file data into the database."""
 
 # Standard libraries
 import os
@@ -30,18 +25,52 @@ from infoset.cache import drain
 from infoset.utils import daemon
 
 
-class ProcessIdentifier(object):
-    """Threaded ingestion of agent files.
+class _ProcessAgentCache(object):
+    """Processes cache files from a single agent.
 
-    Graciously modified from:
-    http://www.ibm.com/developerworks/aix/library/au-threadingpython/
+    The ingester daemon periodically runs methods in this class.
+
+    Methodology:
+
+    1)  JSON data from each successive cache file is converted to a series
+        of dicts using the Drain class in infoset.cache.drain
+
+    2)  Data from invalid files are discarded and moved to a failure
+        directory for future analysis.
+
+    3)  The timestamp of the ingester's PID file is updated with each valid
+        file found.
+
+        The ingester normally updates the PID file periodically while it
+        waits for new data. It is automatically restarted if there is no
+        PID file activity as it is assumed the ingester is hung.
+
+        The ingester therefore needs to continue updating its PID file while
+        it is processing data to reduce this risk.
+
+    4)  Newly discovered agents, devices and datapoints are added to
+        the database. The AgentDevice table is also updated to track the
+        devices each agent is tracking.
+
+    5)  The actual datapoint values are added to the database.
+
+    6)  Database table rows are updated with the timestamp of this most
+        recent update.
 
     """
 
-    def __init__(self, config, metadata):
-        """Initialize the threads."""
+    def __init__(self, config, metadata, ingester_agent_name):
+        """Initialize the class.
+
+        args:
+            config: Config object
+            metadata: Metadata
+            ingester_agent_name: Ingester's agent name
+
+        """
         self.config = config
         self.metadata = metadata
+        self.ingester_agent_name = ingester_agent_name
 
     def process(self):
         """Update the database using threads."""
@@ -57,8 +86,7 @@ class ProcessIdentifier(object):
             'timefixed': []
         }
 
-        # Get the data_dict
-        metadata = self.metadata
+        # Get the directory to which failed files will be moved
         failure_directory = self.config.ingest_failures_directory()
 
         # Initialize other values
@@ -68,7 +96,11 @@ class ProcessIdentifier(object):
         start_ts = time.time()
 
         # Process file for each timestamp, starting from the oldes file
-        for (timestamp, filepath) in metadata:
+        for data_dict in self.metadata:
+            # Initialize key variables
+            timestamp = data_dict['timestamp']
+            filepath = data_dict['filepath']
+
             # Read in data
             ingest = drain.Drain(filepath)
 
@@ -102,14 +134,14 @@ class ProcessIdentifier(object):
                 agent_data['agent_name'] = ingest.agent()
 
                 # Get the PID file for the agent
-                pid_file = daemon.pid_file(agent_data['agent_name'])
+                pid_file = daemon.pid_file(self.ingester_agent_name)
 
             # Update the PID file for the agent to ensure agentd.py
             # doesn't kill the ingest while processing a long stream
             # of files. If we are running this using __main__ = process()
             # then the pid file wouldn't have been created, hence the logic.
             if os.path.isfile(pid_file) is True:
-                daemon.update_pid(agent_data['agent_name'])
+                daemon.update_pid(self.ingester_agent_name)
 
             # Update update flag
             do_update = True
@@ -170,7 +202,15 @@ class ProcessIdentifier(object):
 
 
 class _PrepareDatabase(object):
-    """Prepare database for insertion of new datapoint values."""
+    """Prepare database for insertion of new datapoint values.
+
+    Newly discovered agents, devices and datapoints are added to
+    the database.
+
+    The AgentDevice table is also updated to track the devices
+    each agent is tracking.
+
+    """
 
     def __init__(self, agent_data):
         """Instantiate the class.
@@ -389,7 +429,11 @@ class _PrepareDatabase(object):
 
 
 class _UpdateDB(object):
-    """Update database with agent data."""
+    """Update database with agent data.
+
+    The actual datapoint values are added to the database.
+
+    """
 
     def __init__(self, agent_data, datapoints):
         """Instantiate the class.
@@ -556,7 +600,13 @@ class _UpdateDB(object):
 
 
 class _UpdateLastTimestamp(object):
-    """Update the last_timestamp values for a number of tables."""
+    """Update the last_timestamp values for updated tables.
+
+    1)  DeviceAgent
+    2)  Agent
+    3)  Device
+
+    """
 
     def __init__(self, idx_device, idx_agent, last_timestamp):
         """Instantiate the class.
@@ -651,13 +701,19 @@ class _UpdateLastTimestamp(object):
 
 
 def validate_cache_files():
-    """Method initializing the class.
+    """Create metadata for cache files with valid names.
 
     Args:
-        agent_name: agent name
+        None
 
     Returns:
-        None
+        id_agent_metadata: Dict keyed by
+            devicehash: A hash of the devicename
+            id_agent: The agent's ID
+
+            The contents of each key pair is a list of dicts with these keys
+                timestamp: Timestamp of the data received
+                filepath: The path to the file to be read
 
     """
     # Initialize key variables
@@ -698,15 +754,21 @@ def validate_cache_files():
             (tstamp, id_agent, devicehash) = name.split('_')
             timestamp = int(tstamp)
 
+            # Create data dictionary
+            data_dict = {
+                'timestamp': timestamp,
+                'filepath': filepath
+            }
+
             # Keep track of devices and the Identifiers that track them
             # Create a list of timestamp, device filepath
             # tuples for each id_agent
             if bool(id_agent_metadata[devicehash][id_agent]) is True:
                 id_agent_metadata[
-                    devicehash][id_agent].append((timestamp, filepath))
+                    devicehash][id_agent].append(data_dict)
             else:
                 id_agent_metadata[
-                    devicehash][id_agent] = [(timestamp, filepath)]
+                    devicehash][id_agent] = [data_dict]
 
     # Return
     return id_agent_metadata
@@ -726,27 +788,28 @@ def _wrapper_process(argument_list):
     return _process(*argument_list)
 
 
-def _process(config, metadata):
+def _process(config, metadata, ingester_agent_name):
     """Process metadata.
 
     Args:
         config: Config object
         metadata: metadata
+        ingester_agent_name: Ingester's agent name
 
     Returns:
         Nothing
 
     """
     # Start processing
-    data = ProcessIdentifier(config, metadata)
+    data = _ProcessAgentCache(config, metadata, ingester_agent_name)
     data.process()
 
 
-def process(agent_name):
-    """Method initializing the class.
+def process(ingester_agent_name):
+    """Process cache data by adding it to the database using subprocesses.
 
     Args:
-        agent_name: agent name
+        ingester_agent_name: Ingester agent name
 
     Returns:
         None
@@ -775,7 +838,7 @@ def process(agent_name):
     # Spawn processes only if we have files to process
     if bool(id_agent_metadata.keys()) is True:
         # Process lock file
-        lockfile = daemon.lock_file(agent_name)
+        lockfile = daemon.lock_file(ingester_agent_name)
         if os.path.exists(lockfile) is True:
             # Return if lock file is present
             log_message = (
@@ -796,7 +859,9 @@ def process(agent_name):
             for id_agent in id_agent_metadata[devicehash].keys():
                 # Create a list of arguments to process
                 argument_list.append(
-                    (config, id_agent_metadata[devicehash][id_agent])
+                    (config,
+                     id_agent_metadata[devicehash][id_agent],
+                     ingester_agent_name)
                 )
 
         # Create a pool of sub process resources
