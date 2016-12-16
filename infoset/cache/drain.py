@@ -100,7 +100,7 @@ class Drain(object):
 
                         # Convert values to float if this is
                         # data that could be charted
-                        if base_type != 0:
+                        if base_type != None:
                             value = float(value)
 
                         # Update the data
@@ -452,7 +452,7 @@ def _base_type(data):
     elif value == 64:
         base_type = 64
     else:
-        base_type = 0
+        base_type = None
 
     # Return
     return base_type

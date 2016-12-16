@@ -57,7 +57,7 @@ class TestFunctions(unittest.TestCase):
             self.assertEqual(result, base_type)
 
             result = drain._base_type(str(base_type))
-            self.assertEqual(result, 0)
+            self.assertEqual(result, None)
 
 
 if __name__ == '__main__':
