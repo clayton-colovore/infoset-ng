@@ -111,7 +111,7 @@ def setup_db_deviceagent(data):
         id_agent=general.encode(id_agent),
         name=general.encode(agent_name))
     database = db.Database()
-    database.add(record, 1081)
+    database.add(record, 1031)
 
     # Get idx_agent value from database
     agent_info = db_agent.GetIDAgent(id_agent)
@@ -120,7 +120,7 @@ def setup_db_deviceagent(data):
     # Add record to the database
     record = Device(devicename=general.encode(devicename))
     database = db.Database()
-    database.add(record, 1080)
+    database.add(record, 1023)
 
     # Get idx of newly added device
     device_info = db_device.GetDevice(devicename)
@@ -131,7 +131,7 @@ def setup_db_deviceagent(data):
         # Add to DeviceAgent table
         record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
         database = db.Database()
-        database.add(record, 1038)
+        database.add(record, 1020)
 
     # Update DeviceAgent table with timestamp
     database = db.Database()
@@ -141,7 +141,7 @@ def setup_db_deviceagent(data):
             DeviceAgent.idx_device == idx_device,
             DeviceAgent.idx_agent == idx_agent)).one()
     record.last_timestamp = last_timestamp
-    database.commit(session, 1124)
+    database.commit(session, 1042)
 
     # Return
     result = (idx_agent, idx_device)
@@ -184,7 +184,7 @@ def setup_db_agent():
         enabled=expected['enabled'],
         last_timestamp=expected['last_timestamp'])
     database = db.Database()
-    database.add_all([data], 1018)
+    database.add_all([data], 1045)
 
     # Return
     return(id_agent, expected)
@@ -276,7 +276,7 @@ def setup_db_billcode():
         code=general.encode(expected['code']),
         name=general.encode(expected['name']))
     database = db.Database()
-    database.add_all([data], 1018)
+    database.add_all([data], 1067)
 
     # Return
     return expected

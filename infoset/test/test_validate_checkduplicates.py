@@ -46,7 +46,7 @@ class TestCheckDuplicates(unittest.TestCase):
             id_agent=general.encode(id_agent),
             name=general.encode(agent_name))
         database = db.Database()
-        database.add(record, 1081)
+        database.add(record, 1040)
 
         # Test must be good as DeviceAgent last_timestamp not updated
         result = validate._CheckDuplicates(self.data)
@@ -59,7 +59,7 @@ class TestCheckDuplicates(unittest.TestCase):
         # Add record to the database
         record = Device(devicename=general.encode(devicename))
         database = db.Database()
-        database.add(record, 1080)
+        database.add(record, 1024)
 
         # Test must be good as DeviceAgent last_timestamp not updated
         result = validate._CheckDuplicates(self.data)
@@ -74,7 +74,7 @@ class TestCheckDuplicates(unittest.TestCase):
             # Add to DeviceAgent table
             record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
             database = db.Database()
-            database.add(record, 1038)
+            database.add(record, 1021)
 
         # Test must be good as DeviceAgent last_timestamp not updated
         result = validate._CheckDuplicates(self.data)
@@ -88,7 +88,7 @@ class TestCheckDuplicates(unittest.TestCase):
                 DeviceAgent.idx_device == idx_device,
                 DeviceAgent.idx_agent == idx_agent)).one()
         record.last_timestamp = last_timestamp
-        database.commit(session, 1124)
+        database.commit(session, 1044)
 
         # Test must fail as DeviceAgent last_timestamp not updated
         result = validate._CheckDuplicates(self.data)
