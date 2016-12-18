@@ -1,0 +1,24 @@
+################################################################################
+#
+# 1) Copy this file to the /etc/systemd/system directory
+# 2) Edit the PYTHONPATH path
+# 3) Edit the ExecStart statement
+# 4) Run the command "systemctl daemon-reload". This needs to be run only once
+# 5) Run the command "systemctl start infoset-ng-ingester.service" to start
+# 6) Run the command "systemctl stop infoset-ng-ingester.service" to stop
+# 7) Run the command "systemctl restart infoset-ng-ingester.service" to restart
+# 8) Run the command "systemctl enable infoset-ng-ingester.service" to make
+#    infoset-ng-ingester start automatically on boot
+#
+################################################################################
+[Unit]
+Description=infoset-ng-ingester: Cache data ingester for infoset-ng
+
+[Service]
+Environment=PYTHONPATH=/path/to/infoset-ng-ingester
+ExecStart=/path/to/infoset-ng/bin/infoset-ng-ingester --start
+ExecStop=/path/to/infoset-ng/bin/infoset-ng-ingester --stop
+ExecReload=/path/to/infoset-ng/bin/infoset-ng-ingester --restart
+
+[Install]
+WantedBy=default.target
