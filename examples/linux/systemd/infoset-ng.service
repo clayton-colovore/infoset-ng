@@ -15,6 +15,8 @@
 Description=infoset-ng: Time series data API
 
 [Service]
+User=infoset-ng
+Group=infoset-ng
 Environment=PYTHONPATH=/path/to/infoset-ng
 ExecStart=/path/to/infoset-ng/bin/infoset-ng
 PIDFile=/var/run/infoset-ng.pid

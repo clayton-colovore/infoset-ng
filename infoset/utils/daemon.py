@@ -266,7 +266,7 @@ class Daemon(object):
         pass
 
 
-class _Directory:
+class _Directory(object):
     """A class for creating the names of hidden directories."""
 
     def __init__(self):
@@ -280,7 +280,7 @@ class _Directory:
 
         """
         # Initialize key variables
-        self.root = ('%s/.infoset') % (general.root_directory())
+        self.root = ('%s/.status') % (general.root_directory())
 
     def pid(self):
         """Method for defining the hidden pid directory.
@@ -325,7 +325,7 @@ class _Directory:
         return value
 
 
-class _File:
+class _File(object):
     """A class for creating the names of hidden files."""
 
     def __init__(self):
@@ -387,7 +387,7 @@ class _File:
         return value
 
 
-class _Touch:
+class _Touch(object):
     """A class for updating modifed times for hidden files."""
 
     def __init__(self):
