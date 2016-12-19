@@ -6,6 +6,8 @@ import time
 import subprocess
 import locale
 import hashlib
+import random
+import string
 
 # PIP libraries
 import yaml
@@ -81,11 +83,11 @@ def decode(value):
     return result
 
 
-def hashstring(string, sha=256, utf8=False):
+def hashstring(stringy, sha=256, utf8=False):
     """Create a UTF encoded SHA hash string.
 
     Args:
-        string: String to hash
+        stringy: String to hash
         length: Length of SHA hash
         utf8: Return utf8 encoded string if true
 
@@ -111,7 +113,7 @@ def hashstring(string, sha=256, utf8=False):
             hasher = hashlib.sha256()
 
     # Encode the string
-    hasher.update(bytes(string.encode()))
+    hasher.update(bytes(stringy.encode()))
     device_hash = hasher.hexdigest()
     if utf8 is True:
         result = device_hash.encode()
@@ -261,6 +263,23 @@ def search_file(filename):
             break
 
     # Return
+    return result
+
+
+def randomstring(size=20):
+    """Create a random string.
+
+    Args:
+        None
+
+    Returns:
+        result
+
+    """
+    # Return
+    result = ''.join(
+        random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits) for _ in range(size))
     return result
 
 

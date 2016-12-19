@@ -39,7 +39,7 @@ class GetCodeDepartment(object):
         # Initialize important variables
         value = code.encode()
         self.data_dict = defaultdict(dict)
-        keys = ['idx_department', 'code', 'name']
+        keys = ['idx_department', 'code', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -57,6 +57,7 @@ class GetCodeDepartment(object):
                     'code'] = general.decode(instance.code)
                 self.data_dict[
                     'name'] = general.decode(instance.name)
+                self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['exists'] = True
                 break
 
@@ -75,6 +76,22 @@ class GetCodeDepartment(object):
         """
         # Initialize key variables
         value = self.data_dict['exists']
+        return value
+
+    def enabled(self):
+        """Get agent enabled.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
+
+        # Return
         return value
 
     def idx_department(self):
@@ -145,7 +162,7 @@ class GetIDXDepartment(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_department', 'code', 'name']
+        keys = ['idx_department', 'code', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -164,6 +181,7 @@ class GetIDXDepartment(object):
                     'code'] = general.decode(instance.code)
                 self.data_dict[
                     'name'] = general.decode(instance.name)
+                self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['exists'] = True
                 break
 
@@ -182,6 +200,36 @@ class GetIDXDepartment(object):
         """
         # Initialize key variables
         value = self.data_dict['exists']
+        return value
+
+    def enabled(self):
+        """Get agent enabled.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
+
+        # Return
+        return value
+
+    def idx_department(self):
+        """Get idx_department value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_department']
         return value
 
     def code(self):

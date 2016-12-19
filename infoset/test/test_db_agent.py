@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Test the general module."""
+"""Test the db_agent library in the infoset.db module."""
 
 import unittest
 
 from infoset.db import db_agent
-from infoset.test import db_unittest
+from infoset.test import unittest_db
 
 
 class TestGetIDX(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestGetIDX(unittest.TestCase):
     #########################################################################
 
     # Setup database
-    (_, expected) = db_unittest.setup_db_agent()
+    (_, expected) = unittest_db.setup_db_agent()
 
     # Retrieve data
     good_agent = db_agent.GetIDXAgent(1)
@@ -80,7 +80,7 @@ class TestGetIDX(unittest.TestCase):
         """Testing method everything."""
         # Testing with known good value
         result = self.good_agent.everything()
-        for key in self.expected.keys():
+        for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
 
@@ -88,7 +88,7 @@ class TestGetIdentifier(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Setup database
-    (good_id, expected) = db_unittest.setup_db_agent()
+    (good_id, expected) = unittest_db.setup_db_agent()
 
     # Retrieve data
     good_agent = db_agent.GetIDAgent(good_id)
@@ -153,7 +153,7 @@ class TestGetIdentifier(unittest.TestCase):
         """Testing method everything."""
         # Testing with known good value
         result = self.good_agent.everything()
-        for key in self.expected.keys():
+        for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
 
@@ -164,7 +164,7 @@ class Other(unittest.TestCase):
     idx_agent_good = 1
 
     # Setup database
-    (good_id, _) = db_unittest.setup_db_agent()
+    (good_id, _) = unittest_db.setup_db_agent()
 
     # Retrieve data
     good_agent = db_agent.GetIDAgent(good_id)
@@ -196,7 +196,7 @@ class Other(unittest.TestCase):
 
 if __name__ == '__main__':
     # Test the configuration variables
-    db_unittest.validate()
+    unittest_db.validate()
 
     # Do the unit test
     unittest.main()

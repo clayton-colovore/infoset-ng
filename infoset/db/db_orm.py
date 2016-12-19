@@ -73,6 +73,8 @@ class DeviceAgent(BASE):
         BIGINT(unsigned=True), ForeignKey('iset_agent.idx_agent'),
         nullable=False, server_default='1')
 
+    enabled = Column(INTEGER(unsigned=True), server_default='1')
+
     last_timestamp = Column(
         BIGINT(unsigned=True), nullable=False, server_default='0')
 
@@ -210,6 +212,8 @@ class Department(BASE):
 
     name = Column(VARBINARY(512), nullable=True, default=None)
 
+    enabled = Column(INTEGER(unsigned=True), server_default='1')
+
     ts_modified = Column(
         DATETIME, server_default=text(
             'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),)
@@ -238,6 +242,8 @@ class Billcode(BASE):
 
     name = Column(VARBINARY(512), nullable=True, default=None)
 
+    enabled = Column(INTEGER(unsigned=True), server_default='1')
+
     ts_modified = Column(
         DATETIME, server_default=text(
             'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),)
@@ -265,6 +271,8 @@ class Configuration(BASE):
     config_key = Column(VARBINARY(512), nullable=True, default=None)
 
     config_value = Column(VARBINARY(512), nullable=True, default=None)
+
+    enabled = Column(INTEGER(unsigned=True), server_default='1')
 
     ts_modified = Column(
         DATETIME, server_default=text(

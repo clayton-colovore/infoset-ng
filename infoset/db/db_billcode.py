@@ -39,7 +39,7 @@ class GetCodeBillcode(object):
         # Initialize important variables
         value = code.encode()
         self.data_dict = defaultdict(dict)
-        keys = ['idx_billcode', 'code', 'name']
+        keys = ['idx_billcode', 'code', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -53,6 +53,7 @@ class GetCodeBillcode(object):
         if result.count() == 1:
             for instance in result:
                 self.data_dict['code'] = code
+                self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['idx_billcode'] = instance.idx_billcode
                 self.data_dict[
                     'name'] = general.decode(instance.name)
@@ -74,6 +75,22 @@ class GetCodeBillcode(object):
         """
         # Initialize key variables
         value = self.data_dict['exists']
+        return value
+
+    def enabled(self):
+        """Get agent enabled.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
+
+        # Return
         return value
 
     def idx_billcode(self):
@@ -144,10 +161,14 @@ class GetIDXBillcode(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_billcode', 'code', 'name']
+        keys = ['idx_billcode', 'code', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
+
+        # Fix values passed
+        if isinstance(idx_billcode, int) is False:
+            idx_billcode = None
 
         # Establish a database session
         database = db.Database()
@@ -159,6 +180,7 @@ class GetIDXBillcode(object):
         if result.count() == 1:
             for instance in result:
                 self.data_dict['idx_billcode'] = instance.idx_billcode
+                self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict[
                     'code'] = general.decode(instance.code)
                 self.data_dict[
@@ -181,6 +203,36 @@ class GetIDXBillcode(object):
         """
         # Initialize key variables
         value = self.data_dict['exists']
+        return value
+
+    def enabled(self):
+        """Get agent enabled.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
+
+        # Return
+        return value
+
+    def idx_billcode(self):
+        """Get idx_billcode value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_billcode']
         return value
 
     def code(self):
@@ -246,6 +298,10 @@ def idx_billcode_exists(idx_billcode):
     """
     # Initialize key variables
     exists = False
+
+    # Fix values passed
+    if isinstance(idx_billcode, int) is False:
+        idx_billcode = None
 
     # Get information on agent from database
     data = GetIDXBillcode(idx_billcode)

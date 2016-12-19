@@ -3,6 +3,7 @@ click
 colorama
 Flask
 Flask-RESTful
+gunicorn
 funcsigs
 isort
 itsdangerous
@@ -30,5 +31,6 @@ PyYAML
 requests
 six
 SQLAlchemy
+SQLAlchemy-Utils
 Werkzeug
 wrapt

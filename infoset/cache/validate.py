@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-
-"""Demonstration Script that extracts agent data from cache directory files.
-
-This could be a modified to be a daemon
-
-"""
+"""Code to validate agent data read by the ingester from cache files."""
 
 # Standard libraries
 import os
@@ -21,18 +16,23 @@ from infoset.db import db_device
 
 
 class ValidateCache(object):
-    """Infoset class that ingests agent data.
+    """Primary class that reads and validates agent data from the cache.
 
-    Args:
-        None
+    The following validations are done:
 
-    Returns:
-        None
+    class _CheckFile: Makes sure the file has the correct
+        1) naming convention
 
-    Methods:
-        __init__:
-        populate:
-        post:
+    class _CheckMainKeys: Makes sure the file has the correct
+        1) first level keys in the json contents of the cache file
+
+    class _CheckData: Makes sure the file has the correct
+        1) second level keys in the json contents of the cache file
+        2) values for the 'data' key for each agent label in the data
+
+    class _CheckDuplicates: Makes sure the data in the json cache file
+        hasn't already been inserted into the database
+
     """
 
     def __init__(self, filepath=None, data=None):
@@ -66,9 +66,11 @@ class ValidateCache(object):
                 # Data read from file has already gone through this process.
                 contents = _CheckMainKeys(data)
                 if contents.valid() is True:
-                    self.information = check.contents()
+                    self.information = data
                 else:
                     self._valid = False
+            else:
+                self._valid = False
 
     def getinfo(self):
         """Provide validated information when valid.
@@ -134,13 +136,10 @@ class ValidateCache(object):
 
 
 class _CheckDuplicates(object):
-    """Checks whether data for this agent has already been entered.
+    """Checks for duplicate data entries.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Verifies whether data for this agent, hostname and timestamp
+    has already been entered in the database.
 
     """
 
@@ -176,6 +175,13 @@ class _CheckDuplicates(object):
         """
         # Initialize key variables
         valid = True
+
+        # Return if instantiation tests have failed
+        if self._valid is False:
+            valid = False
+            return valid
+
+        # Assign other values
         timestamp = int(self.data['timestamp'])
         id_agent = self.data['id_agent']
         devicename = self.data['devicename']
@@ -212,11 +218,9 @@ class _CheckDuplicates(object):
 class _CheckData(object):
     """Validates timeseries data in ingested data.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Makes sure the file has the correct
+        1) second level keys in the json contents of the cache file
+        2) values for the 'data' key for each agent label in the data
 
     """
 
@@ -260,11 +264,14 @@ class _CheckData(object):
                 # Skip if data type isn't in the data
                 if data_type in self.data:
                     valid = True
+                else:
+                    valid = False
+                    break
 
         # Log error
         if valid is False:
             log_message = (
-                'Ingest data does not contain data keys.')
+                'Ingest data does not contain all data keys.')
             log.log2warning(1003, log_message)
 
         # Return
@@ -331,7 +338,7 @@ class _CheckData(object):
         # Return
         return valid
 
-    def _charable_data_ok(self):
+    def _timeseries_data_ok(self):
         """Check if timeseries data is OK.
 
         Args:
@@ -411,8 +418,8 @@ class _CheckData(object):
         valid = False
         valid_list = [self._valid]
 
-        # All other tests need to pass for _charable_data_ok to pass
-        valid_list.append(self._charable_data_ok())
+        # All other tests need to pass for _timeseries_data_ok to pass
+        valid_list.append(self._timeseries_data_ok())
 
         # Return
         if len(valid_list) == valid_list.count(True):
@@ -426,11 +433,8 @@ class _CheckData(object):
 class _CheckMainKeys(object):
     """Validates main keys in ingested data.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Makes sure the file has the correct first level keys in the json
+    contents of the cache file
 
     """
 
@@ -574,11 +578,7 @@ class _CheckMainKeys(object):
 class _CheckFile(object):
     """Validate file.
 
-    Args:
-        None
-
-    Returns:
-        None
+    Makes sure the file has the correct naming convention
 
     """
 

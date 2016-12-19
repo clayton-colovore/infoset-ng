@@ -22,7 +22,7 @@ Below is the workflow for having your contribution accepted into the `infoset` r
 3. Fork the project 
 4. Clone the fork to your local machine
 5. Run `make setup` to install dependencies to virtualenv (information about virtualenv found further below in this doc)
-6. Add the original project as a remote (git remote add upstream https://github.com/UWICompSociety/infoset, check with: git remote -v)
+6. Add the original project as a remote (git remote add upstream https://github.com/PalisadoesFoundation/infoset, check with: git remote -v)
 7. Create a topic branch for your change (git checkout -b `branchName`)
 8. you may create additional brances if modifying multiple parts of the code
 9. Write code and Commit your changes locally. Exampe proper git commit message below:

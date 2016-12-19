@@ -1,5 +1,6 @@
 main:
     log_file: /opt/infoset-ng/log/infoset-ng.log
+    web_log_file: /opt/infoset-ng/log/web.log
     log_level: debug
     ingest_cache_directory: /opt/infoset-ng/cache
     ingest_pool_size: 20
