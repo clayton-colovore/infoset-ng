@@ -56,14 +56,18 @@ dist/
 var/
 include/
 .installed.cfg
-MANIFEST
+
+# Generic exclusions
 dist
+build
+MANIFEST
 setuptools-*
 *.so
 *.egg
 *.egg-info
 nohup.out
 .coverage
+.tox
 
 # pyenv
 .python-version
