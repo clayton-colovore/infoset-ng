@@ -1,7 +1,7 @@
-#ignore luke's code-style test object script
-test.py
+#############################################################################
 # Ignore all vim / vi temporary files
 # Created by https://www.gitignore.io/api/vim
+#############################################################################
 .idea*
 ### Vim ###
 # swap
@@ -30,12 +30,10 @@ __pycache__/
 
 # Ignore hidden environment files / directory
 *.infoset
+*.status
 
 # Ignore files in these directories and ALL subdirectories
-data/**
 etc/**
-www/static/img/**
-bin/agents/non-standard/**
 
 # Ignore files in these directories,  _BUT_
 # their subdirectories will be placed in the repository.
@@ -45,7 +43,6 @@ foo/*
 .Python
 env/
 venv/
-bin/infoset
 build/
 develop-eggs/
 downloads/
@@ -58,9 +55,16 @@ sdist/
 dist/
 var/
 include/
-*.egg-info/
 .installed.cfg
+MANIFEST
+dist
+setuptools-*
+*.so
 *.egg
+*.egg-info
+nohup.out
+.coverage
+
 # pyenv
 .python-version
 
@@ -79,9 +83,6 @@ pip-selfcheck.json
 
 # There are exceptions
 !etc/.gitignore
-!data/snmp/.gitignore
-!data/aux/.gitignore
-!www/static/.gitignore
 !.gitignore
 !README
 !*.md
