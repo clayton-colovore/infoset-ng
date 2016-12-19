@@ -242,7 +242,10 @@ The `server.py` script controls the API. The script can be started like this:
 ```
 $ ./server.py
 ```
-Make sure you have a valid configuration file in the `etc/` directory
+Make sure you have a valid configuration file in the `etc/` directory.
+
+There are also examples of system startup scripts in the `examples/linux/systemd` and `examples/linux/systemd` to allow you to run the API as a system service.
+
 
 ## Using the API
 This section outlines how to use the API
