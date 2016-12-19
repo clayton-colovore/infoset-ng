@@ -11,14 +11,21 @@
 #    infoset-ng-ingester start automatically on boot
 #
 ################################################################################
+
 [Unit]
 Description=infoset-ng-ingester: Cache data ingester for infoset-ng
 
 [Service]
-Environment=PYTHONPATH=/path/to/infoset-ng-ingester
-ExecStart=/path/to/infoset-ng/bin/infoset-ng-ingester --start
-ExecStop=/path/to/infoset-ng/bin/infoset-ng-ingester --stop
-ExecReload=/path/to/infoset-ng/bin/infoset-ng-ingester --restart
+User=infoset-ng
+Group=infoset-ng
+Environment=PYTHONPATH=/path/to/infoset-ng START=--start STOP=--stop RESTART=--restart
+ExecStart=
+ExecStart=/path/to/infoset-ng/bin/infoset-ng-ingester $START
+ExecStop=/path/to/infoset-ng/bin/infoset-ng-ingester $STOP
+ExecReload=/path/to/infoset-ng/bin/infoset-ng-ingester $RESTART
+RemainAfterExit=yes
+GuessMainPID=yes
+Type=forking
 
 [Install]
 WantedBy=default.target
