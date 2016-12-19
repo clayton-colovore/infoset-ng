@@ -1,10 +1,10 @@
 # infoset Configuration Details
 
-This page has detailed information on how to configure `infoset-ng`. 
+This page has detailed information on how to configure `infoset-ng`.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents** 
+**Table of Contents**
 
 - [infoset Configuration Samples](#infoset-configuration-samples)
 - [Main Configuration](#main-configuration)
@@ -23,6 +23,7 @@ This section of the configuration file governs the general operation of `infoset
 ```
 main:
     log_file: /opt/infoset/log/infoset.log
+    web_log_file: /opt/infoset/log/web.log
     log_level: debug
     ingest_cache_directory: /opt/infoset/cache
     ingest_pool_size: 20
@@ -39,7 +40,8 @@ main:
 |Parameter|Description|
 | --- | --- |
 | main: | YAML key describing the server configuration.|
-| `log_file:` | The name of the log file `infoset-ng` uses|
+| `log_file:` | The name of the log file `infoset-ng` uses for logging backend activities|
+| `web_log_file:` | The name of the log file `infoset-ng` uses for logging API activities|
 | log_level: | Defines the logging level. `debug` level is the most verbose, followed by `info`, `warning` and `critical`|
 | `ingest_cache_directory:` | Location where the agent data ingester will store its data in the event it cannot communicate with either the database or the server's API|
 | `ingest_pool_size:` | The maximum number of threads used to ingest data into the database|

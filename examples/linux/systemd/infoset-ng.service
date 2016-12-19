@@ -1,0 +1,23 @@
+################################################################################
+#
+# 1) Copy this file to the /etc/systemd/system directory
+# 2) Edit the PYTHONPATH path
+# 3) Edit the ExecStart statement
+# 4) Run the command "systemctl daemon-reload". This needs to be run only once
+# 5) Run the command "systemctl start infoset-ng.service" to start
+# 6) Run the command "systemctl stop infoset-ng.service" to stop
+# 7) Run the command "systemctl restart infoset-ng.service" to restart
+# 8) Run the command "systemctl enable infoset-ng.service" to make infoset-ng
+#    start automatically on boot
+#
+################################################################################
+[Unit]
+Description=infoset-ng: Time series data API
+
+[Service]
+Environment=PYTHONPATH=/path/to/infoset-ng
+ExecStart=/path/to/infoset-ng/bin/infoset-ng
+PIDFile=/var/run/infoset-ng.pid
+
+[Install]
+WantedBy=default.target

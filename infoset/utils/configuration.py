@@ -327,6 +327,27 @@ class Config(object):
         # Return
         return result
 
+    def web_log_file(self):
+        """Get web_log_file.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        sub_key = 'web_log_file'
+        result = None
+        key = 'main'
+
+        # Get new result
+        result = _key_sub_key(key, sub_key, self.config_dict)
+
+        # Return
+        return result
+
     def log_level(self):
         """Get log_level.
 
