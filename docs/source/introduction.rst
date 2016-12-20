@@ -1,11 +1,7 @@
 Introduction
 ============
 
-``infoset-ng`` is a lightweight Python 3 based REST API that stores
-and/or retrieves timestamped data. It runs on Linux.
-
-We strongly recommend that you read everything on this page before
-installing ``infoset-ng`` **Table of Contents**
+There's a lot to know about ``infoset-ng`` which we'll summarize here.
 
 Features
 --------

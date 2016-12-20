@@ -7,21 +7,13 @@ directory before starting data collection.
 The ``examples/etc`` directory includes a sample file that can be copied
 to the ``/etc`` directory and edited.
 
-The ``README.md`` file in the ``examples/etc`` directory explains what
-each parameter does. You can easily view this ``README.md`` file on the
-web by visiting the ``examples/etc`` directory on GitHub.
 
 infoset-ng Configuration Example
 --------------------------------
 
-This ``examples/etc`` directory includes a sample file that can be
-edited. ``infoset-ng`` assumes all files in this directory only contains
-``infoset-ng`` configuration files.
+In this example we explain each parameter in the configuration file.
 
-You must place your configuration file in the ``etc/`` directory as your
-permanent configuration file location. ## Main Configuration This
-section of the configuration file governs the general operation of
-``infoset-ng``.
+The ``main`` section governs the general operation of ``infoset-ng``.
 
 ::
 
@@ -70,12 +62,14 @@ Logrotate Configuration
 
 
 The ``examples/linux/logrotate/infoset-ng`` file is a working logrotate
-configuration to rotate the log files that infoset-ng generates. The log
-file data can be extensive and adding the logrotate file to your system
+configuration to rotate the log files that ``infoset-ng`` generates. The ``infoset-ng`` log file data can be extensive and adding the logrotate file to your system
 is highly recommended.
 
 ::
 
     $ sudo cp examples/linux/logrotate/infoset-ng /etc/logrotate.d
 
-Instructions on how to operate ``infoset-ng`` follow.
+Next Steps
+----------
+
+It is time to test the operation of ``infoset-ng``.
