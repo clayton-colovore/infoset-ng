@@ -9,10 +9,65 @@ Operation
    calls. Received data is placed in the cache directory defined in the
    configuration.
 
-Explanations of how run each component will be given next.
+Explanations of how to permanently run each component will be given shortly, but first we'll cover how to test your installation.
 
-**NOTE!** You must have a valid configuration file placed in the
-``etc/`` directory before activating data collection.
+Testing Operation After Installation
+------------------------------------
+
+There are a number of steps to take to make sure you have installed ``infoset-ng`` correctly. This section explains how to do basic testing before putting ``infoset-ng`` into production.
+
+Start the API Interactively
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Start the ``infoset-ng`` API interactively. This will start an interactive session that can be stopped with a ``^C`` keystroke combination.
+
+::
+
+    $ bin/infoset-ng-api
+
+
+Start the Ingester
+~~~~~~~~~~~~~~~~~~
+The ingester will need to be running prior to testing.
+
+::
+
+    $ bin/infoset-ng-ingester --start
+
+
+Test API Functionality
+~~~~~~~~~~~~~~~~~~~~~~
+
+Now that both the API and ingester are running, it's time to test functionality by running the ``bin/tools/test_installation.py`` script
+
+Here is an example of a successful test:
+
+::
+
+    $ bin/tools/test_installation.py
+    2016-12-03 18:12:56,640 - infoset_console - INFO - [peter] (1054S): Successfully posted test data for agent ID 558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
+    2016-12-03 18:12:56,656 - infoset_console - INFO - [peter] (1054S): Successfully retrieved test data for agent ID 558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
+
+    OK
+
+    $
+
+Refer to the Troubleshooting section of this page to rectify any issues.
+
+Stop After Successful Testing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now that it have tested the functionality successsfully it is time to stop the interactive API session and the ingester so that you can operate them as system daemons. 
+
+::
+
+    $ bin/infoset-ng-api
+    ^C
+    $ bin/infoset-ng-ingester --stop
+
+
+The procedures to do operate the system daemons will be covered next.
+
 
 Ingester Operation
 ------------------

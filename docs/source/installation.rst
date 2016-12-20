@@ -1,7 +1,7 @@
-Installation and Configuration
-==============================
+Installation
+============
 
-This section outlines how to install and configure ``infoset-ng``.
+This section outlines how to install and do basic configuration of ``infoset-ng``.
 
 Dependencies
 ------------
@@ -43,7 +43,7 @@ this command to check:
 Setup Database
 ~~~~~~~~~~~~~~
 
-Next create the MySQL or MariaDB database.
+Next create the MySQL or MariaDB database. Make sure the database server is running.
 
 ::
 
@@ -77,6 +77,7 @@ Edit the database credential information in the server section of the
 
 ::
 
+    $ cp examples/etc/config.yaml etc/config.yaml
     $ vim etc/config.yaml
 
 
@@ -108,34 +109,7 @@ Run the install scripts.
     $ source venv/bin/activate
     $ sudo make install
 
-Start the ``infoset-ng`` API.
+Next Steps
+----------
 
-::
-
-    $ ./server.py
-
-
-Test Installation
-~~~~~~~~~~~~~~~~~
-
-It is important to have a valid configuration file in the ``etc/``
-directory before starting data collection. See the ``Configuration``
-section of this document.
-
-You can test whether your configuration works by:
-
-1. Starting the API (Important, see the ``Operation`` section of this
-   document)
-2. Running the ``bin/tools/test_installation.py`` script
-
-Here is an example of a successful test:
-
-::
-
-    $ bin/tools/test_installation.py
-    2016-12-03 18:12:56,640 - infoset_console - INFO - [peter] (1054S): Successfully posted test data for agent ID 558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
-    2016-12-03 18:12:56,656 - infoset_console - INFO - [peter] (1054S): Successfully retrieved test data for agent ID 558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
-
-    OK
-
-    $
+It is now time to review the various configuration options. 
