@@ -40,6 +40,9 @@ this command to check:
 
     $ python3 --version
 
+Setup Database
+~~~~~~~~~~~~~~
+
 Next create the MySQL or MariaDB database.
 
 ::
@@ -51,6 +54,10 @@ Next create the MySQL or MariaDB database.
     mysql> flush privileges;
     mysql> exit;
 
+
+Clone the Repository
+~~~~~~~~~~~~~~~~~~~~
+
 Now clone the repository and copy the sample configuration file to its
 final location.
 
@@ -61,12 +68,20 @@ final location.
     $ export PYTHONPATH=`pwd`
     $ cp examples/etc/* etc/
 
+
+Edit Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~
+
 Edit the database credential information in the server section of the
 ``etc/config.yaml`` file. Update the configured database password.
 
 ::
 
     $ vim etc/config.yaml
+
+
+Create Working Directories
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create the directories that ``infoset-ng`` will use for its working
 files.
@@ -77,6 +92,10 @@ files.
     $ sudo chown -R $USER /opt/infoset-ng
     $ mkdir -p /opt/infoset-ng/log
     $ mkdir -p /opt/infoset-ng/cache
+
+
+Run Installation Script
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Run the install scripts.
 
@@ -95,8 +114,9 @@ Start the ``infoset-ng`` API.
 
     $ ./server.py
 
-Testing Installation
-~~~~~~~~~~~~~~~~~~~~
+
+Test Installation
+~~~~~~~~~~~~~~~~~
 
 It is important to have a valid configuration file in the ``etc/``
 directory before starting data collection. See the ``Configuration``
