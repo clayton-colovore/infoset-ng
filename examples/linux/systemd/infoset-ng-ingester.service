@@ -1,13 +1,17 @@
 ################################################################################
 #
+# READ ALL STEPS BEFORE PROCEEDING
+#
 # 1) Copy this file to the /etc/systemd/system directory
 # 2) Edit the PYTHONPATH path
-# 3) Edit the ExecStart statement
-# 4) Run the command "systemctl daemon-reload". This needs to be run only once
-# 5) Run the command "systemctl start infoset-ng-ingester.service" to start
-# 6) Run the command "systemctl stop infoset-ng-ingester.service" to stop
-# 7) Run the command "systemctl restart infoset-ng-ingester.service" to restart
-# 8) Run the command "systemctl enable infoset-ng-ingester.service" to make
+# 3) Edit the User and Group to match the POSIX user you want the daemon
+#    to run as.
+# 4) Edit the ExecStart statement (Leave the first one blank!)
+# 5) Run the command "systemctl daemon-reload". This needs to be run only once
+# 6) Run the command "systemctl start infoset-ng-ingester.service" to start
+# 7) Run the command "systemctl stop infoset-ng-ingester.service" to stop
+# 8) Run the command "systemctl restart infoset-ng-ingester.service" to restart
+# 9) Run the command "systemctl enable infoset-ng-ingester.service" to make
 #    infoset-ng-ingester start automatically on boot
 #
 ################################################################################

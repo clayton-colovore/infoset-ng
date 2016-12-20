@@ -12,6 +12,11 @@ Welcome to infoset-ng's documentation!
 
    introduction
    installation
+   configuration
+   operation
+   api
+   troubleshooting
+   community
 
 
 Indices and tables
