@@ -17,7 +17,7 @@ The commands for installing the dependencies are:
 ::
 
     # sudo apt-get install python3 python3-pip python3-dev python3-yaml
-    # pip3 install --user sqlalchemy
+    # pip3 install --user sqlalchemy yaml
 
 Fedora
 ~~~~~~
@@ -27,7 +27,7 @@ The commands for installing the dependencies are:
 ::
 
     # sudo dnf install python3 python3-pip python3-dev python3-yaml
-    # pip3 install --user sqlalchemy
+    # pip3 install --user sqlalchemy yaml
 
 Installation
 ------------
@@ -66,7 +66,6 @@ final location.
     $ git clone https://github.com/PalisadoesFoundation/infoset-ng
     $ cd infoset-ng
     $ export PYTHONPATH=`pwd`
-    $ cp examples/etc/* etc/
 
 
 Edit Configuration File
@@ -81,20 +80,6 @@ Edit the database credential information in the server section of the
     $ vim etc/config.yaml
 
 
-Create Working Directories
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Create the directories that ``infoset-ng`` will use for its working
-files.
-
-::
-
-    $ sudo mkdir -p /opt/infoset-ng
-    $ sudo chown -R $USER /opt/infoset-ng
-    $ mkdir -p /opt/infoset-ng/log
-    $ mkdir -p /opt/infoset-ng/cache
-
-
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -102,12 +87,8 @@ Run the install scripts.
 
 ::
 
-    $ pip3 install --user sqlalchemy
     $ python3 setup.py
-    $ source ~/.bashrc
-    $ sudo make
-    $ source venv/bin/activate
-    $ sudo make install
+
 
 Next Steps
 ----------

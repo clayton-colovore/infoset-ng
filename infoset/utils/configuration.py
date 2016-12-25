@@ -306,6 +306,33 @@ class Config(object):
             result = int(intermediate)
         return result
 
+    def log_directory(self):
+        """Determine the log_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured log_directory
+
+        """
+        # Initialize key variables
+        key = 'main'
+        sub_key = 'log_directory'
+
+        # Process configuration
+        value = _key_sub_key(key, sub_key, self.config_dict)
+
+        # Check if value exists
+        if os.path.isdir(value) is False:
+            log_message = (
+                'log_directory: "%s" '
+                'in configuration doesn\'t exist!') % (value)
+            log.log2die(1030, log_message)
+
+        # Return
+        return value
+
     def log_file(self):
         """Get log_file.
 
@@ -316,13 +343,8 @@ class Config(object):
             result: result
 
         """
-        # Get result
-        sub_key = 'log_file'
-        result = None
-        key = 'main'
-
         # Get new result
-        result = _key_sub_key(key, sub_key, self.config_dict)
+        result = ('%s/infoset-ng.log') % (self.log_directory())
 
         # Return
         return result
@@ -337,13 +359,8 @@ class Config(object):
             result: result
 
         """
-        # Get result
-        sub_key = 'web_log_file'
-        result = None
-        key = 'main'
-
         # Get new result
-        result = _key_sub_key(key, sub_key, self.config_dict)
+        result = ('%s/api-web.log') % (self.log_directory())
 
         # Return
         return result
@@ -369,188 +386,6 @@ class Config(object):
         # Return
         return result
 
-    def agents(self):
-        """Get agents.
-
-        Args:
-            None
-
-        Returns:
-            result: list of agents
-
-        """
-        # Initialize key variables
-        key = 'agents'
-        result = None
-
-        # Verify data
-        if key not in self.config_dict:
-            log_message = ('No agents configured')
-            log.log2die(1100, log_message)
-
-        # Process agents
-        result = self.config_dict[key]
-
-        # Return
-        return result
-
-    def _config(self):
-        """Get the config as a dict.
-
-        Args:
-            None
-
-        Returns:
-            data: configuration
-
-        """
-        # Initialize key variables
-        data = self.config_dict
-        return data
-
-
-class ConfigAgent(Config):
-    """Class gathers all configuration information.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        devices:
-        snmp_auth:
-    """
-
-    def __init__(self, agent_name):
-        """Function for intializing the class.
-
-        Args:
-            agent_name: Name of agent used to get descriptions
-                from configuration subdirectory
-
-        Returns:
-            None
-
-        """
-        # Intialize key variables
-        self._agent_name = agent_name
-
-        # Instantiate the Config parent
-        Config.__init__(self)
-
-        # Get config as dictionary
-        self.config_dict = self._config()
-
-    def agent_name(self):
-        """Get agent_name.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._agent_name
-        return result
-
-    def agent_enabled(self):
-        """Get agent_enabled.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get config
-        agent_config = _agent_config(self.agent_name(), self.config_dict)
-
-        # Get result
-        if 'agent_enabled' in agent_config:
-            result = bool(agent_config['agent_enabled'])
-        else:
-            result = False
-        return result
-
-    def monitor_agent_pid(self):
-        """Get monitor_agent_pid.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get config
-        agent_config = _agent_config(self.agent_name(), self.config_dict)
-
-        # Get result
-        if 'monitor_agent_pid' in agent_config:
-            result = bool(agent_config['monitor_agent_pid'])
-        else:
-            result = False
-        return result
-
-    def agent_filename(self):
-        """Get agent_filename.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get config
-        agent_config = _agent_config(self.agent_name(), self.config_dict)
-
-        # Get result
-        result = agent_config['agent_filename']
-        return result
-
-
-def _agent_config(agent_name, config_dict):
-    """Get agent config parameter from YAML.
-
-    Args:
-        agent_name: Agent Name
-        config_dict: Dictionary to explore
-        die: Die if true and the result encountered is None
-
-    Returns:
-        result: result
-
-    """
-    # Get result
-    key = 'agents'
-    result = None
-
-    # Get new result
-    if key in config_dict:
-        configurations = config_dict[key]
-        for configuration in configurations:
-            if 'agent_name' in configuration:
-                if configuration['agent_name'] == agent_name:
-                    result = configuration
-                    break
-
-    # Error if not configured
-    if result is None:
-        log_message = (
-            'Agent %s not defined in configuration in '
-            'agents:%s section') % (key, key)
-        log.log2die(1094, log_message)
-
-    # Return
-    return result
-
 
 def _key_sub_key(key, sub_key, config_dict, die=True):
     """Get config parameter from YAML.
@@ -568,8 +403,20 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     # Get result
     result = None
 
+    # Verify config_dict is indeed a dict.
+    # Die safely as log_directory is not defined
+    if isinstance(config_dict, dict) is False:
+        log.log2die_safe(
+            2000, 'Invalid configuration file. YAML not found')
+
     # Get new result
     if key in config_dict:
+        # Make sure we don't have a None value
+        if config_dict[key] is None:
+            log_message = ('%s: value in configuration is blank. Please fix')
+            log.log2die_safe(2000, log_message)
+
+        # Get value we need
         if sub_key in config_dict[key]:
             result = config_dict[key][sub_key]
 
@@ -577,7 +424,7 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     if result is None and die is True:
         log_message = (
             '%s:%s not defined in configuration') % (key, sub_key)
-        log.log2die(1016, log_message)
+        log.log2die_safe(1016, log_message)
 
     # Return
     return result

@@ -7,16 +7,20 @@ Manages connection pooling among other things.
 
 # Main python libraries
 import sys
+import os
 from pathlib import Path
 
 # Pip3 libraries
+import yaml
 from sqlalchemy import create_engine
 
 # Infoset libraries
 try:
     from infoset.utils import log
 except:
-    print('You need to set your PYTHONPATH to include the infoset library')
+    print(
+        'You need to set your PYTHONPATH to include the '
+        'infoset-ng root directory')
     sys.exit(2)
 from infoset.utils import configuration
 from infoset.utils import general
@@ -169,7 +173,7 @@ def insert_config():
             database.add(record, 1108)
 
 
-def server_setup():
+def _server_setup():
     """Setup server.
 
     Args:
@@ -224,6 +228,127 @@ def server_setup():
         insert_config()
 
 
+def _update_config():
+    """Update the configuration with good defaults.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    valid = True
+    updated_list = []
+
+    # Read configuration into dictionary
+    directory = ('%s/etc') % (general.root_directory())
+    config = general.read_yaml_files([directory])
+
+    # Update log_directory and ingest_cache_directory
+    if isinstance(config, dict) is True:
+        if 'main' in config:
+            # Setup the log_directory to a known good default
+            (updated, config) = _create_directory_entries(
+                'log_directory', config)
+            updated_list.append(updated)
+
+            # Setup the ingest_cache_directory to a known good default
+            (updated, config) = _create_directory_entries(
+                'ingest_cache_directory', config)
+            updated_list.append(updated)
+        else:
+            valid = False
+    else:
+        valid = False
+
+    # Gracefully exit if things are not OK
+    if valid is False:
+        log_message = (
+            'Configuration file found in %s is invalid') % (directory)
+        log.log2die_safe(2000, log_message)
+        sys.exit(2)
+
+    # Update configuration file if required
+    if len(updated_list) == updated_list.count(True):
+        # Delete all YAML files in the directory
+        general.delete_yaml_files(directory)
+
+        # Write config back to directory
+        filepath = ('%s/config.yaml') % (directory)
+        with open(filepath, 'w') as outfile:
+            yaml.dump(config, outfile, default_flow_style=False)
+
+
+def _create_directory_entries(key, config):
+    """Update the configuration with good defaults for directories.
+
+    Args:
+        key: Configuration key related to a directory.
+        config: Configuration dictionary
+
+    Returns:
+        updated: True if we have to update a value
+
+    """
+    # Initialize key variables
+    updated = False
+    dir_dict = {
+        'log_directory': 'log',
+        'ingest_cache_directory': 'cache',
+    }
+    directory = ('%s/etc') % (general.root_directory())
+
+    # Setup the key value to a known good default
+    if key in config['main']:
+        # Verify whether key value is empty
+        if config['main'][key] is not None:
+            # Create
+            if os.path.isdir(config['main'][key]) is False:
+                config['main'][key] = ('%s/%s') % (directory, dir_dict[key])
+                updated = True
+        else:
+            config['main'][key] = ('%s/%s') % (directory, dir_dict[key])
+            updated = True
+    else:
+        config['main'][key] = ('%s/%s') % (directory, dir_dict[key])
+        updated = True
+
+    # Return
+    return (updated, config)
+
+
+def _python_valid():
+    """Determine whether we are running the minimum python version.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    valid = True
+    major = 3
+    minor = 5
+    major_installed = sys.version_info[0]
+    minor_installed = sys.version_info[1]
+
+    # Exit if python version is too low
+    if major_installed < major:
+        valid = False
+    elif major_installed == major and minor_installed < minor:
+        valid = False
+    if valid is False:
+        log_message = (
+            'Required python version must be >= {}.{}. '
+            'Python version {}.{} installed'
+            ''.format(major, minor, major_installed, minor_installed))
+        log.log2die_safe(2000, log_message)
+
+
 def main():
     """Process agent data.
 
@@ -234,8 +359,14 @@ def main():
         None
 
     """
+    # Determine whether version of python is valid
+    _python_valid()
+
+    # Update configuration if required
+    _update_config()
+
     # Run server setup
-    server_setup()
+    _server_setup()
 
     # Install required PIP packages
     print('Installing required pip3 packages')

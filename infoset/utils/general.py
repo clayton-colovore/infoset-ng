@@ -347,3 +347,44 @@ def run_script(cli_string, shell=False, die=True):
 
     # Return
     return stdoutdata
+
+
+def delete_files(directory, extension='.yaml'):
+    """Delete all files of a specfic extension in a directory.
+
+    Args:
+        directory: Directory name
+        extension: File extension
+
+    Returns:
+        None
+
+    """
+    # Determine whether directory is valid
+    if os.path.isdir(directory) is False:
+        log_message = ('Directory %s does not exist') % (directory)
+        log.log2die_safe(2000, log_message)
+
+    # Get list of files
+    filelist = [
+        next_file for next_file in os.listdir(
+            directory) if next_file.endswith(extension)]
+
+    # Delete files
+    for delete_file in filelist:
+        delete_path = ('%s/%s') % (directory, delete_file)
+        os.remove(delete_path)
+
+
+def delete_yaml_files(directory):
+    """Delete all yaml files in a directory.
+
+    Args:
+        directory: Directory name
+
+    Returns:
+        None
+
+    """
+    # Delete files
+    delete_files(directory, extension='.yaml')
