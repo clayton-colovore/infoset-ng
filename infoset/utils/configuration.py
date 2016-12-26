@@ -3,11 +3,12 @@
 
 import os.path
 import os
+import sys
 
 # Import project libraries
 from infoset.utils import general
 from infoset.utils import log
-
+from pprint import pprint
 
 class Config(object):
     """Class gathers all configuration information.
@@ -209,7 +210,7 @@ class Config(object):
         # Get result
         key = 'main'
         sub_key = 'interval'
-        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=True)
 
         # Default to 300
         if intermediate is None:
@@ -231,7 +232,7 @@ class Config(object):
         # Get result
         key = 'main'
         sub_key = 'bind_port'
-        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=True)
 
         # Default to 6000
         if intermediate is None:
@@ -275,7 +276,7 @@ class Config(object):
         # Get result
         key = 'main'
         sub_key = 'sqlalchemy_pool_size'
-        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=True)
 
         # Set default
         if intermediate is None:
@@ -297,7 +298,7 @@ class Config(object):
         # Get result
         key = 'main'
         sub_key = 'sqlalchemy_max_overflow'
-        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=True)
 
         # Set default
         if intermediate is None:
@@ -568,6 +569,22 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     # Get result
     result = None
 
+    # Test if config_dict is a dict.
+    if isinstance(config_dict, dict) is False:
+        log_message = ('Incorrect configuration file format.')
+        log.log2die(1016, log_message)
+
+    # Test if config_dict[key] has any sub keys.
+    if key in config_dict:
+        if config_dict[key] is None:
+            if sub_key != 'log_file':
+                log_message = (
+                    'Key %s has no sub keys in configuration.') % (key)
+                log.log2die(1016, log_message)
+            else:
+                print('"log_file" not found in configuration file.')
+                sys.exit(2)
+
     # Get new result
     if key in config_dict:
         if sub_key in config_dict[key]:
@@ -575,9 +592,76 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
 
     # Error if not configured
     if result is None and die is True:
-        log_message = (
-            '%s:%s not defined in configuration') % (key, sub_key)
+        if sub_key != 'log_file':
+            log_message = (
+                '%s:%s not defined in configuration') % (key, sub_key)
+            log.log2die(1016, log_message)
+        else:
+            print('"log_file" value in configuration is blank.')
+            sys.exit(2)
+
+    # Test if config_dict is a dict.
+    if isinstance(config_dict, dict) is False:
+        log_message = ('Incorrect configuration file format.')
         log.log2die(1016, log_message)
+
+    # Test if config_dict[key] has any sub keys.
+    if key in config_dict:
+        if config_dict[key] is None:
+            if sub_key != 'web_log_file':
+                log_message = (
+                    'Key %s has no sub keys in configuration.') % (key)
+                log.log2die(1016, log_message)
+            else:
+                print('"web_log_file" not found in configuration file.')
+                sys.exit(2)
+
+    # Get new result
+    if key in config_dict:
+        if sub_key in config_dict[key]:
+            result = config_dict[key][sub_key]
+
+    # Error if not configured
+    if result is None and die is True:
+        if sub_key != 'web_log_file':
+            log_message = (
+                '%s:%s not defined in configuration') % (key, sub_key)
+            log.log2die(1016, log_message)
+        else:
+            print('"web_log_file" value in configuration is blank.')
+            sys.exit(2)
+
+
+     # Test if config_dict is a dict.
+    if isinstance(config_dict, dict) is False:
+        log_message = ('Incorrect configuration file format.')
+        log.log2die(1016, log_message)
+
+    # Test if config_dict[key] has any sub keys.
+    if key in config_dict:
+        if config_dict[key] is None:
+            if sub_key != 'bind_port':
+                log_message = (
+                    'Key %s has no sub keys in configuration.') % (key)
+                log.log2die(1016, log_message)
+            else:
+                print('"bind_port" not found in configuration file.')
+                sys.exit(2)
+
+    # Get new result
+    if key in config_dict:
+        if sub_key in config_dict[key]:
+            result = config_dict[key][sub_key]
+
+    # Error if not configured
+    if result is None and die is True:
+        if intermediate != 20:
+            log_message = (
+                '%s:%s not defined in configuration') % (key, sub_key)
+            log.log2die(1016, log_message)
+        else:
+            print('"log_file" value in configuration is blank.')
+            sys.exit(2)
 
     # Return
     return result
