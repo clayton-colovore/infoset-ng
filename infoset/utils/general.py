@@ -363,7 +363,7 @@ def delete_files(directory, extension='.yaml'):
     # Determine whether directory is valid
     if os.path.isdir(directory) is False:
         log_message = ('Directory %s does not exist') % (directory)
-        log.log2die_safe(2000, log_message)
+        log.log2die_safe(1023, log_message)
 
     # Get list of files
     filelist = [
