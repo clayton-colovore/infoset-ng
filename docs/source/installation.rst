@@ -49,8 +49,8 @@ Next create the MySQL or MariaDB database. Make sure the database server is runn
 
     $ mysql -u root -p
     password:
-    mysql> create database infoset-ng;
-    mysql> grant all privileges on infoset-ng.* to infoset-ng@"localhost" identified by 'PASSWORD';
+    mysql> create database infoset_ng;
+    mysql> grant all privileges on infoset_ng.* to infoset_ng@"localhost" identified by 'PASSWORD';
     mysql> flush privileges;
     mysql> exit;
 
@@ -93,4 +93,4 @@ Run the install scripts.
 Next Steps
 ----------
 
-It is now time to review the various configuration options. 
+It is now time to review the various configuration options.
