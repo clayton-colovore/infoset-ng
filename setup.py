@@ -9,6 +9,8 @@ Manages connection pooling among other things.
 import sys
 import os
 from pathlib import Path
+import getpass
+import pwd
 
 # Pip3 libraries
 import yaml
@@ -349,6 +351,97 @@ def _python_valid():
         log.log2die_safe(2000, log_message)
 
 
+def _infoset_user_setup():
+    """Determine whether the PYTHONPATH is valid for root user installation.
+
+    The root user can only install if the python path includes the $HOME
+    directory of the infoset-ng user.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    infoset_user_exists = True
+    infoset_user = 'infoset-ng'
+    username = getpass.getuser()
+
+    # If running as the root user, then the infoset user needs to exist
+    if username == 'root':
+        try:
+            pwd.getpwnam(infoset_user)
+        except KeyError:
+            infoset_user_exists = False
+    else:
+        # No need to proceed further if this is not the root user
+        return
+
+    # Create user if it doesn't exist
+    if infoset_user_exists is False:
+        command = '/usr/sbin/useradd -m {}'.format(infoset_user)
+        general.run_script(command)
+
+    # Verify user now exists
+    try:
+        pwd.getpwnam(infoset_user)
+    except KeyError:
+        log_message = (
+            'User {} could not be created. Please create manually'
+            ''.format(infoset_user))
+        log.log2die_safe(2000, log_message)
+
+    # Ensure $PYTHONPATH includes the home directory of infoset-ng user
+    try:
+        home = os.path.expanduser('~{}'.format(infoset_user))
+    except NameError:
+        log_message = ''
+    path = os.environ['PYTHONPATH']
+    if home not in path:
+        log_message = (
+            'PYTHONPATH {} does not include home directory of user {}'
+            ''.format(path, infoset_user))
+        log.log2die_safe(2000, log_message)
+
+
+def _install_pip3_packages():
+    """Install PIP3 packages.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    username = getpass.getuser()
+
+    # Determine whether PIP3 exists
+    print('Installing required pip3 packages')
+    pip3 = infoset.utils.general.search_file('pip3')
+    if pip3 is None:
+        log_message = ('Cannot find python "pip3". Please install.')
+        log.log2die_safe(1052, log_message)
+
+    # Install required PIP packages
+    utils_directory = infoset.utils.__path__[0]
+    requirements_file = ('%s/requirements.txt') % (
+        Path(utils_directory).parents[1])
+
+    if username == 'root':
+        script_name = (
+            'pip3 install --upgrade --requirement %s'
+            '') % (requirements_file)
+    else:
+        script_name = (
+            'pip3 install --user --upgrade --requirement %s'
+            '') % (requirements_file)
+    infoset.utils.general.run_script(script_name)
+
+
 def main():
     """Process agent data.
 
@@ -362,6 +455,9 @@ def main():
     # Determine whether version of python is valid
     _python_valid()
 
+    # Do specific setups for root user
+    _infoset_user_setup()
+
     # Update configuration if required
     _update_config()
 
@@ -369,19 +465,7 @@ def main():
     _server_setup()
 
     # Install required PIP packages
-    print('Installing required pip3 packages')
-    pip3 = infoset.utils.general.search_file('pip3')
-    if pip3 is None:
-        log_message = ('Cannot find python "pip3". Please install.')
-        log.log2die(1052, log_message)
-
-    utils_directory = infoset.utils.__path__[0]
-    requirements_file = ('%s/requirements.txt') % (
-        Path(utils_directory).parents[1])
-    script_name = (
-        'pip3 install --user --upgrade --requirement %s'
-        '') % (requirements_file)
-    infoset.utils.general.run_script(script_name)
+    _install_pip3_packages()
 
 
 if __name__ == '__main__':
