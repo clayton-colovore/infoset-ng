@@ -19,11 +19,11 @@ There are a number of steps to take to make sure you have installed ``infoset-ng
 Start the API Interactively
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Start the ``infoset-ng`` API interactively. This will start an interactive session that can be stopped with a ``^C`` keystroke combination.
+Start the ``infoset-ng`` API interactively.
 
 ::
 
-    $ bin/infoset-ng-api
+    $ bin/infoset-ng-api --start
 
 
 Start the Ingester
@@ -61,8 +61,7 @@ Now that it have tested the functionality successsfully it is time to stop the i
 
 ::
 
-    $ bin/infoset-ng-api
-    ^C
+    $ bin/infoset-ng-api --stop
     $ bin/infoset-ng-ingester --stop
 
 
@@ -85,7 +84,15 @@ The Ingester as a System Daemon
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This is the preferred mode of operation.
 
-The ``examples/linux/systemd`` directory has a sample ``systemd`` startup file named ``infoset-ng-ingester.service``. Follow the instructions in this file to activate and start your system ``ingester`` daemon.
+There are examples of system startup scripts in the
+``examples/linux/systemd/infoset-ng-ingester.service`` and ``examples/linux/upstart/infoset-ng-ingester.conf`` to allow you to run the ingester as a system service depending on whether your system uses ``systemd`` or ``upstart``. Follow the instructions in the respective files to activate and start your system ``ingester`` daemon.
+
+**Note:** There will be no visible output when the ``ingester`` is running. The ``ingester`` logs its status to the ``etc/infoset-ng.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+
+::
+
+    $ tail -f etc/infoset-ng.log
+
 
 The Ingester as a User Daemon
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -110,6 +117,11 @@ You can get the status of the ingester like this:
 
 You may want to make sure that the ingester is running correctly. This will be covered next.
 
+**Note:** There will be no visible output when the ``ingester`` is running. The ``ingester`` logs its status to the ``etc/infoset-ng.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+
+::
+
+    $ tail -f etc/infoset-ng.log
 
 API Operation
 -------------
@@ -126,20 +138,40 @@ The API as a System Daemon
 
 This is the preferred mode of operation.
 
-The ``examples/linux/systemd`` directory has a sample ``systemd`` startup file named ``infoset-ng-api.service``. Follow the instructions in this file to activate and start your system ``ingester`` daemon.
+There are examples of system startup scripts in the
+``examples/linux/systemd/infoset-ng-api.service`` and ``examples/linux/upstart/infoset-ng-api.conf`` to allow you to run the API as a system service depending on whether your system uses ``systemd`` or ``upstart``. Follow the instructions in the respective files to activate and start your system ``API`` daemon.
+
+**Note:** There will be no visible output when the API is running. Web traffic to the API is logged to the ``etc/api-web.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+
+::
+
+    $ tail -f etc/api-web.log
+
 
 The API as a User Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``infoset-ng-api`` script controls the API. The script can be started
-like this:
+You can run the API in standalone mode using the  ``bin/infoset-ng-api`` script. The standalone ``API`` can be started like this:
 
 ::
 
-    $ bin/infoset-ng-api
+    $ bin/infoset-ng-api --start
 
-**Note:** There will be no visible output when this command is run. It is used primarily for quick troubleshooting. The system daemon method is preferred.
+The API can be stopped like this:
 
-There are also examples of system startup scripts in the
-``examples/linux/systemd`` and ``examples/linux/systemd`` to allow you
-to run the API as a system service.
+::
+
+    $ bin/infoset-ng-api --stop
+
+You can get the status of the API like this:
+
+::
+
+    $ bin/infoset-ng-api --status
+
+**Note:** There will be no visible output when the API is running. Web traffic to the API is logged to the ``etc/api-web.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+
+::
+
+    $ tail -f etc/api-web.log
+

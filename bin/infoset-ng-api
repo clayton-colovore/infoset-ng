@@ -21,6 +21,7 @@ except:
     sys.exit(2)
 from infoset.utils import configuration
 from infoset.utils import log
+from infoset.agents import agent as Agent
 
 
 class StandaloneApplication(BaseApplication):
@@ -63,42 +64,103 @@ def number_of_workers():
     return (multiprocessing.cpu_count() * 2) + 1
 
 
+class _APIAgent(object):
+    """Garnet agent that gathers data.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Functions:
+        __init__:
+        populate:
+        post:
+    """
+
+    def __init__(self):
+        """Method initializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self.config = configuration.Config()
+        self.agent_name = 'infoset_ng_api'
+
+    def name(self):
+        """Return agent name.
+
+        Args:
+            None
+
+        Returns:
+            value: Name of agent
+
+        """
+        # Return
+        value = self.agent_name
+        return value
+
+    def query(self):
+        """Query all remote devices for data.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        config = self.config
+
+        ######################################################################
+        #
+        # Assign options in format that the Gunicorn WSGI will accept
+        #
+        # NOTE! to get a full set of valid options pprint(self.cfg.settings)
+        # in the instantiation of StandaloneApplication. The option names
+        # do not exactly match the CLI options found at
+        # http://docs.gunicorn.org/en/stable/settings.html
+        #
+        ######################################################################
+        options = {
+            'bind': '%s:%s' % (config.listen_address(), config.bind_port()),
+            'accesslog': config.web_log_file(),
+            'errorlog': config.web_log_file(),
+            'capture_output': True,
+            'loglevel': config.log_level(),
+            'workers': number_of_workers(),
+        }
+
+        # Log so that user running the script from the CLI knows that something
+        # is happening
+        log_message = (
+            'Infoset API running on %s:%s and logging to file %s.'
+            '') % (
+                config.listen_address(),
+                config.bind_port(),
+                config.web_log_file())
+        log.log2info(1022, log_message)
+
+        # Run
+        StandaloneApplication(API, options).run()
+
+
 def main():
     """Main function to start the Gunicorn WSGI."""
-    # Initialize key variables
-    config = configuration.Config()
+    # Get configuration
+    cli = Agent.AgentCLI()
+    poller = _APIAgent()
 
-    ##########################################################################
-    #
-    # Assign options in format that the Gunicorn WSGI will accept
-    #
-    # NOTE! to get a full set of valid options pprint(self.cfg.settings)
-    # in the instantiation of StandaloneApplication. The option names do not
-    # exactly match the CLI options found at
-    # http://docs.gunicorn.org/en/stable/settings.html
-    #
-    ##########################################################################
-    options = {
-        'bind': '%s:%s' % (config.listen_address(), config.bind_port()),
-        'accesslog': config.web_log_file(),
-        'errorlog': config.web_log_file(),
-        'capture_output': True,
-        'loglevel': config.log_level(),
-        'workers': number_of_workers(),
-    }
-
-    # Log so that user running the script from the CLI knows that something
-    # is happening
-    log_message = (
-        'Infoset API running on %s:%s and logging to file %s.'
-        '') % (
-            config.listen_address(),
-            config.bind_port(),
-            config.web_log_file())
-    log.log2see(1022, log_message)
-
-    # Run
-    StandaloneApplication(API, options).run()
+    # Do control
+    cli.control(poller)
 
 
 if __name__ == '__main__':

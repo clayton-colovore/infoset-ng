@@ -269,7 +269,7 @@ def _update_config():
     if valid is False:
         log_message = (
             'Configuration file found in %s is invalid') % (directory)
-        log.log2die_safe(2000, log_message)
+        log.log2die_safe(1015, log_message)
         sys.exit(2)
 
     # Update configuration file if required
@@ -348,7 +348,7 @@ def _python_valid():
             'Required python version must be >= {}.{}. '
             'Python version {}.{} installed'
             ''.format(major, minor, major_installed, minor_installed))
-        log.log2die_safe(2000, log_message)
+        log.log2die_safe(1018, log_message)
 
 
 def _infoset_user_setup():
@@ -391,7 +391,7 @@ def _infoset_user_setup():
         log_message = (
             'User {} could not be created. Please create manually'
             ''.format(infoset_user))
-        log.log2die_safe(2000, log_message)
+        log.log2die_safe(1019, log_message)
 
     # Ensure $PYTHONPATH includes the home directory of infoset-ng user
     try:
@@ -403,7 +403,7 @@ def _infoset_user_setup():
         log_message = (
             'PYTHONPATH {} does not include home directory of user {}'
             ''.format(path, infoset_user))
-        log.log2die_safe(2000, log_message)
+        log.log2die_safe(1020, log_message)
 
 
 def _install_pip3_packages():
