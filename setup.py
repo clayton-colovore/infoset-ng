@@ -288,7 +288,6 @@ class _Configuration(object):
             log_message = (
                 'Configuration file found in {} is invalid'.format(directory))
             log.log2die_safe(1015, log_message)
-            sys.exit(2)
 
         # Update configuration file if required
         if len(updated_list) == updated_list.count(True):
