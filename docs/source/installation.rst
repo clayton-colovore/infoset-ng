@@ -83,11 +83,26 @@ Edit the database credential information in the server section of the
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Run the install scripts.
+Run the installation script. There are two alternatives:
+
+:Run Interactively: This is the preferred method if you don't have ``root`` access to your system. ``infoset-ng`` `will not` automatically restart on reboot using this method. To make ``infoset-ng`` run with your username, then execute this command:
 
 ::
 
     $ python3 setup.py
+
+:Run as System Daemon: If you want ``infoset-ng`` to be run as a system daemon, then execute these commands. ``infoset-ng`` `will` automatically restart on reboot using this installation method. (**Note**: Do not run setup using ``sudo``. Use ``sudo`` to become the root user first)
+
+This example assumes you have downloaded ``infoset-ng`` in the ``/home/infoset-ng`` directory. Change this to the appropiate directory in your case.
+
+::
+
+    $ pwd
+    /home/infoset-ng
+    $ sudo su -
+    # cd /home/infoset-ng
+    # python3 setup.py
+
 
 
 Next Steps

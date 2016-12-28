@@ -620,8 +620,13 @@ def main():
 
 You can start infoset-ng daemons with these commands:
 
-    # systemctl start infoset-ng-api.service start
-    # systemctl start infoset-ng-ingester.service start
+    # systemctl start infoset-ng-api.service
+    # systemctl start infoset-ng-ingester.service
+
+You can enable infoset-ng daemons to start on system boot with these commands:
+
+    # systemctl enable infoset-ng-api.service
+    # systemctl enable infoset-ng-ingester.service
 
 """
         print(suggestions)
