@@ -17,8 +17,6 @@ Description=infoset-ng: Time series data API
 [Service]
 User=infoset-ng
 Group=infoset-ng
-User=infoset-ng
-Group=infoset-ng
 Environment=PYTHONPATH=/home/infoset-ng START=--start STOP=--stop RESTART=--restart
 ExecStart=
 ExecStart=/home/infoset-ng/bin/infoset-ng-api $START
