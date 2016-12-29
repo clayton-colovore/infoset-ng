@@ -514,6 +514,11 @@ class _Daemon(object):
         home_directory = os.path.expanduser('~{}'.format(username))
         filepath = '{}/.bashrc'.format(home_directory)
 
+        # Do nothing if .bashrc file doesn't exist
+        if (os.path.isfile(filepath) is False) or (
+                os.path.exists(filepath) is False):
+            return
+
         # Read contents of file
         with open(filepath, 'r') as f_handle:
             contents = f_handle.read()
