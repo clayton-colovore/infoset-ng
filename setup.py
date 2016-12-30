@@ -472,6 +472,9 @@ class _Daemon(object):
             None
 
         """
+        # Set bashrc file
+        self._bashrc()
+
         # Return if not running script as root user
         if self.running_as_root is False:
             return
@@ -485,6 +488,63 @@ class _Daemon(object):
 
         # Setup systemd
         self._systemd()
+
+    def _bashrc(self):
+        """Set bashrc file environment variables.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        root_directory = self.root_directory
+
+        # Determine username to use
+        if self.running_as_root is True:
+            # Edit local user's bashrc file
+            username = self.infoset_user
+        else:
+            # Edit selected user's bashrc file
+            username = getpass.getuser()
+
+        # Read bashrc file
+        home_directory = os.path.expanduser('~{}'.format(username))
+        filepath = '{}/.bashrc'.format(home_directory)
+
+        # Do nothing if .bashrc file doesn't exist
+        if (os.path.isfile(filepath) is False) or (
+                os.path.exists(filepath) is False):
+            return
+
+        # Read contents of file
+        with open(filepath, 'r') as f_handle:
+            contents = f_handle.read()
+
+        # Create string to append to the end of the file
+        if 'PYTHONPATH' in contents:
+            export_string = """\
+
+# Automatically inserted by the infoset-ng installation script
+# It appended the requied PYTHONPATH to your your existing PYTHONPATH
+PYTHONPATH=$PYTHONPATH:{}
+export PYTHONPATH
+""".format(root_directory)
+        else:
+            export_string = """\
+
+# Automatically inserted by the infoset-ng installation script
+# It appended the requied PYTHONPATH to your your existing PYTHONPATH
+PYTHONPATH={}
+export PYTHONPATH
+""".format(root_directory)
+
+        # Append the PYTHONPATH to the end of the
+        contents = '{}{}'.format(contents, export_string)
+        with open(filepath, 'w') as f_handle:
+            f_handle.write(contents)
 
     def _file_permissions(self):
         """Set file permissions.
@@ -536,7 +596,6 @@ class _Daemon(object):
         # Initialize key variables
         username = self.infoset_user
         groupname = grp.getgrgid(self.gid).gr_name
-        home_directory = self.root_directory
         system_directory = '/etc/systemd/system'
         system_command = '/bin/systemctl daemon-reload'
 
@@ -561,7 +620,7 @@ class _Daemon(object):
             # Substitute home directory
             contents = re.sub(
                 r'/home/infoset-ng',
-                home_directory,
+                self.root_directory,
                 contents)
 
             # Substitute username

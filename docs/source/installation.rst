@@ -16,17 +16,17 @@ The commands for installing the dependencies are:
 
 ::
 
-    # sudo apt-get install python3 python3-pip python3-dev python3-yaml
+    # sudo apt-get install python3 python3-pip python3-dev python3-yaml mysql-server
     # pip3 install --user sqlalchemy yaml
 
-Fedora
-~~~~~~
+Centos / Fedora
+~~~~~~~~~~~~~~~
 
 The commands for installing the dependencies are:
 
 ::
 
-    # sudo dnf install python3 python3-pip python3-dev python3-yaml
+    # sudo dnf install python3 python3-pip python3-dev python3-yaml mysql-server
     # pip3 install --user sqlalchemy yaml
 
 Installation
@@ -54,6 +54,7 @@ Next create the MySQL or MariaDB database. Make sure the database server is runn
     mysql> flush privileges;
     mysql> exit;
 
+**Note** Remember the value you select for ``PASSWORD``. It will be required when you edit the ``infoset-ng`` configuration file later.
 
 Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~
@@ -71,14 +72,15 @@ final location.
 Edit Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Edit the database credential information in the server section of the
-``etc/config.yaml`` file. Update the configured database password.
+Edit the database credential information in the server section of the ``etc/config.yaml`` file. Update the configured database ``PASSWORD`` that you saved previously.
 
 ::
 
     $ cp examples/etc/config.yaml etc/config.yaml
     $ vim etc/config.yaml
 
+    main:
+        db_password: PASSWORD
 
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
