@@ -18,8 +18,7 @@ The ``main`` section governs the general operation of ``infoset-ng``.
 ::
 
     main:
-        log_file: /opt/infoset/log/infoset.log
-        web_log_file: /opt/infoset/log/web.log
+        log_directory: /opt/infoset/log
         log_level: debug
         ingest_cache_directory: /opt/infoset/cache
         ingest_pool_size: 20
@@ -29,18 +28,17 @@ The ``main`` section governs the general operation of ``infoset-ng``.
         sqlalchemy_pool_size: 10
         sqlalchemy_max_overflow: 10
         db_hostname: localhost
-        db_username: infoset
+        db_username: infoset_ng
         db_password: PASSWORD
-        db_name: infoset
+        db_name: infoset_ng
 
 An explanation of these fields follows:
 
-=================================== ======== 
+=================================== ========
 Parameter                           Description
-=================================== ======== 
+=================================== ========
 ``main:``                           YAML key describing the server configuration.
-``log_file:``                       The name of the log file ``infoset-ng`` uses for logging backend activities
-``web_log_file:``                   The name of the log file ``infoset-ng`` uses for logging API activities
+``log_directory:``                  The directory where ``infoset-ng`` places its log files
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
 ``ingest_cache_directory:``         Location where the agent data ingester will store its data in the event it cannot communicate with either the database or the server's API
 ``ingest_pool_size:``               The maximum number of threads used to ingest data into the database
@@ -48,12 +46,12 @@ Parameter                           Description
 ``listen_address:``                 IP address the API will be using. The default is ``0.0.0.0`` or all available IP addresses
 ``bind_port:``                      The TCP port the API will be listening on
 ``sqlalchemy_pool_size:``           The SQLAlchemy pool size. This is the largest number of connections that ``infoset-ng`` will be keep persistently with the MySQL database
-``sqlalchemy_max_overflow:``        The SQLAlchemy maximum overflow size. When the number of connections reaches the size set in ``sqlalchemy_pool_size``, additional connections will be returned up to this limit. This is the floating number of additional database connections to be made available. 
+``sqlalchemy_max_overflow:``        The SQLAlchemy maximum overflow size. When the number of connections reaches the size set in ``sqlalchemy_pool_size``, additional connections will be returned up to this limit. This is the floating number of additional database connections to be made available.
 ``db_hostname:``                    The devicename or IP address of the database server.
 ``db_username:``                    The database username
 ``db_password:``                    The database password
-``db_name:``                        The name of the database        
-=================================== ======== 
+``db_name:``                        The name of the database
+=================================== ========
 
 
 

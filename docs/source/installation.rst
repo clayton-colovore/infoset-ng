@@ -17,7 +17,7 @@ The commands for installing the dependencies are:
 ::
 
     # sudo apt-get install python3 python3-pip python3-dev python3-yaml
-    # pip3 install --user sqlalchemy
+    # pip3 install --user sqlalchemy yaml
 
 Fedora
 ~~~~~~
@@ -27,7 +27,7 @@ The commands for installing the dependencies are:
 ::
 
     # sudo dnf install python3 python3-pip python3-dev python3-yaml
-    # pip3 install --user sqlalchemy
+    # pip3 install --user sqlalchemy yaml
 
 Installation
 ------------
@@ -49,8 +49,8 @@ Next create the MySQL or MariaDB database. Make sure the database server is runn
 
     $ mysql -u root -p
     password:
-    mysql> create database infoset-ng;
-    mysql> grant all privileges on infoset-ng.* to infoset-ng@"localhost" identified by 'PASSWORD';
+    mysql> create database infoset_ng;
+    mysql> grant all privileges on infoset_ng.* to infoset_ng@"localhost" identified by 'PASSWORD';
     mysql> flush privileges;
     mysql> exit;
 
@@ -66,7 +66,6 @@ final location.
     $ git clone https://github.com/PalisadoesFoundation/infoset-ng
     $ cd infoset-ng
     $ export PYTHONPATH=`pwd`
-    $ cp examples/etc/* etc/
 
 
 Edit Configuration File
@@ -81,35 +80,32 @@ Edit the database credential information in the server section of the
     $ vim etc/config.yaml
 
 
-Create Working Directories
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Create the directories that ``infoset-ng`` will use for its working
-files.
-
-::
-
-    $ sudo mkdir -p /opt/infoset-ng
-    $ sudo chown -R $USER /opt/infoset-ng
-    $ mkdir -p /opt/infoset-ng/log
-    $ mkdir -p /opt/infoset-ng/cache
-
-
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Run the install scripts.
+Run the installation script. There are two alternatives:
+
+:Run Interactively: This is the preferred method if you don't have ``root`` access to your system. ``infoset-ng`` `will not` automatically restart on reboot using this method. To make ``infoset-ng`` run with your username, then execute this command:
 
 ::
 
-    $ pip3 install --user sqlalchemy
     $ python3 setup.py
-    $ source ~/.bashrc
-    $ sudo make
-    $ source venv/bin/activate
-    $ sudo make install
+
+:Run as System Daemon: If you want ``infoset-ng`` to be run as a system daemon, then execute these commands. ``infoset-ng`` `will` automatically restart on reboot using this installation method. (**Note**: Do not run setup using ``sudo``. Use ``sudo`` to become the root user first)
+
+This example assumes you have downloaded ``infoset-ng`` in the ``/home/infoset-ng`` directory. Change this to the appropiate directory in your case.
+
+::
+
+    $ pwd
+    /home/infoset-ng
+    $ sudo su -
+    # cd /home/infoset-ng
+    # python3 setup.py
+
+
 
 Next Steps
 ----------
 
-It is now time to review the various configuration options. 
+It is now time to review the various configuration options.

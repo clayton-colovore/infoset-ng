@@ -39,7 +39,7 @@ class GetConfigurationKey(object):
         # Initialize important variables
         value = config_key.encode()
         self.data_dict = defaultdict(dict)
-        keys = ['idx_configuration', 'config_key', 'name']
+        keys = ['idx_configuration', 'config_key', 'config_value', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -57,7 +57,8 @@ class GetConfigurationKey(object):
                     'idx_configuration'] = instance.idx_configuration
                 self.data_dict['config_key'] = config_key
                 self.data_dict[
-                    'name'] = general.decode(instance.name)
+                    'config_value'] = general.decode(instance.config_value)
+                self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['exists'] = True
                 break
 
@@ -76,6 +77,22 @@ class GetConfigurationKey(object):
         """
         # Initialize key variables
         value = self.data_dict['exists']
+        return value
+
+    def enabled(self):
+        """Get agent enabled.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
+
+        # Return
         return value
 
     def idx_configuration(self):
@@ -106,8 +123,8 @@ class GetConfigurationKey(object):
         value = self.data_dict['config_key']
         return value
 
-    def name(self):
-        """Get name value.
+    def config_value(self):
+        """Get config_value value.
 
         Args:
             None
@@ -117,7 +134,7 @@ class GetConfigurationKey(object):
 
         """
         # Initialize key variables
-        value = self.data_dict['name']
+        value = self.data_dict['config_value']
         return value
 
 
@@ -146,7 +163,7 @@ class GetIDXConfiguration(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_configuration', 'config_key', 'name']
+        keys = ['idx_configuration', 'config_key', 'config_value']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -166,7 +183,7 @@ class GetIDXConfiguration(object):
                 self.data_dict[
                     'config_key'] = general.decode(instance.config_key)
                 self.data_dict[
-                    'name'] = general.decode(instance.name)
+                    'config_value'] = general.decode(instance.config_value)
                 self.data_dict['exists'] = True
                 break
 
@@ -201,8 +218,8 @@ class GetIDXConfiguration(object):
         value = self.data_dict['config_key']
         return value
 
-    def name(self):
-        """Get name value.
+    def config_value(self):
+        """Get config_value value.
 
         Args:
             None
@@ -212,7 +229,7 @@ class GetIDXConfiguration(object):
 
         """
         # Initialize key variables
-        value = self.data_dict['name']
+        value = self.data_dict['config_value']
         return value
 
 
