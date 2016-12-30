@@ -93,7 +93,12 @@ def main():
                 'the database'
                 '') % (id_agent)
             log.log2see(1035, log_message)
-            print('\nOK - Ingester not running\n')
+            print("""\
+
+OK, but Ingester has not updated the database yet. \
+Run test in a minute and this message should change. \
+If not, the Ingester may not be running.
+""")
     else:
         log_message = (
             'Failed to post data to the local infoset server. '
