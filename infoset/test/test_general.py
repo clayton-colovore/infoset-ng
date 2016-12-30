@@ -176,7 +176,7 @@ class KnownValues(unittest.TestCase):
         with self.assertRaises(SystemExit):
             general.delete_files(directory)
 
-        # Testing with temporary yaml and json files
+        # Creating temporary yaml and json files to test with
         directory = tempfile.mkdtemp()
         filenames = ['test1.yaml', 'test2.yaml', 'test3.json']
 
@@ -184,7 +184,7 @@ class KnownValues(unittest.TestCase):
             filepath = '{}/{}'.format(directory, filename)
             open(filepath, 'a').close()
 
-        # Ensuring all the files were created
+        # Testing if all files were created
         yamlcount = len([name for name in os.listdir(
             directory) if name.endswith('.yaml')])
         self.assertEqual(yamlcount, 2)
@@ -208,7 +208,41 @@ class KnownValues(unittest.TestCase):
         # Removing test directory
         os.removedirs(directory)
 
-        # Check if test directory has been deleted
+        # Test if directory has been deleted
+        self.assertEqual(os.path.isdir(directory), False)
+
+    def test_delete_yaml_files(self):
+        """Test function delete_yaml_files"""
+        # Testing with a known invalid directory
+        directory = self.random_string
+        with self.assertRaises(SystemExit):
+            general.delete_files(directory)
+
+        # Creating temporary yaml files for testing
+        directory = tempfile.mkdtemp()
+        yamlfiles = ['test1.yaml', 'test2.yaml', 'test3.yaml']
+
+        for filename in yamlfiles:
+            filepath = '{}/{}'.format(directory, filename)
+            open(filepath, 'a').close()
+
+        # Testing if all yaml files were created
+        count = len([name for name in os.listdir(
+            directory) if name.endswith('.yaml')])
+        self.assertEqual(count, 3)
+
+        # Deleting all yaml files using function
+        general.delete_yaml_files(directory)
+
+        # Test if  all yaml files were deleted
+        result = len([name for name in os.listdir(
+            directory) if name.endswith('.yaml')])
+        self.assertEqual(result, 0)
+
+        # Removing test directory
+        os.removedirs(directory)
+
+        # Test if directory has been deleted
         self.assertEqual(os.path.isdir(directory), False)
 
     def test_search_file(self):
