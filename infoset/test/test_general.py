@@ -169,6 +169,48 @@ class KnownValues(unittest.TestCase):
             os.remove(delete_path)
         os.removedirs(directory)
 
+    def test_delete_file(self):
+        """Test function delete_file"""
+        # Testing with a known invalid directory
+        directory = self.random_string
+        with self.assertRaises(SystemExit):
+            general.delete_files(directory)
+
+        # Testing with temporary yaml and json files
+        directory = tempfile.mkdtemp()
+        filenames = ['test1.yaml', 'test2.yaml', 'test3.json']
+
+        for filename in filenames:
+            filepath = '{}/{}'.format(directory, filename)
+            open(filepath, 'a').close()
+
+        # Ensuring all the files were created
+        yamlcount = len([name for name in os.listdir(
+            directory) if name.endswith('.yaml')])
+        self.assertEqual(yamlcount, 2)
+
+        jsoncount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jsoncount, 1)
+
+        # Testing if all json files are deleted
+        general.delete_files(directory, extension='.json')
+        result = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(result, 0)
+
+        # Testing if all yaml files are deleted
+        general.delete_files(directory, extension='.yaml')
+        result = len([name for name in os.listdir(
+            directory) if name.endswith('.yaml')])
+        self.assertEqual(result, 0)
+
+        # Removing test directory
+        os.removedirs(directory)
+
+        # Check if test directory has been deleted
+        self.assertEqual(os.path.isdir(directory), False)
+
     def test_search_file(self):
         """Test function search_file."""
         # Initialize key variables
