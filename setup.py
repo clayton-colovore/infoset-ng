@@ -316,7 +316,7 @@ class _Configuration(object):
             'log_directory': 'log',
             'ingest_cache_directory': 'cache',
         }
-        directory = ('%s/etc') % (general.root_directory())
+        directory = general.root_directory()
 
         # Setup the key value to a known good default
         if key in config['main']:
