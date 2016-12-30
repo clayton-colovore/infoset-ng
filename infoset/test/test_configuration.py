@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Test the db_agent library in the infoset.db module."""
 
-import sys
 import os
 import os.path
 import tempfile
@@ -9,7 +8,6 @@ import unittest
 import yaml
 
 from infoset.utils import configuration
-from infoset.utils import general
 
 
 class TestConfiguration(unittest.TestCase):
@@ -19,12 +17,13 @@ class TestConfiguration(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    good_config = """\
+    log_directory = tempfile.mkdtemp()
+    cache_directory = tempfile.mkdtemp()
+    good_config = ("""\
 main:
-    log_file: /opt/unittest_infoset-ng/log/infoset-ng.log
-    web_log_file: /opt/unittest_infoset-ng/log/web.log
+    log_directory: %s
     log_level: debug
-    ingest_cache_directory: /opt/unittest_infoset-ng/cache
+    ingest_cache_directory: %s
     ingest_pool_size: 20
     bind_port: 3000
     interval: 300
@@ -34,7 +33,8 @@ main:
     db_username: test_infoset
     db_password: test_B3bFHgxQfsEy86TN
     db_name: test_infoset
-"""
+""") % (log_directory, cache_directory)
+
     # Convert good_config to dictionary
     good_dict = yaml.load(bytes(good_config, 'utf-8'))
 
@@ -50,13 +50,47 @@ main:
     # Create configuration object
     config = configuration.Config()
 
+    @classmethod
+    def tearDownClass(cls):
+        """Post test cleanup."""
+        os.rmdir(cls.log_directory)
+        os.rmdir(cls.cache_directory)
+        os.remove(cls.config_file)
+        os.rmdir(cls.directory)
+
+    def test_init(self):
+        """Testing method init."""
+        # Testing with non-existant directory
+        directory = 'bogus'
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        with self.assertRaises(SystemExit):
+            configuration.Config()
+
+        # Testing with an empty directory
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        with self.assertRaises(SystemExit):
+            configuration.Config()
+
+        # Write bad_config to file
+        config_file = ('%s/test_config.yaml') % (directory)
+        with open(config_file, 'w') as f_handle:
+            f_handle.write('')
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.log_file()
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
     def test_log_file(self):
-        """Testing method log_file"""
+        """Testing method log_file."""
         # Test the log_file with a good_dict
         # good key and key_value
         result = self.config.log_file()
-        self.assertEqual(result, '/opt/unittest_infoset-ng/log/infoset-ng.log')
-        self.assertEqual(result, self.good_dict['main']['log_file'])
+        self.assertEqual(result, ('%s/infoset-ng.log') % (self.log_directory))
 
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
@@ -81,41 +115,14 @@ main:
         with self.assertRaises(SystemExit):
             config.log_file()
 
-        # Testing log_file with blank key_value
-        key = 'log_file:'
-        key_value = ''
-        bad_config = ("""\
-main:
-    %s %s
-""") % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
-
-        # Write bad_config to file
-        with open(config_file, 'w') as f_handle:
-            yaml.dump(bad_dict, f_handle, default_flow_style=True)
-
-        # Create configuration object
-        config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.log_file()
-
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            print(key)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_web_log_file(self):
         """Testing method web_log_file ."""
         # Testing web_log_file with a good dictionary.
         result = self.config.web_log_file()
-        self.assertEqual(result, '/opt/unittest_infoset-ng/log/web.log')
-        self.assertEqual(result, self.good_dict['main']['web_log_file'])
+        self.assertEqual(result, ('%s/api-web.log') % (self.log_directory))
 
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
@@ -140,34 +147,8 @@ main:
         with self.assertRaises(SystemExit):
             config.web_log_file()
 
-        # Testing web_log_file with good key and blank key_value
-        key = 'web_log_file:'
-        key_value = ''
-        bad_config = ("""\
-main:
-    %s %s
-""") % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
-
-        # Write bad_config to file
-        with open(config_file, 'w') as f_handle:
-            yaml.dump(bad_dict, f_handle, default_flow_style=True)
-
-        # Create configuration object
-        config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.web_log_file()
-
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_log_level(self):
         """Testing method log_level."""
@@ -219,15 +200,7 @@ main:
             config.log_level()
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_ingest_cache_directory(self):
         """Testing method ingest_cache_directory"""
@@ -255,15 +228,7 @@ main:
             config.ingest_cache_directory()
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_ingest_pool_size(self):
         """Testing method ingest_pool_size."""
@@ -319,19 +284,11 @@ main:
 
         # Create configuration object
         config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.bind_port()
+        result = config.bind_port()
+        self.assertEqual(result, 6000)
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_interval(self):
         """Testing method interval."""
@@ -349,11 +306,10 @@ main:
         # Testing interval with blank key and blank key_value
         key = ''
         key_value = ''
-        intermediate = None
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -368,11 +324,10 @@ main:
         # Testing interval with blank key_value
         key = 'interval:'
         key_value = ''
-        intermediate = ''
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -381,19 +336,11 @@ main:
 
         # Create configuration object
         config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.interval()
+        result = config.interval()
+        self.assertEqual(result, 300)
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_sqlalchemy_pool_size(self):
         """Testing method sqlalchemy_pool_size."""
@@ -401,7 +348,8 @@ main:
         # good key and key_value
         result = self.config.sqlalchemy_pool_size()
         self.assertEqual(result, 10)
-        self.assertEqual(result, self.good_dict['main']['sqlalchemy_pool_size'])
+        self.assertEqual(
+            result, self.good_dict['main']['sqlalchemy_pool_size'])
 
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
@@ -411,11 +359,10 @@ main:
         # Testing sqlalchemy_pool_size with blank key and blank key_value
         key = ''
         key_value = ''
-        intermediate = None
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -430,11 +377,10 @@ main:
         # Testing sqlalchemy_pool_size with good key and blank key_value
         key = 'sqlalchemy_pool_size:'
         key_value = ''
-        intermediate = ''
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -443,25 +389,18 @@ main:
 
         # Create configuration object
         config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.sqlalchemy_pool_size()
+        result = config.sqlalchemy_pool_size()
+        self.assertEqual(result, 10)
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_sqlalchemy_max_overflow(self):
         """Testing method sqlalchemy_max_overflow."""
         result = self.config.sqlalchemy_max_overflow()
         self.assertEqual(result, 10)
-        self.assertEqual(result, self.good_dict['main']['sqlalchemy_max_overflow'])
+        self.assertEqual(
+            result, self.good_dict['main']['sqlalchemy_max_overflow'])
 
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
@@ -471,11 +410,10 @@ main:
         # Testing sqlalchemy_max_overflow with blank key and blank key_value
         key = ''
         key_value = ''
-        intermediate = None
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -490,11 +428,10 @@ main:
         # Testing sqlalchemy_max_overflow with good key and blank key_value
         key = 'sqlalchemy_max_overflow:'
         key_value = ''
-        intermediate = ''
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -503,19 +440,11 @@ main:
 
         # Create configuration object
         config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.sqlalchemy_max_overflow()
+        result = config.sqlalchemy_max_overflow()
+        self.assertEqual(result, 10)
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_db_hostname(self):
         """Testing method db_hostname."""
@@ -565,15 +494,7 @@ main:
             config.db_hostname()
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_db_username(self):
         """Testing method db_username."""
@@ -607,11 +528,10 @@ main:
         # Testing db_username with good key and blank key_value
         key = 'db_username:'
         key_value = ''
-        intermediate = ''
         bad_config = ("""\
 main:
-    %s %s %s
-""") % (key, key_value, intermediate)
+    %s %s
+""") % (key, key_value)
         bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -624,15 +544,7 @@ main:
             config.db_username()
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_db_password(self):
         """Testing method db_password."""
@@ -682,15 +594,7 @@ main:
             config.db_password()
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
-
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+        _delete_files(directory)
 
     def test_db_name(self):
         """Testing method db_name."""
@@ -740,15 +644,23 @@ main:
             config.db_name()
 
         # Cleanup files in temp directories
-        filenames = [filename for filename in os.listdir(
-            directory) if os.path.isfile(
-                os.path.join(directory, filename))]
+        _delete_files(directory)
 
-        # Get the full filepath for the cache file and print before removing
-        for filename in filenames:
-            filepath = os.path.join(directory, filename)
-            print(filepath)
-            os.remove(filepath)
+
+def _delete_files(directory):
+    """Delete all files in directory."""
+    # Cleanup files in temp directories
+    filenames = [filename for filename in os.listdir(
+        directory) if os.path.isfile(
+            os.path.join(directory, filename))]
+
+    # Get the full filepath for the cache file and remove filepath
+    for filename in filenames:
+        filepath = os.path.join(directory, filename)
+        os.remove(filepath)
+
+    # Remove directory after files are deleted.
+    os.rmdir(directory)
 
 
 if __name__ == '__main__':
