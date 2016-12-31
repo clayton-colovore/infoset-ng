@@ -218,18 +218,23 @@ class KnownValues(unittest.TestCase):
         with self.assertRaises(SystemExit):
             general.delete_files(directory)
 
-        # Creating temporary yaml files for testing
+        # Creating temporary yaml and json files for testing
         directory = tempfile.mkdtemp()
-        yamlfiles = ['test1.yaml', 'test2.yaml', 'test3.yaml']
+        testfiles = ['test1.yaml', 'test2.yaml', 'test3.json']
 
-        for filename in yamlfiles:
+        for filename in testfiles:
             filepath = '{}/{}'.format(directory, filename)
             open(filepath, 'a').close()
 
         # Testing if all yaml files were created
         count = len([name for name in os.listdir(
             directory) if name.endswith('.yaml')])
-        self.assertEqual(count, 3)
+        self.assertEqual(count, 2)
+
+        # Test if json file was created
+        jcount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jcount, 1)
 
         # Deleting all yaml files using function
         general.delete_yaml_files(directory)
@@ -238,6 +243,19 @@ class KnownValues(unittest.TestCase):
         result = len([name for name in os.listdir(
             directory) if name.endswith('.yaml')])
         self.assertEqual(result, 0)
+
+        # Test if json file was not deleted
+        jcount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jcount, 1)
+
+        # Delete json file
+        general.delete_files(directory, extension='.json')
+
+        # Test if json file was deleted
+        jcount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jcount, 0)
 
         # Removing test directory
         os.removedirs(directory)
