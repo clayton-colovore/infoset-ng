@@ -14,6 +14,149 @@ from infoset.db import db
 from infoset.db.db_orm import DeviceAgent
 
 
+class GetIDXDeviceAgent(object):
+    """Class to return deviceagent data.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Methods:
+
+    """
+
+    def __init__(self, idx_deviceagent):
+        """Function for intializing the class.
+
+        Args:
+            idx_deviceagent: DeviceAgent idx_deviceagent
+
+        Returns:
+            None
+
+        """
+        # Initialize important variables
+        self.data_dict = defaultdict(dict)
+        keys = ['idx_deviceagent', 'idx_agent', 'enabled', 'idx_device']
+        for key in keys:
+            self.data_dict[key] = None
+        self.data_dict['exists'] = False
+
+        # Fix values passed
+        if isinstance(idx_deviceagent, int) is False:
+            idx_deviceagent = None
+
+        # Only work if the value is an integer
+        if isinstance(idx_deviceagent, int) is True and (
+                idx_deviceagent is not None):
+            # Get the result
+            database = db.Database()
+            session = database.session()
+            result = session.query(DeviceAgent).filter(
+                DeviceAgent.idx_deviceagent == idx_deviceagent)
+
+            # Massage data
+            if result.count() == 1:
+                for instance in result:
+                    self.data_dict['idx_deviceagent'] = idx_deviceagent
+                    self.data_dict['idx_agent'] = instance.idx_agent
+                    self.data_dict['enabled'] = bool(instance.enabled)
+                    self.data_dict['idx_device'] = instance.idx_device
+                    self.data_dict['exists'] = True
+                    break
+
+            # Return the session to the database pool after processing
+            database.close()
+
+    def exists(self):
+        """Tell if row is exists.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['exists']
+        return value
+
+    def idx_deviceagent(self):
+        """Get idx_deviceagent value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_deviceagent']
+        return value
+
+    def idx_agent(self):
+        """Get idx_agent value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_agent']
+        return value
+
+    def enabled(self):
+        """Get agent enabled.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['enabled']
+
+        # Return
+        return value
+
+    def idx_device(self):
+        """Get agent idx_device.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_device']
+        return value
+
+    def everything(self):
+        """Get all agent data.
+
+        Args:
+            None
+
+        Returns:
+            value: Data as a dict
+
+        """
+        # Initialize key variables
+        value = self.data_dict
+        return value
+
+
 class GetDeviceAgent(object):
     """Class to return DeviceAgent data by device and agent idx.
 

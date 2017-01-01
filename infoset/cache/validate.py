@@ -256,6 +256,7 @@ class _CheckData(object):
         """
         # Initialize key variables
         valid = False
+        count = 0
         data_types = ['timeseries', 'timefixed']
 
         # Process data
@@ -263,10 +264,11 @@ class _CheckData(object):
             for data_type in data_types:
                 # Skip if data type isn't in the data
                 if data_type in self.data:
-                    valid = True
-                else:
-                    valid = False
-                    break
+                    count += 1
+
+        # Verify validity
+        if count > 0:
+            valid = True
 
         # Log error
         if valid is False:

@@ -209,6 +209,23 @@ def db_getidxdevice(value):
     return jsonify(data)
 
 
+@API.route('/infoset/api/v1.0/db/deviceagent/getidxdeviceagent/<value>')
+def db_getidxdeviceagent(value):
+    """Get DeviceAgent data from the DB by idx value.
+
+    Args:
+        None
+
+    Returns:
+        data: JSON data for the selected deviceagent
+
+    """
+    # Return
+    query = db_deviceagent.GetIDXDeviceAgent(_integer(value))
+    data = query.everything()
+    return jsonify(data)
+
+
 @API.route('/infoset/api/v1.0/db/deviceagent/alldeviceindices')
 def db_deviceagent_alldeviceindices():
     """Get all device indices from the DB.

@@ -29,13 +29,20 @@ class TestCheckData(unittest.TestCase):
         result = validate._CheckData(data_dict)
         self.assertEqual(result._data_keys_ok(), True)
 
-        # Test with bad data (no data keys)
+        # Test with good data (missing one time keys)
         data_dict = copy.deepcopy(self.data)
         data_dict.pop('timefixed', None)
         result = validate._CheckData(data_dict)
-        self.assertEqual(result._data_keys_ok(), False)
+        self.assertEqual(result._data_keys_ok(), True)
 
         data_dict = copy.deepcopy(self.data)
+        data_dict.pop('timeseries', None)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._data_keys_ok(), True)
+
+        # Test with bad data (no time keys)
+        data_dict = copy.deepcopy(self.data)
+        data_dict.pop('timefixed', None)
         data_dict.pop('timeseries', None)
         result = validate._CheckData(data_dict)
         self.assertEqual(result._data_keys_ok(), False)
@@ -47,14 +54,21 @@ class TestCheckData(unittest.TestCase):
         result = validate._CheckData(data_dict)
         self.assertEqual(result._agent_label_keys_ok(), True)
 
-        # Test with bad data (no data keys)
+        # Test with good data (missing one time keys)
         data_dict = copy.deepcopy(self.data)
         data_dict.pop('timefixed', None)
         result = validate._CheckData(data_dict)
-        self.assertEqual(result._agent_label_keys_ok(), False)
+        self.assertEqual(result._agent_label_keys_ok(), True)
 
         data_dict = copy.deepcopy(self.data)
         data_dict.pop('timeseries', None)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._agent_label_keys_ok(), True)
+
+        # Test with bad data (missing all time keys)
+        data_dict = copy.deepcopy(self.data)
+        data_dict.pop('timeseries', None)
+        data_dict.pop('timefixed', None)
         result = validate._CheckData(data_dict)
         self.assertEqual(result._agent_label_keys_ok(), False)
 
@@ -109,9 +123,21 @@ class TestCheckData(unittest.TestCase):
         result = validate._CheckData(data_dict)
         self.assertEqual(result._timeseries_data_ok(), False)
 
+        # Test with good data (missing one time keys)
+        data_dict = copy.deepcopy(self.data)
+        data_dict.pop('timeseries', None)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._timeseries_data_ok(), True)
+
+        data_dict = copy.deepcopy(self.data)
+        data_dict.pop('timefixed', None)
+        result = validate._CheckData(data_dict)
+        self.assertEqual(result._timeseries_data_ok(), True)
+
         # Test with bad data (no timeseries key)
         data_dict = copy.deepcopy(self.data)
         data_dict.pop('timeseries', None)
+        data_dict.pop('timefixed', None)
         result = validate._CheckData(data_dict)
         self.assertEqual(result._timeseries_data_ok(), False)
 
