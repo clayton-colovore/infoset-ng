@@ -421,16 +421,16 @@ Example:
     ]
     $
 
-Route /infoset/api/v1.0/db/datapoint/charted/``<idx_device>``/``<idx_agent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1.0/db/datapoint/timeseries/``<idx_device>``/``<idx_agent>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive **charted** datapoint data for a specific agent
+This route will retreive **timeseries** datapoint data for a specific agent
 running on a specific device. The query is done based on the index of
 the device and the index of the agent.
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/charted/2/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/timeseries/2/2
     [
       {
         "agent_label": "cpu_count",

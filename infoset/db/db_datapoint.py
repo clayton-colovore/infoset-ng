@@ -592,8 +592,8 @@ def idx_datapoint_exists(idx_datapoint):
     return exists
 
 
-def charted(idx_device, idx_agent):
-    """List of charted datapoint data for a specific idx_device, idx_agent.
+def timeseries(idx_device, idx_agent):
+    """List of timeseries datapoint data for a specific idx_device, idx_agent.
 
     Args:
         idx_device: Device index
@@ -604,7 +604,7 @@ def charted(idx_device, idx_agent):
 
     """
     # Initialize key variables
-    dict_list = _dp_device_agent(idx_device, idx_agent, charted_data=True)
+    dict_list = _dp_device_agent(idx_device, idx_agent, timeseries_data=True)
     return dict_list
 
 
@@ -620,18 +620,18 @@ def timefixed(idx_device, idx_agent):
 
     """
     # Initialize key variables
-    dict_list = _dp_device_agent(idx_device, idx_agent, charted_data=False)
+    dict_list = _dp_device_agent(idx_device, idx_agent, timeseries_data=False)
     return dict_list
 
 
-def _dp_device_agent(idx_device, idx_agent, charted_data=True):
+def _dp_device_agent(idx_device, idx_agent, timeseries_data=True):
     """List of datapoint data for a specific idx_device, idx_agent combination.
 
     Args:
         idx_device: Device index
         idx_agent: Agent index
-        charted_data: Return data for charted points if True.
-            Uncharted if False.
+        timeseries_data: Return data for timeseries points if True.
+            TimeFixed if False.
 
     Returns:
         dict_list: List of dicts containing data
@@ -649,7 +649,7 @@ def _dp_device_agent(idx_device, idx_agent, charted_data=True):
         # Establish a database session
         database = db.Database()
         session = database.session()
-        if charted_data is True:
+        if timeseries_data is True:
             result = session.query(Datapoint).filter(
                 and_(
                     Datapoint.timefixed_value == None,

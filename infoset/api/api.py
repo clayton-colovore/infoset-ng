@@ -274,9 +274,9 @@ def db_devagt_get_all_device_agents():
     return jsonify(data)
 
 
-@API.route('/infoset/api/v1.0/db/datapoint/charted/<idx_device>/<idx_agent>')
-def db_datapoint_charted(idx_device, idx_agent):
-    """Get charted datapoint metadata.
+@API.route('/infoset/api/v1.0/db/datapoint/timeseries/<idx_device>/<idx_agent>')
+def db_datapoint_timeseries(idx_device, idx_agent):
+    """Get timeseries datapoint metadata.
 
     Args:
         idx_device: Index value of device
@@ -287,7 +287,7 @@ def db_datapoint_charted(idx_device, idx_agent):
 
     """
     # Return
-    data = db_datapoint.charted(_integer(idx_device), _integer(idx_agent))
+    data = db_datapoint.timeseries(_integer(idx_device), _integer(idx_agent))
     return jsonify(data)
 
 
