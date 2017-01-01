@@ -150,12 +150,8 @@ class Datapoint(BASE):
         BIGINT(unsigned=True), primary_key=True,
         autoincrement=True, nullable=False)
 
-    idx_agent = Column(
-        BIGINT(unsigned=True), ForeignKey('iset_agent.idx_agent'),
-        nullable=False, server_default='1')
-
-    idx_device = Column(
-        BIGINT(unsigned=True), ForeignKey('iset_device.idx_device'),
+    idx_deviceagent = Column(
+        BIGINT(unsigned=True), ForeignKey('iset_deviceagent.idx_deviceagent'),
         nullable=False, server_default='1')
 
     idx_department = Column(

@@ -13,6 +13,7 @@ from sqlalchemy import and_
 # Infoset libraries
 from infoset.utils import general
 from infoset.db import db
+from infoset.db import db_deviceagent
 from infoset.db.db_orm import Datapoint
 
 
@@ -43,7 +44,7 @@ class GetIDDatapoint(object):
         value = id_datapoint.encode()
         self.data_dict = defaultdict(dict)
         keys = [
-            'idx_datapoint', 'id_datapoint', 'idx_agent', 'idx_device',
+            'idx_datapoint', 'id_datapoint', 'idx_deviceagent',
             'idx_department',
             'idx_billcode', 'agent_label', 'agent_source', 'enabled',
             'billable', 'base_type', 'timefixed_value', 'last_timestamp']
@@ -62,8 +63,7 @@ class GetIDDatapoint(object):
             for instance in result:
                 self.data_dict['idx_datapoint'] = instance.idx_datapoint
                 self.data_dict['id_datapoint'] = id_datapoint
-                self.data_dict['idx_agent'] = instance.idx_agent
-                self.data_dict['idx_device'] = instance.idx_device
+                self.data_dict['idx_deviceagent'] = instance.idx_deviceagent
                 self.data_dict['idx_department'] = instance.idx_department
                 self.data_dict['idx_billcode'] = instance.idx_billcode
                 self.data_dict[
@@ -194,8 +194,8 @@ class GetIDDatapoint(object):
         value = self.data_dict['agent_source']
         return value
 
-    def idx_agent(self):
-        """Get idx_agent value.
+    def idx_deviceagent(self):
+        """Get idx_deviceagent value.
 
         Args:
             None
@@ -205,7 +205,7 @@ class GetIDDatapoint(object):
 
         """
         # Initialize key variables
-        value = self.data_dict['idx_agent']
+        value = self.data_dict['idx_deviceagent']
         return value
 
     def id_datapoint(self):
@@ -234,20 +234,6 @@ class GetIDDatapoint(object):
         """
         # Initialize key variables
         value = self.data_dict['idx_datapoint']
-        return value
-
-    def idx_device(self):
-        """Get idx_device value.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['idx_device']
         return value
 
     def idx_department(self):
@@ -319,7 +305,7 @@ class GetIDXDatapoint(object):
         # Initialize important variables
         self.data_dict = defaultdict(dict)
         keys = [
-            'idx_datapoint', 'id_datapoint', 'idx_agent', 'idx_device',
+            'idx_datapoint', 'id_datapoint', 'idx_deviceagent',
             'idx_department',
             'idx_billcode', 'agent_label', 'agent_source', 'enabled',
             'billable', 'base_type', 'timefixed_value', 'last_timestamp']
@@ -343,8 +329,8 @@ class GetIDXDatapoint(object):
                     self.data_dict[
                         'id_datapoint'] = general.decode(
                             instance.id_datapoint)
-                    self.data_dict['idx_agent'] = instance.idx_agent
-                    self.data_dict['idx_device'] = instance.idx_device
+                    self.data_dict[
+                        'idx_deviceagent'] = instance.idx_deviceagent
                     self.data_dict['idx_department'] = instance.idx_department
                     self.data_dict['idx_billcode'] = instance.idx_billcode
                     self.data_dict[
@@ -505,8 +491,8 @@ class GetIDXDatapoint(object):
         value = self.data_dict['id_datapoint']
         return value
 
-    def idx_agent(self):
-        """Get idx_agent value.
+    def idx_deviceagent(self):
+        """Get idx_deviceagent value.
 
         Args:
             None
@@ -516,21 +502,7 @@ class GetIDXDatapoint(object):
 
         """
         # Initialize key variables
-        value = self.data_dict['idx_agent']
-        return value
-
-    def idx_device(self):
-        """Get idx_device value.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['idx_device']
+        value = self.data_dict['idx_deviceagent']
         return value
 
     def idx_department(self):
@@ -620,38 +592,8 @@ def idx_datapoint_exists(idx_datapoint):
     return exists
 
 
-def device_idx(idx_device):
-    """Get list of all datapoint indexes for a specific device_idx.
-
-    Args:
-        idx_device: Device index
-
-    Returns:
-        listing: List of indexes
-
-    """
-    # Initialize key variables
-    idx_datapoint_list = []
-
-    # Establish a database session
-    database = db.Database()
-    session = database.session()
-    result = session.query(Datapoint.idx_datapoint).filter(
-        Datapoint.idx_device == idx_device)
-
-    # Add to the list of device idx_datapoint values
-    for instance in result:
-        idx_datapoint_list.append(instance.idx_datapoint)
-
-    # Return the connection to the pool
-    database.close()
-
-    # Return
-    return idx_datapoint_list
-
-
 def charted(idx_device, idx_agent):
-    """List of charted datapoint data for a specific device_idx, idx_agent.
+    """List of charted datapoint data for a specific idx_device, idx_agent.
 
     Args:
         idx_device: Device index
@@ -667,7 +609,7 @@ def charted(idx_device, idx_agent):
 
 
 def timefixed(idx_device, idx_agent):
-    """List of timefixed datapoint data for a specific device_idx, idx_agent.
+    """List of timefixed datapoint data for a specific idx_device, idx_agent.
 
     Args:
         idx_device: Device index
@@ -683,7 +625,7 @@ def timefixed(idx_device, idx_agent):
 
 
 def _dp_device_agent(idx_device, idx_agent, charted_data=True):
-    """List of datapoint data for a specific device_idx, idx_agent combination.
+    """List of datapoint data for a specific idx_device, idx_agent combination.
 
     Args:
         idx_device: Device index
@@ -698,48 +640,51 @@ def _dp_device_agent(idx_device, idx_agent, charted_data=True):
     # Initialize key variables
     dict_list = []
 
-    # Establish a database session
-    database = db.Database()
-    session = database.session()
-    if charted_data is True:
-        result = session.query(Datapoint).filter(
-            and_(
-                Datapoint.timefixed_value == None,
-                Datapoint.idx_device == idx_device,
-                Datapoint.idx_agent == idx_agent)
-            )
-    else:
-        result = session.query(Datapoint).filter(
-            and_(
-                Datapoint.timefixed_value != None,
-                Datapoint.idx_device == idx_device,
-                Datapoint.idx_agent == idx_agent)
-            )
+    # Get idx_deviceagent
+    if db_deviceagent.device_agent_exists(idx_device, idx_agent) is True:
+        # Get device agent index
+        idx_deviceagent = db_deviceagent.GetDeviceAgent(
+            idx_device, idx_agent).idx_deviceagent()
 
-    # Add to the list of device idx_datapoint values
-    for instance in result:
-        data_dict = {}
-        data_dict['idx_datapoint'] = instance.idx_datapoint
-        data_dict['id_datapoint'] = general.decode(instance.id_datapoint)
-        data_dict['idx_agent'] = instance.idx_agent
-        data_dict['idx_device'] = instance.idx_device
-        data_dict['idx_department'] = instance.idx_department
-        data_dict['idx_billcode'] = instance.idx_billcode
-        data_dict[
-            'agent_label'] = general.decode(instance.agent_label)
-        data_dict[
-            'agent_source'] = general.decode(instance.agent_source)
-        data_dict['enabled'] = bool(instance.enabled)
-        data_dict['billable'] = bool(instance.billable)
-        data_dict['base_type'] = instance.base_type
-        data_dict[
-            'timefixed_value'] = general.decode(instance.timefixed_value)
-        data_dict['last_timestamp'] = instance.last_timestamp
-        data_dict['exists'] = True
-        dict_list.append(data_dict)
+        # Establish a database session
+        database = db.Database()
+        session = database.session()
+        if charted_data is True:
+            result = session.query(Datapoint).filter(
+                and_(
+                    Datapoint.timefixed_value == None,
+                    Datapoint.idx_deviceagent == idx_deviceagent)
+                )
+        else:
+            result = session.query(Datapoint).filter(
+                and_(
+                    Datapoint.timefixed_value != None,
+                    Datapoint.idx_deviceagent == idx_deviceagent)
+                )
 
-    # Return the connection to the pool
-    database.close()
+        # Add to the list of device idx_datapoint values
+        for instance in result:
+            data_dict = {}
+            data_dict['idx_datapoint'] = instance.idx_datapoint
+            data_dict['id_datapoint'] = general.decode(instance.id_datapoint)
+            data_dict['idx_deviceagent'] = instance.idx_deviceagent
+            data_dict['idx_department'] = instance.idx_department
+            data_dict['idx_billcode'] = instance.idx_billcode
+            data_dict[
+                'agent_label'] = general.decode(instance.agent_label)
+            data_dict[
+                'agent_source'] = general.decode(instance.agent_source)
+            data_dict['enabled'] = bool(instance.enabled)
+            data_dict['billable'] = bool(instance.billable)
+            data_dict['base_type'] = instance.base_type
+            data_dict[
+                'timefixed_value'] = general.decode(instance.timefixed_value)
+            data_dict['last_timestamp'] = instance.last_timestamp
+            data_dict['exists'] = True
+            dict_list.append(data_dict)
+
+        # Return the connection to the pool
+        database.close()
 
     # Return
     return dict_list

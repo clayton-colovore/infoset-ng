@@ -229,6 +229,8 @@ class _PrepareDatabase(object):
         # Device and agent are not already there
         self._idx_agent = self.idx_agent()
         self._idx_device = self.idx_device()
+        self._idx_deviceagent = hagent.GetDeviceAgent(
+            self._idx_device, self._idx_agent).idx_deviceagent()
 
     def idx_agent(self):
         """Insert new agent into database if necessary.
@@ -355,7 +357,7 @@ class _PrepareDatabase(object):
 
         """
         # Initialize key variables
-        idx_agent = self._idx_agent
+        idx_deviceagent = self._idx_deviceagent
         data = {}
 
         # Update database
@@ -363,19 +365,17 @@ class _PrepareDatabase(object):
         session = database.session()
         result = session.query(
             Datapoint.id_datapoint, Datapoint.idx_datapoint,
-            Datapoint.idx_agent, Datapoint.last_timestamp).filter(
+            Datapoint.idx_deviceagent, Datapoint.last_timestamp).filter(
                 and_(Datapoint.enabled == 1,
-                     Datapoint.idx_agent == idx_agent))
+                     Datapoint.idx_deviceagent == idx_deviceagent))
 
         # Massage data
         for instance in result:
             id_datapoint = instance.id_datapoint.decode('utf-8')
             idx_datapoint = instance.idx_datapoint
-            idx_agent = instance.idx_agent
             last_timestamp = instance.last_timestamp
             data[id_datapoint] = {
                 'idx_datapoint': idx_datapoint,
-                'idx_agent': idx_agent,
                 'last_timestamp': last_timestamp
             }
 
@@ -409,8 +409,7 @@ class _PrepareDatabase(object):
 
         """
         # Initialize key variables
-        idx_agent = self._idx_agent
-        idx_device = self._idx_device
+        idx_deviceagent = self._idx_deviceagent
         id_datapoint = source['id_datapoint']
         agent_label = source['agent_label']
         agent_source = source['agent_source']
@@ -419,8 +418,7 @@ class _PrepareDatabase(object):
         # Insert record
         record = Datapoint(
             id_datapoint=general.encode(id_datapoint),
-            idx_agent=idx_agent,
-            idx_device=idx_device,
+            idx_deviceagent=idx_deviceagent,
             agent_label=general.encode(agent_label),
             agent_source=general.encode(agent_source),
             base_type=base_type)
@@ -687,6 +685,8 @@ class _UpdateLastTimestamp(object):
         idx_device = self.idx_device
         last_timestamp = self.last_timestamp
         data_dict = {'last_timestamp': last_timestamp}
+        idx_deviceagent = hagent.GetDeviceAgent(
+            idx_device, idx_agent).idx_deviceagent()
 
         # Access the database
         database = db.Database()
@@ -694,8 +694,7 @@ class _UpdateLastTimestamp(object):
 
         # Update
         session.query(Datapoint).filter(
-            and_(Datapoint.idx_device == idx_device,
-                 Datapoint.idx_agent == idx_agent,
+            and_(Datapoint.idx_deviceagent == idx_deviceagent,
                  Datapoint.enabled == 1)).update(data_dict)
         database.commit(session, 1057)
 
