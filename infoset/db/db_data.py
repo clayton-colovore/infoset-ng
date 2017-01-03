@@ -9,7 +9,6 @@ from sqlalchemy import and_
 
 # Infoset libraries
 from infoset.utils import general
-from infoset.utils import configuration
 from infoset.db import db_datapoint
 from infoset.db import db
 from infoset.db.db_orm import Data
@@ -28,10 +27,11 @@ class GetIDXData(object):
 
     """
 
-    def __init__(self, idx_datapoint, start=None, stop=None):
+    def __init__(self, config, idx_datapoint, start=None, stop=None):
         """Function for intializing the class.
 
         Args:
+            config: Config object
             idx_datapoint: idx_datapoint of datapoint
             start: Starting timestamp
             stop: Ending timestamp
@@ -42,6 +42,7 @@ class GetIDXData(object):
         """
         # Initialize important variables
         self.data = defaultdict(dict)
+        self.config = config
 
         # Get the datapoint's base_type
         datapointer = db_datapoint.GetIDXDatapoint(idx_datapoint)
@@ -105,7 +106,7 @@ class GetIDXData(object):
         """
         # Initialize key variables
         count = 0
-        interval = configuration.Config().interval()
+        interval = self.config.interval()
 
         # Populate values dictionary with zeros. This ensures that
         # all timestamp values are covered if we have lost contact
@@ -166,11 +167,11 @@ class GetIDXData(object):
         return values
 
 
-def get_all_last_contacts():
+def get_all_last_contacts(config):
     """Get the last time each timeseries datapoint was updated.
 
     Args:
-        None
+        config: Configuration object
 
     Returns:
         data: List of dicts of last contact information
@@ -181,7 +182,6 @@ def get_all_last_contacts():
     last_contact = defaultdict(lambda: defaultdict(dict))
 
     # Get start and stop times
-    config = configuration.Config()
     ts_stop = general.normalized_timestamp()
     ts_start = ts_stop - (config.interval() * 3)
 

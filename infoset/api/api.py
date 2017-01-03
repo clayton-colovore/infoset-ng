@@ -18,6 +18,7 @@ from infoset.db import db_deviceagent
 
 # Define the API global variable
 API = Flask(__name__)
+CONFIG = configuration.Config()
 
 
 @API.route('/infoset/api/v1.0/')
@@ -50,8 +51,7 @@ def receive(id_agent):
     found_count = 0
 
     # Read configuration
-    config = configuration.Config()
-    cache_dir = config.ingest_cache_directory()
+    cache_dir = CONFIG.ingest_cache_directory()
 
     # Get JSON from incoming agent POST
     data = request.json
@@ -99,7 +99,7 @@ def db_data_get_all_last_contacts():
 
     """
     # Return
-    data = db_data.get_all_last_contacts()
+    data = db_data.get_all_last_contacts(CONFIG)
     return jsonify(data)
 
 
@@ -119,7 +119,7 @@ def db_getidxdata(value, ts_start, ts_stop):
     """
     # Return
     query = db_data.GetIDXData(
-        _integer(value), _integer(ts_start), _integer(ts_stop))
+        CONFIG, _integer(value), _integer(ts_start), _integer(ts_stop))
     data = query.everything()
     return jsonify(data)
 
@@ -356,9 +356,8 @@ def main():
 
     """
     # Start
-    config = configuration.Config()
-    bind_port = config.bind_port()
-    listen_address = config.listen_address()
+    bind_port = CONFIG.bind_port()
+    listen_address = CONFIG.listen_address()
     API.run(debug=True, host=listen_address, threaded=True, port=bind_port)
 
 
