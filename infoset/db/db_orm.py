@@ -107,6 +107,27 @@ class Data(BASE):
     value = Column(FLOAT, default=None)
 
 
+class DataLastContact(BASE):
+    """Class defining the iset_datalastcontact table of the database."""
+
+    __tablename__ = 'iset_datalastcontact'
+    __table_args__ = (
+        PrimaryKeyConstraint(
+            'idx_datapoint'),
+        {
+            'mysql_engine': 'InnoDB'
+        }
+        )
+
+    idx_datapoint = Column(
+        BIGINT(unsigned=True), ForeignKey('iset_data.idx_datapoint'),
+        nullable=False, server_default='1')
+
+    timestamp = Column(BIGINT(unsigned=True), nullable=False, default='1')
+
+    value = Column(FLOAT, default=None)
+
+
 class Agent(BASE):
     """Class defining the iset_agent table of the database."""
 

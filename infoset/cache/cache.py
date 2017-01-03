@@ -15,6 +15,7 @@ from sqlalchemy import and_
 # Infoset libraries
 from infoset.db import db
 from infoset.db.db_orm import Data, Datapoint, Agent, Device, DeviceAgent
+from infoset.db.db_orm import DataLastContact
 from infoset.db import db_agent as agent
 from infoset.db import db_device as ddevice
 from infoset.db import db_deviceagent as hagent
@@ -83,14 +84,12 @@ class _ProcessAgentCache(object):
             'id_agent': None,
             'sources': [],
             'timeseries': [],
-            'timefixed': []
+            'timefixed': [],
+            'max_timestamp': 0
         }
 
         # Get the directory to which failed files will be moved
         failure_directory = self.config.ingest_failures_directory()
-
-        # Initialize other values
-        max_timestamp = 0
 
         # Get start time for activity
         start_ts = time.time()
@@ -124,9 +123,6 @@ class _ProcessAgentCache(object):
             # Append ingest object to a list for later processing
             ingests.append(ingest)
 
-            # Get the max timestamp
-            max_timestamp = max(timestamp, max_timestamp)
-
             # Update information that doesn't change
             if do_update is False:
                 agent_data['devicename'] = ingest.devicename()
@@ -135,6 +131,10 @@ class _ProcessAgentCache(object):
 
                 # Get the PID file for the agent
                 pid_file = daemon.pid_file(self.ingester_agent_name)
+            else:
+                # Get the max timestamp
+                agent_data['max_timestamp'] = max(
+                    timestamp, agent_data['max_timestamp'])
 
             # Update the PID file for the agent to ensure agentd.py
             # doesn't kill the ingest while processing a long stream
@@ -148,37 +148,9 @@ class _ProcessAgentCache(object):
 
         # Process the rest
         if do_update is True:
-            # Update remaining agent data
-            agent_data['max_timestamp'] = max_timestamp
-
-            # Add datapoints to the database
-            db_prepare = _PrepareDatabase(agent_data)
-            db_prepare.add_datapoints()
-
-            # Get the latest datapoints
-            datapoints = db_prepare.get_datapoints()
-
-            # Get the assigned index values for the device and agent
-            idx_device = db_prepare.idx_device()
-            idx_agent = db_prepare.idx_agent()
-
-            # Update database with data
-            db_update = _UpdateDB(agent_data, datapoints)
-            success = db_update.update()
-
-            # Update database table timestamps
-            update_timestamps = _UpdateLastTimestamp(
-                idx_device, idx_agent, max_timestamp)
-            update_timestamps.agent()
-            update_timestamps.deviceagent()
-            update_timestamps.datapoint()
-
-            # Purge source files. Only done after complete
-            # success of database updates. If not we could lose data in the
-            # event of an ingester crash. Ingester would re-read the files
-            # and process the non-duplicates, while deleting the duplicates.
-            for ingest in ingests:
-                ingest.purge()
+            # Upadate and note success
+            (success, datapoints_processed) = self._do_update(
+                agent_data, ingests)
 
             # Log duration of activity
             duration = time.time() - start_ts
@@ -191,7 +163,7 @@ class _ProcessAgentCache(object):
                         len(ingests),
                         round(duration, 4),
                         round(duration / len(ingests), 4),
-                        round(duration / len(datapoints), 6))
+                        round(duration / datapoints_processed, 6))
                 log.log2info(1007, log_message)
             else:
                 log_message = (
@@ -199,6 +171,54 @@ class _ProcessAgentCache(object):
                     'Investigate.') % (
                         agent_data['id_agent'])
                 log.log2info(1008, log_message)
+
+    def _do_update(self, agent_data, ingests):
+        """Update the database using threads."""
+        # Initialize key variables
+        max_timestamp = agent_data['max_timestamp']
+
+        # Add datapoints to the database
+        db_prepare = _PrepareDatabase(agent_data)
+        db_prepare.add_datapoints()
+
+        # Get the latest datapoints
+        datapoints = db_prepare.get_datapoints()
+
+        # Get the assigned index values for the device and agent
+        idx_device = db_prepare.idx_device()
+        idx_agent = db_prepare.idx_agent()
+
+        # Update database with data
+        db_update = _UpdateDB(agent_data, datapoints)
+        success = db_update.update()
+
+        #####################################################################
+        #####################################################################
+        #
+        # We need to update the database with last update data and purge
+        # files whether successful or not. This is a precaution to prevent
+        # database corruption if multiple sets of bogus data is posted with
+        # valid data
+        #
+        #####################################################################
+        #####################################################################
+
+        # Update database table timestamps
+        update_timestamps = _UpdateLastTimestamp(
+            idx_device, idx_agent, max_timestamp)
+        update_timestamps.agent()
+        update_timestamps.deviceagent()
+        update_timestamps.datapoint()
+
+        # Purge source files. Only done after complete
+        # success of database updates. If not we could lose data in the
+        # event of an ingester crash. Ingester would re-read the files
+        # and process the non-duplicates, while deleting the duplicates.
+        for ingest in ingests:
+            ingest.purge()
+
+        # Return
+        return (success, len(datapoints))
 
 
 class _PrepareDatabase(object):
@@ -299,9 +319,10 @@ class _PrepareDatabase(object):
         idx_agent = self._idx_agent
         if hagent.device_agent_exists(idx_device, idx_agent) is False:
             # Add to DeviceAgent table
-            record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
+            new_record = DeviceAgent(
+                idx_device=idx_device, idx_agent=idx_agent)
             database = db.Database()
-            database.add(record, 1038)
+            database.add(new_record, 1038)
 
         # Return
         return idx_device
@@ -415,7 +436,7 @@ class _PrepareDatabase(object):
         agent_source = source['agent_source']
         base_type = source['base_type']
 
-        # Insert record
+        # Insert Datapoint record
         record = Datapoint(
             id_datapoint=general.encode(id_datapoint),
             idx_deviceagent=idx_deviceagent,
@@ -424,6 +445,22 @@ class _PrepareDatabase(object):
             base_type=base_type)
         database = db.Database()
         database.add(record, 1082)
+
+        #####################################################################
+        # Insert DataLastContact
+        #####################################################################
+
+        # Get datapoint index value
+        database = db.Database()
+        session = database.session()
+        result = session.query(Datapoint.idx_datapoint).filter(
+            Datapoint.id_datapoint == id_datapoint.encode()).one()
+        idx_datapoint = result.idx_datapoint
+
+        # Update database
+        new_record = DataLastContact(idx_datapoint=idx_datapoint)
+        database = db.Database()
+        database.add(new_record, 1083)
 
 
 class _UpdateDB(object):
@@ -507,6 +544,14 @@ class _UpdateDB(object):
             if timestamp > last_timestamp:
                 data_list.append(
                     Data(
+                        idx_datapoint=idx_datapoint,
+                        value=value,
+                        timestamp=timestamp
+                    )
+                )
+
+                data_list.append(
+                    DataLastContact(
                         idx_datapoint=idx_datapoint,
                         value=value,
                         timestamp=timestamp
@@ -699,11 +744,11 @@ class _UpdateLastTimestamp(object):
         database.commit(session, 1057)
 
 
-def validate_cache_files():
+def validate_cache_files(config):
     """Create metadata for cache files with valid names.
 
     Args:
-        None
+        config: Configuration object
 
     Returns:
         id_agent_metadata: Dict keyed by
@@ -719,7 +764,6 @@ def validate_cache_files():
     id_agent_metadata = defaultdict(lambda: defaultdict(dict))
 
     # Configuration setup
-    config = configuration.Config()
     cache_dir = config.ingest_cache_directory()
 
     # Filenames must start with a numeric timestamp and #
@@ -804,10 +848,11 @@ def _process(config, metadata, ingester_agent_name):
     data.process()
 
 
-def process(ingester_agent_name):
+def process(config, ingester_agent_name):
     """Process cache data by adding it to the database using subprocesses.
 
     Args:
+        config: Configuration object
         ingester_agent_name: Ingester agent name
 
     Returns:
@@ -819,7 +864,6 @@ def process(ingester_agent_name):
     id_agent_metadata = defaultdict(lambda: defaultdict(dict))
 
     # Configuration setup
-    config = configuration.Config()
     configured_pool_size = config.ingest_pool_size()
 
     # Make sure we have database connectivity
@@ -832,7 +876,7 @@ def process(ingester_agent_name):
         return
 
     # Get meta data on files
-    id_agent_metadata = validate_cache_files()
+    id_agent_metadata = validate_cache_files(config)
 
     # Spawn processes only if we have files to process
     if bool(id_agent_metadata.keys()) is True:
@@ -870,12 +914,25 @@ def process(ingester_agent_name):
             # Create sub processes from the pool
             pool.map(_wrapper_process, argument_list)
 
-        # Wait for all the processes to end
-        # pool.join()
-
         # Return if lock file is present
         if os.path.exists(lockfile) is True:
             os.remove(lockfile)
 
+
+def main():
+    """Ingest data if this file is run from the CLI.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Process data
+    config = configuration.Config()
+    process(config, 'ingestd')
+
+
 if __name__ == "__main__":
-    process('ingestd')
+    main()

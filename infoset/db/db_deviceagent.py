@@ -413,6 +413,7 @@ def get_all_device_agents():
     # Add to the list of device idx values
     for instance in result:
         data_dict = {}
+        data_dict['idx_deviceagent'] = instance.idx_deviceagent
         data_dict['idx_agent'] = instance.idx_agent
         data_dict['idx_device'] = instance.idx_device
         data.append(data_dict)

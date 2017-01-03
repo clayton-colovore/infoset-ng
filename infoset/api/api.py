@@ -12,6 +12,7 @@ from infoset.utils import configuration
 from infoset.utils import general
 from infoset.db import db_agent
 from infoset.db import db_data
+from infoset.db import db_datalastcontact
 from infoset.db import db_datapoint
 from infoset.db import db_device
 from infoset.db import db_deviceagent
@@ -274,7 +275,8 @@ def db_devagt_get_all_device_agents():
     return jsonify(data)
 
 
-@API.route('/infoset/api/v1.0/db/datapoint/timeseries/<idx_device>/<idx_agent>')
+@API.route(
+    '/infoset/api/v1.0/db/datapoint/timeseries/<idx_device>/<idx_agent>')
 def db_datapoint_timeseries(idx_device, idx_agent):
     """Get timeseries datapoint metadata.
 
@@ -305,6 +307,22 @@ def db_datapoint_timefixed(idx_device, idx_agent):
     """
     # Return
     data = db_datapoint.timefixed(_integer(idx_device), _integer(idx_agent))
+    return jsonify(data)
+
+
+@API.route('/infoset/api/v1.0/db/datalastcontact/getalldatalastcontacts')
+def db_dlc_get_all_last_contacts():
+    """Get all DeviceAgent data from the DB.
+
+    Args:
+        None
+
+    Returns:
+        Agent data
+
+    """
+    # Return
+    data = db_datalastcontact.get_all_last_contacts()
     return jsonify(data)
 
 
