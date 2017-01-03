@@ -164,3 +164,60 @@ class GetIDXData(object):
 
         # Return
         return values
+
+
+def get_all_last_contacts():
+    """Get the last time each timeseries datapoint was updated.
+
+    Args:
+        None
+
+    Returns:
+        data: List of dicts of last contact information
+
+    """
+    # Initialize key variables
+    data = []
+    last_contact = defaultdict(lambda: defaultdict(dict))
+
+    # Get start and stop times
+    config = configuration.Config()
+    ts_stop = general.normalized_timestamp()
+    ts_start = ts_stop - (config.interval() * 3)
+
+    # Establish a database session
+    database = db.Database()
+    session = database.session()
+    result = session.query(
+        Data.value, Data.idx_datapoint, Data.timestamp).filter(
+            and_(Data.timestamp >= ts_start, Data.timestamp <= ts_stop)
+        )
+
+    # Add to the list of device idx values
+    for instance in result:
+        idx_datapoint = instance.idx_datapoint
+        timestamp = instance.timestamp
+        value = instance.value
+
+        # Update dictionary
+        if idx_datapoint in last_contact:
+            if timestamp > last_contact[idx_datapoint]['timestamp']:
+                last_contact[idx_datapoint]['timestamp'] = timestamp
+                last_contact[idx_datapoint]['value'] = value
+        else:
+            last_contact[idx_datapoint]['timestamp'] = timestamp
+            last_contact[idx_datapoint]['value'] = value
+
+    # Return the session to the pool after processing
+    database.close()
+
+    # Convert dict to list of dicts
+    for idx_datapoint in last_contact:
+        data_dict = {}
+        data_dict['timestamp'] = timestamp
+        data_dict['value'] = value
+        data_dict['idx_datapoint'] = idx_datapoint
+        data.append(data_dict)
+
+    # Return
+    return data

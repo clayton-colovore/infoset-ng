@@ -22,8 +22,8 @@ from sqlalchemy import and_
 from infoset.utils import configuration
 from infoset.utils import log
 from infoset.utils import general
-from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent, Billcode, Department
-from infoset.db.db_orm import Department
+from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent, Billcode
+from infoset.db.db_orm import Department, Datapoint
 from infoset.db import URL, TEST_ENGINE
 from infoset.db import db
 from infoset.db import db_agent
@@ -118,9 +118,9 @@ def setup_db_deviceagent(data):
     idx_agent = agent_info.idx_agent()
 
     # Add record to the database
-    record = Device(devicename=general.encode(devicename))
+    dev_record = Device(devicename=general.encode(devicename))
     database = db.Database()
-    database.add(record, 1023)
+    database.add(dev_record, 1034)
 
     # Get idx of newly added device
     device_info = db_device.GetDevice(devicename)
@@ -129,9 +129,9 @@ def setup_db_deviceagent(data):
     # Update DeviceAgent table
     if hagent.device_agent_exists(idx_device, idx_agent) is False:
         # Add to DeviceAgent table
-        record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
+        da_record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
         database = db.Database()
-        database.add(record, 1020)
+        database.add(da_record, 1020)
 
     # Update DeviceAgent table with timestamp
     database = db.Database()
@@ -144,7 +144,7 @@ def setup_db_deviceagent(data):
     database.commit(session, 1042)
 
     # Return
-    result = (idx_agent, idx_device)
+    result = (idx_device, idx_agent)
     return result
 
 
@@ -163,12 +163,10 @@ def setup_db_agent():
 
     # Get an agent ID
     id_agent = general.hashstring('_INFOSET_TEST_')
-    last_timestamp = general.normalized_timestamp()
 
     # Create a dict of all the expected values
     expected = {
         'id_agent': id_agent,
-        'last_timestamp': last_timestamp,
         'name': general.hashstring(general.randomstring()),
         'idx_agent': idx_agent,
         'enabled': 1
@@ -181,8 +179,7 @@ def setup_db_agent():
     data = Agent(
         id_agent=general.encode(expected['id_agent']),
         name=general.encode(expected['name']),
-        enabled=expected['enabled'],
-        last_timestamp=expected['last_timestamp'])
+        enabled=expected['enabled'])
     database = db.Database()
     database.add_all([data], 1045)
 
@@ -261,11 +258,10 @@ def setup_db_billcode():
 
     # Create a dict of all the expected values
     expected = {
-        'enabled': True,
+        'enabled': 1,
         'name': general.hashstring(general.randomstring()),
         'idx_billcode': idx_billcode,
         'code': general.hashstring(general.randomstring()),
-        'enabled': 1
     }
 
     # Drop the database and create tables
@@ -297,11 +293,10 @@ def setup_db_department():
 
     # Create a dict of all the expected values
     expected = {
-        'enabled': True,
+        'enabled': 1,
         'name': general.hashstring(general.randomstring()),
         'idx_department': idx_department,
         'code': general.hashstring(general.randomstring()),
-        'enabled': 1
     }
 
     # Drop the database and create tables
@@ -312,7 +307,78 @@ def setup_db_department():
         code=general.encode(expected['code']),
         name=general.encode(expected['name']))
     database = db.Database()
-    database.add_all([data], 1018)
+    database.add_all([data], 1027)
 
     # Return
     return expected
+
+
+def setup_db_datapoint():
+    """Create the database for Datapoint table testing.
+
+    Args:
+        None
+
+    Returns:
+        results: List of dicts of values to expect
+
+    """
+    # Initialize key variables
+    idx_datapoint = 1
+    results = []
+    timestamp = general.normalized_timestamp()
+    id_datapoint = general.hashstring(general.randomstring())
+    devicename = general.hashstring(general.randomstring())
+    id_agent = general.hashstring(general.randomstring())
+    devicename = general.randomstring()
+    agent_name = general.randomstring()
+
+    # Drop the database and create tables
+    initialize_db()
+
+    # Initialize agent variables
+    agent_data = {}
+    agent_data['devicename'] = devicename
+    agent_data['id_agent'] = id_agent
+    agent_data['agent'] = agent_name
+    agent_data['timestamp'] = timestamp
+    (idx_device, idx_agent) = setup_db_deviceagent(agent_data)
+
+    # Get DeviceAgent index value
+    deviceagent = hagent.GetDeviceAgent(idx_device, idx_agent)
+    idx_deviceagent = deviceagent.idx_deviceagent()
+
+    # Create dict of expected results
+    expected = {
+        'value': 100,
+        'idx_datapoint': idx_datapoint,
+        'timestamp': timestamp
+    }
+
+    # Insert Department data into database
+    dept_data = Department(
+        code=general.randomstring().encode()
+    )
+    database = db.Database()
+    database.add_all([dept_data], 1035)
+
+    # Insert Billcode data into database
+    bill_data = Billcode(
+        code=general.randomstring().encode()
+    )
+    database = db.Database()
+    database.add_all([bill_data], 1039)
+
+    # Insert Datapoint data into database
+    new_data = Datapoint(
+        idx_deviceagent=idx_deviceagent,
+        id_datapoint=general.encode(id_datapoint))
+    database = db.Database()
+    database.add_all([new_data], 1007)
+
+    # Add value to expected
+    expected['id_datapoint'] = id_datapoint
+    results.append(expected)
+
+    # Return
+    return results

@@ -15,7 +15,6 @@ from sqlalchemy import and_
 # Infoset libraries
 from infoset.db import db
 from infoset.db.db_orm import Data, Datapoint, Agent, Device, DeviceAgent
-from infoset.db.db_orm import DataLastContact
 from infoset.db import db_agent as agent
 from infoset.db import db_device as ddevice
 from infoset.db import db_deviceagent as hagent
@@ -206,7 +205,6 @@ class _ProcessAgentCache(object):
         # Update database table timestamps
         update_timestamps = _UpdateLastTimestamp(
             idx_device, idx_agent, max_timestamp)
-        update_timestamps.agent()
         update_timestamps.deviceagent()
         update_timestamps.datapoint()
 
@@ -446,22 +444,6 @@ class _PrepareDatabase(object):
         database = db.Database()
         database.add(record, 1082)
 
-        #####################################################################
-        # Insert DataLastContact
-        #####################################################################
-
-        # Get datapoint index value
-        database = db.Database()
-        session = database.session()
-        result = session.query(Datapoint.idx_datapoint).filter(
-            Datapoint.id_datapoint == id_datapoint.encode()).one()
-        idx_datapoint = result.idx_datapoint
-
-        # Update database
-        new_record = DataLastContact(idx_datapoint=idx_datapoint)
-        database = db.Database()
-        database.add(new_record, 1083)
-
 
 class _UpdateDB(object):
     """Update database with agent data.
@@ -544,14 +526,6 @@ class _UpdateDB(object):
             if timestamp > last_timestamp:
                 data_list.append(
                     Data(
-                        idx_datapoint=idx_datapoint,
-                        value=value,
-                        timestamp=timestamp
-                    )
-                )
-
-                data_list.append(
-                    DataLastContact(
                         idx_datapoint=idx_datapoint,
                         value=value,
                         timestamp=timestamp
@@ -692,28 +666,6 @@ class _UpdateLastTimestamp(object):
                 DeviceAgent.idx_agent == idx_agent)).one()
         record.last_timestamp = last_timestamp
         database.commit(session, 1124)
-
-    def agent(self):
-        """Update the database timestamp for the agent.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        idx_agent = self.idx_agent
-        last_timestamp = self.last_timestamp
-
-        # Update the database
-        database = db.Database()
-        session = database.session()
-        record = session.query(
-            Agent).filter(Agent.idx_agent == idx_agent).one()
-        record.last_timestamp = last_timestamp
-        database.commit(session, 1055)
 
     def datapoint(self):
         """Update the database timestamp for the datapoint.

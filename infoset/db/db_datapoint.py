@@ -652,13 +652,13 @@ def _dp_device_agent(idx_device, idx_agent, timeseries_data=True):
         if timeseries_data is True:
             result = session.query(Datapoint).filter(
                 and_(
-                    Datapoint.timefixed_value == None,
+                    Datapoint.base_type >= 1,
                     Datapoint.idx_deviceagent == idx_deviceagent)
                 )
         else:
             result = session.query(Datapoint).filter(
                 and_(
-                    Datapoint.timefixed_value != None,
+                    Datapoint.base_type == 0,
                     Datapoint.idx_deviceagent == idx_deviceagent)
                 )
 

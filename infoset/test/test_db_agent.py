@@ -65,17 +65,6 @@ class TestGetIDX(unittest.TestCase):
         result = self.good_agent.enabled()
         self.assertNotEqual(result, expected)
 
-    def test_last_timestamp_getidx(self):
-        """Testing method last_timestamp."""
-        # Testing with known good value
-        result = self.good_agent.last_timestamp()
-        self.assertEqual(result, self.expected['last_timestamp'])
-
-        # Testing with known bad value
-        expected = ('bogus')
-        result = self.good_agent.last_timestamp()
-        self.assertNotEqual(result, expected)
-
     def test_everything_getidx(self):
         """Testing method everything."""
         # Testing with known good value
@@ -136,17 +125,6 @@ class TestGetIdentifier(unittest.TestCase):
         # Testing with known bad value
         expected = ('bogus')
         result = self.good_agent.enabled()
-        self.assertNotEqual(result, expected)
-
-    def test_last_timestamp_getid_agent(self):
-        """Testing method last_timestamp."""
-        # Testing with known good value
-        result = self.good_agent.last_timestamp()
-        self.assertEqual(result, self.expected['last_timestamp'])
-
-        # Testing with known bad value
-        expected = ('bogus')
-        result = self.good_agent.last_timestamp()
         self.assertNotEqual(result, expected)
 
     def test_everything_getid_agent(self):

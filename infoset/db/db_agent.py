@@ -37,7 +37,7 @@ class GetIDXAgent(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_agent', 'id_agent', 'name', 'enabled', 'last_timestamp']
+        keys = ['idx_agent', 'id_agent', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -62,7 +62,6 @@ class GetIDXAgent(object):
                         'id_agent'] = general.decode(instance.id_agent)
                     self.data_dict['name'] = general.decode(instance.name)
                     self.data_dict['enabled'] = bool(instance.enabled)
-                    self.data_dict['last_timestamp'] = instance.last_timestamp
                     self.data_dict['exists'] = True
                     break
 
@@ -141,20 +140,6 @@ class GetIDXAgent(object):
         # Return
         return value
 
-    def last_timestamp(self):
-        """Get agent last_timestamp.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['last_timestamp']
-        return value
-
     def everything(self):
         """Get all agent data.
 
@@ -195,7 +180,7 @@ class GetIDAgent(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_agent', 'name', 'enabled', 'last_timestamp']
+        keys = ['idx_agent', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -215,7 +200,6 @@ class GetIDAgent(object):
                 self.data_dict['idx_agent'] = instance.idx_agent
                 self.data_dict['name'] = general.decode(instance.name)
                 self.data_dict['enabled'] = bool(instance.enabled)
-                self.data_dict['last_timestamp'] = instance.last_timestamp
                 self.data_dict['exists'] = True
                 break
 
@@ -292,20 +276,6 @@ class GetIDAgent(object):
         value = self.data_dict['enabled']
 
         # Return
-        return value
-
-    def last_timestamp(self):
-        """Get agent last_timestamp.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['last_timestamp']
         return value
 
     def everything(self):
@@ -397,7 +367,6 @@ def get_all_agents():
         data_dict['idx_agent'] = instance.idx_agent
         data_dict['name'] = general.decode(instance.name)
         data_dict['enabled'] = bool(instance.enabled)
-        data_dict['last_timestamp'] = instance.last_timestamp
         data_dict['exists'] = True
 
         # Append to list
