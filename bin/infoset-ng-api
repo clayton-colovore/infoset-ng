@@ -7,6 +7,7 @@ Serves as a Gunicorn WSGI entry point for infoset.api.api.py
 
 # Standard libraries
 import sys
+import os
 import multiprocessing
 
 # PIP libraries
@@ -21,6 +22,8 @@ except:
     sys.exit(2)
 from infoset.api.api import API
 from infoset.utils import configuration
+from infoset.utils import log
+from infoset.utils import daemon
 from infoset.agents import agent as Agent
 
 
@@ -119,6 +122,26 @@ class _APIAgent(object):
         """
         # Initialize key variables
         config = self.config
+
+        # Check for lock and pid files
+        lockfile = daemon.lock_file(self.agent_name)
+        if os.path.exists(lockfile) is True:
+            log_message = (
+                'Lock file %s exists. Multiple API daemons running '
+                'API may have died '
+                'catastrophically in the past, in which case the lockfile '
+                'should be deleted. '
+                '') % (lockfile)
+            log.log2see(1083, log_message)
+
+        pidfile = daemon.pid_file(self.agent_name)
+        if os.path.exists(pidfile) is True:
+            log_message = (
+                'PID file: %s already exists. Daemon already running? '
+                'If not, it may have died catastrophically in the past '
+                'in which case you should use --stop --force to fix.'
+                '') % (pidfile)
+            log.log2see(1084, log_message)
 
         ######################################################################
         #

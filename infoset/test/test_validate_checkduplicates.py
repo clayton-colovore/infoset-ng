@@ -74,7 +74,7 @@ class TestCheckDuplicates(unittest.TestCase):
             # Add to DeviceAgent table
             record = DeviceAgent(idx_device=idx_device, idx_agent=idx_agent)
             database = db.Database()
-            database.add(record, 1033)
+            database.add(record, 1055)
 
         # Test must be good as DeviceAgent last_timestamp not updated
         result = validate._CheckDuplicates(self.data)
