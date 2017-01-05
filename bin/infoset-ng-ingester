@@ -8,6 +8,7 @@ Extracts agent data from cache directory files.
 
 # Standard libraries
 import sys
+import os
 import time
 
 # Infoset libraries
@@ -18,6 +19,7 @@ except:
     sys.exit(2)
 from infoset.cache import cache
 from infoset.utils import daemon
+from infoset.utils import log
 from infoset.utils import configuration
 
 
@@ -75,6 +77,26 @@ class PollingAgent(object):
         """
         # Read the config
         config = configuration.Config()
+
+        # Check for lock and pid files
+        lockfile = daemon.lock_file(self.agent_name)
+        if os.path.exists(lockfile) is True:
+            log_message = (
+                'Ingest lock file %s exists. Multiple ingest daemons running '
+                'or lots of cache files to ingest. Ingester may have died '
+                'catastrophically in the past and no new files will be '
+                'ingested unless the stale lockfile is deleted.'
+                '') % (lockfile)
+            log.log2see(1073, log_message)
+
+        pidfile = daemon.pid_file(self.agent_name)
+        if os.path.exists(pidfile) is True:
+            log_message = (
+                'PID file: %s already exists. Daemon already running? '
+                'If not, it may have died catastrophically in the past '
+                'in which case you should use --stop --force to fix.'
+                '') % (pidfile)
+            log.log2see(1075, log_message)
 
         # Do the daemon thing
         while True:

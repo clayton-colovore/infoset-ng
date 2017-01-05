@@ -307,7 +307,7 @@ def setup_db_department():
         code=general.encode(expected['code']),
         name=general.encode(expected['name']))
     database = db.Database()
-    database.add_all([data], 1027)
+    database.add_all([data], 1048)
 
     # Return
     return expected
@@ -374,7 +374,7 @@ def setup_db_datapoint():
         idx_deviceagent=idx_deviceagent,
         id_datapoint=general.encode(id_datapoint))
     database = db.Database()
-    database.add_all([new_data], 1007)
+    database.add_all([new_data], 1072)
 
     # Add value to expected
     expected['id_datapoint'] = id_datapoint

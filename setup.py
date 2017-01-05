@@ -78,7 +78,7 @@ class _Database(object):
                 agent_source=general.encode(self.reserved)
             )
             database = db.Database()
-            database.add(record, 1012)
+            database.add(record, 1047)
 
     def _insert_department(self):
         """Insert first department in the database.
@@ -460,7 +460,7 @@ class _Daemon(object):
             log_message = (
                 'User {} not found. Please try again.'
                 ''.format(self.infoset_user))
-            log.log2die_safe(1029, log_message)
+            log.log2die_safe(1049, log_message)
 
     def setup(self):
         """Setup daemon scripts and file permissions.
@@ -569,7 +569,7 @@ export PYTHONPATH
         # Abort if necessary
         if response.lower() != 'y':
             log_message = ('Aborting as per user request.')
-            log.log2die_safe(1032, log_message)
+            log.log2die_safe(1050, log_message)
 
         # Change ownership of files under root_directory
         for parent_directory, directories, files in os.walk(root_directory):
