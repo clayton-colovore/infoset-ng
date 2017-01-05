@@ -694,4 +694,12 @@ You can enable infoset-ng daemons to start on system boot with these commands:
 
 
 if __name__ == '__main__':
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        log_message = (
+            'Cannot run setup using "sudo". Run as a regular user to '
+            'install in this directory or as user "root".')
+        log.log2die_safe(1078, log_message)
+
+    # Run main
     main()

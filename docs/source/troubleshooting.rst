@@ -19,7 +19,7 @@ You can see these changes as they occur by using the ``tail -f`` command as seen
 
     $ tail -f /opt/infoset-ng/log/infoset-ng.log
 
-The location of the log file is governed by the ``log_file`` parameter in the configuration.
+The location of the log file is governed by the ``log_directory`` parameter in the configuration.
 
 Testing Ingester Operation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,9 +55,9 @@ You can see these changes as they occur by using the ``tail -f`` command as seen
 
 ::
 
-    $ tail -f /opt/infoset-ng/log/web.log
+    $ tail -f /opt/infoset-ng/log/api-web.log
 
-The location of the log file is governed by the ``web_log_file`` parameter in the configuration.
+The location of the log file is governed by the ``log_directory`` parameter in the configuration.
 
 
 Poor or Blocked Network Connectivity
