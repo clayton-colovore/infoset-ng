@@ -87,19 +87,79 @@ def receive(id_agent):
         abort(404)
 
 
-@API.route('/infoset/api/v1.0/db/data/getallastcontacts')
-def db_data_get_all_last_contacts():
+@API.route('/infoset/api/v1.0/db/data/lastcontacts/<ts_start>')
+def db_data_last_contacts(ts_start):
     """Get last contact data from the DB.
 
     Args:
-        None
+        ts_start: Timestamp to start from
 
     Returns:
         Agent data
 
     """
     # Return
-    data = db_data.get_all_last_contacts(CONFIG)
+    data = db_data.last_contacts(int(ts_start))
+    return jsonify(data)
+
+
+@API.route(
+    '/infoset/api/v1.0/db/data/lastcontactsbydevice/'
+    '<idx_deviceagent>/<ts_start>')
+def db_data_last_contacts_device(idx_deviceagent, ts_start):
+    """Get last contact data from the DB.
+
+    Args:
+        idx_deviceagent: Index from the DeviceAgent table
+        ts_start: Timestamp to start from
+
+    Returns:
+        Agent data
+
+    """
+    # Return
+    data = db_data.last_contacts_by_device(
+        int(idx_deviceagent), int(ts_start))
+    return jsonify(data)
+
+
+@API.route(
+    '/infoset/api/v1.0/db/data/lastcontactsbydeviceagent/'
+    '<devicename>/<id_agent>/<ts_start>')
+def db_dlc_deviceagent(devicename, id_agent, ts_start):
+    """Get last contact data from the DB.
+
+    Args:
+        ts_start: Timestamp to start from
+
+    Returns:
+        Agent data
+
+    """
+    # Initialize key variables
+    data = []
+
+    # Get idx_device and idx_agent
+    device = db_device.GetDevice(devicename)
+    if device.exists() is True:
+        # Device Found
+        idx_device = device.idx_device()
+
+        # Now find idx_agent
+        agent = db_agent.GetIDAgent(id_agent)
+        if agent.exists() is True:
+            idx_agent = agent.idx_agent()
+
+        # Now get the idx_deviceagent
+        deviceagent = db_deviceagent.GetDeviceAgent(idx_device, idx_agent)
+        if deviceagent.exists() is True:
+            idx_deviceagent = deviceagent.idx_deviceagent()
+
+            # Now get the data
+            data = db_data.last_contacts_by_device(
+                int(idx_deviceagent), int(ts_start))
+
+    # Return
     return jsonify(data)
 
 
@@ -230,7 +290,7 @@ def db_getidxdeviceagent(value):
     """Get DeviceAgent data from the DB by idx value.
 
     Args:
-        None
+        value: idx_deviceagent
 
     Returns:
         data: JSON data for the selected deviceagent

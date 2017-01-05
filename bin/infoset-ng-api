@@ -15,12 +15,12 @@ from gunicorn.six import iteritems
 
 # Infoset libraries
 try:
-    from infoset.api.api import API
+    from infoset.utils import log
 except:
     print('You need to set your PYTHONPATH to include the infoset library')
     sys.exit(2)
+from infoset.api.api import API
 from infoset.utils import configuration
-from infoset.utils import log
 from infoset.agents import agent as Agent
 
 
