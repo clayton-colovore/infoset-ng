@@ -1,7 +1,7 @@
 Using the API
 =============
 
-This section outlines how to use the API 
+This section outlines how to use the API
 
 Posting Data to the API
 -----------------------
@@ -33,18 +33,24 @@ Where feasible, we will use Linux and networking related examples to
 make explanation easier.
 
 ===================================     ========
-Field                                   Descripton 
+Field                                   Descripton
 ===================================     ========
 ``agent``                               Agent or application name. If your agent script is designed to collect server performance data, you could name it 'server_performance'. Each server performance agent would therefore report the same agent value.
 ``timeseries``                          TimeSeries data follows
 ``timeseries[label]``                   A short label defining what the data is about.
 ``timeseries[label][base_type]``        Defines the type of data. The values are basesd on the SNMP standard. Values include: `0` for relatively unchanging alphanumeric data, which could include things like the version of an operating system; `1` for non-incremental, point-in-time numeric data such as temperature, speed, process count; `32` for numeric data that increments using a 32 bit counter such as bytes through a network interface since the device booted; `64` for 64 bit counter numeric data.
 ``timeseries[label][description]``      Description of the data, such as 'temperature data'
-``timeseries[label][data]``             Data related to the labels. It is a list of lists. Each list has three fields `[index, value, source]`. The `index` value is a unique, unchangeable identifier for the source of the data, this is preferrably numeric such as an interface index number, but could also be string information such as an interface name or disk partition mount point. The `value` is the value of the data recorded. The `source` is a description of the source of the data to make it more recognizable when the data is eventually presented to your users. This could be `interface eth0` versus a plain `eth0` 
+``timeseries[label][data]``             Data related to the labels. It is a list of lists. Each list has three fields `[index, value, source]`. The `index` value is a unique, unchangeable identifier for the source of the data, this is preferrably numeric such as an interface index number, but could also be string information such as an interface name or disk partition mount point. The `value` is the value of the data recorded. The `source` is a description of the source of the data to make it more recognizable when the data is eventually presented to your users. This could be `interface eth0` versus a plain `eth0`
 ``devicename``                          Devicename of the **device** sending the data. For phone apps, this could be set to a phone number of SIM ID.
 ``timestamp``                           Epoch time when data was generated. This must be an integer.
-``agent_id``                            A unique, unchanging identifier for the **application** sending the data.     
+``agent_id``                            A unique, unchanging identifier for the **application** sending the data.
 ===================================     ========
+
+How to Create Agents Using Python
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When you installed ``infoset-ng`` you probably ran the ``bin/tools/test_installation.py`` test script. This script emulates an agent and uses the classess in the ``infoset/reference/reference.py`` file to create the required JSON. Refer to this code when creating your agents.
+
 
 Retrieving Data from the API
 ----------------------------
@@ -73,11 +79,11 @@ The API routes for retrieving database data have a simple naming scheme.
 Here's some insight into this scheme.
 
 ===================================     ========
-Field                                   Descripton 
+Field                                   Descripton
 ===================================     ========
 ``table name``                          Name of the table in the MySQL database
 ``funtion or class``                    The ``infoset.db`` python module contains files related to each database table. The naming convention is ``db_<table_name>``. Each file has funtions or classes in them. These are the names used in the API routes. You can review the files in the module for more details.
-``other arguments``                     Required module Class or function arguments                    
+``other arguments``                     Required module Class or function arguments
 ===================================     ========
 
 Database Table Names
@@ -88,7 +94,7 @@ are used in the routes. The structure of each table can be seen by
 reviewing the ``db_orm.py`` file in the ``infoset.db`` module.
 
 ======================  ==============
-Table                   Descripton 
+Table                   Descripton
 ======================  ==============
 ``iset_agent``          Data on the agents that have posted information to the API
 ``iset_deviceagent``    The same agent could be installed on multiple devices. This table tracks which unique device and agent combination have posted information to the API
@@ -96,7 +102,7 @@ Table                   Descripton
 ``iset_datapoint``      Stores metadata on the various datapoints that agents report on. A datapoint ID is unique throughout the system
 ``iset_data``           Stores the actual data for each datapoint
 ``iset_billcode``       Stores data on the billing code for datapoints. Useful for financial accounting.
-``iset_department``     Stores data on the departments to which the billing code should be applied. Useful for financial accounting.              
+``iset_department``     Stores data on the departments to which the billing code should be applied. Useful for financial accounting.
 ======================  ==============
 
 Routes
@@ -111,14 +117,14 @@ This route will retreive data on all agents that have ever posted data
 to the API. It is returned in the form of a list of lists.
 
 =========================   ======
-Field                       Description 
+Field                       Description
 =========================   ======
 ``exists``                  True if the agent exists, False if not
 ``enabled``                 True if enabled, False if disabled
 ``id_agent``                The Agent ID
 ``idx_agent``               The unique index value of the agent in the database
 ``name``                    The agent name
-``last_timestamp``          The timestamp of the the most recent data posted by the agent to the API 
+``last_timestamp``          The timestamp of the the most recent data posted by the agent to the API
 =========================   ======
 
 Example:
@@ -126,6 +132,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/agent/getallagents
+
     [
       {
         "enabled": true,
@@ -154,6 +161,7 @@ the API. It is returned as a list of index values.
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/deviceagent/alldeviceindices
+
     [
       1,
       2
@@ -168,10 +176,10 @@ returns data that tracks each unique device and agent combination have
 posted information to the API. It is returned as a list of dicts.
 
 =========================   ======
-Field                       Description                      
+Field                       Description
 =========================   ======
-idx_agent                   The index value of the agent    
-idx_device                  The index value of the device   
+idx_agent                   The index value of the agent
+idx_device                  The index value of the device
 =========================   ======
 
 Example:
@@ -179,6 +187,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/deviceagent/getalldeviceagents
+
     [
       {
         "idx_agent": 1,
@@ -205,13 +214,13 @@ Route /infoset/api/v1.0/db/device/getidxdevice/``<idx_device>``
 This route retrieves information for a specific device index value.
 
 =========================   ======
-Field                       Description                      
+Field                       Description
 =========================   ======
-``enabled``                 True if enabled, False if not                              
-``exists``                  True if the requested index value exists in the database   
-``devicename``              Unique devicename in the``infoset-ng`` database           
-``idx_device``              The unique index of the device in the database             
-``ip_address``              The IP address of the device                               
+``enabled``                 True if enabled, False if not
+``exists``                  True if the requested index value exists in the database
+``devicename``              Unique devicename in the``infoset-ng`` database
+``idx_device``              The unique index of the device in the database
+``ip_address``              The IP address of the device
 =========================   ======
 
 
@@ -220,6 +229,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/device/getidxdevice/2
+
     {
       "description": null,
       "enabled": true,
@@ -236,7 +246,7 @@ Route /infoset/api/v1.0/db/device/getidxagent/``<idx_agent>``
 This route retrieves information for a specific agent index value.
 
 =========================   ======
-Field                       Description                      
+Field                       Description
 =========================   ======
 ``enabled``                 True if enabled, False if not
 ``exists``                  True if the requested index value exists in the database
@@ -251,6 +261,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/agent/getidxagent/3
+
     {
       "enabled": true,
       "exists": true,
@@ -267,7 +278,7 @@ Route /infoset/api/v1.0/db/agent/getidagent/``<id_agent>``
 This route retrieves information for a specific ``id_agent`` value.
 
 =========================   ======
-Field                       Description                      
+Field                       Description
 =========================   ======
 ``agent_label``             Label that the agent assigned to the datapoint
 ``agent_source``            The source of the data
@@ -289,6 +300,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/agent/getidagent/70f2d9061f3ccc96915e19c13817c8207e2005d05f23959ac4c225b6a5bfe557
+
     {
       "enabled": true,
       "exists": true,
@@ -310,7 +322,7 @@ further clarification of the field description in the table below.
 
 
 =========================   ======
-Field                       Description                      
+Field                       Description
 =========================   ======
 ``agent_label``             Label that the agent assigned to the datapoint
 ``agent_source``            The source of the data
@@ -333,6 +345,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/getidxdatapoint/2
+
     {
       "agent_label": "cpu_count",
       "agent_source": null,
@@ -361,7 +374,7 @@ Please read section on the API's ``/infoset/api/v1.0/receive`` route for
 further clarification of the field description in the table below.
 
 =========================   ======
-Field                       Description                      
+Field                       Description
 =========================   ======
 ``agent_label``             Label that the agent assigned to the datapoint
 ``agent_source``            The source of the data
@@ -384,6 +397,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/getiddatapoint/fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f
+
     {
       "agent_label": "cpu_count",
       "agent_source": null,
@@ -414,6 +428,7 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/deviceagent/agentindices/2
+
     [
       2,
       3,
@@ -428,9 +443,32 @@ This route will retreive **timeseries** datapoint data for a specific agent
 running on a specific device. The query is done based on the index of
 the device and the index of the agent.
 
+Please read section on the API's ``/infoset/api/v1.0/receive`` route for
+further clarification of the field description in the table below.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``agent_label``             Label that the agent assigned to the datapoint
+``agent_source``            The source of the data
+``base_type``               Base type of the data
+``billable``                True if billable, false if not.
+``enabled``                 True if enabled, False if not
+``exists``                  True if the requested index value exists in the database
+``id_datapoint``            The unique datapoint ID
+``idx_datapoint``           The unique datapoint index
+``idx_agent``               The unique index of the agent that reported on this datapoint
+``idx_billcode``            The index of the billing code to be applied to the datapoint
+``idx_department``          The index value of the department to which the billing code should be applied
+``idx_device``              The unique index of the device in the database
+``last_timestamp``          The timestamp of the the most recent data posted by the agent to the API
+``timefixed_value``         Some datapoints may track unchanging numbers such as the version of an operating system. This value is placed here if the base_type is `0```
+=========================   ======
+
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/timeseries/2/2
+
     [
       {
         "agent_label": "cpu_count",
@@ -473,9 +511,32 @@ This route will retreive **timefixed** datapoint data for a specific
 agent running on a specific device. The query is done based on the index
 of the device and the index of the agent.
 
+Please read section on the API's ``/infoset/api/v1.0/receive`` route for
+further clarification of the field description in the table below.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``agent_label``             Label that the agent assigned to the datapoint
+``agent_source``            The source of the data
+``base_type``               Base type of the data
+``billable``                True if billable, false if not.
+``enabled``                 True if enabled, False if not
+``exists``                  True if the requested index value exists in the database
+``id_datapoint``            The unique datapoint ID
+``idx_datapoint``           The unique datapoint index
+``idx_agent``               The unique index of the agent that reported on this datapoint
+``idx_billcode``            The index of the billing code to be applied to the datapoint
+``idx_department``          The index value of the department to which the billing code should be applied
+``idx_device``              The unique index of the device in the database
+``last_timestamp``          The timestamp of the the most recent data posted by the agent to the API
+``timefixed_value``         Some datapoints may track unchanging numbers such as the version of an operating system. This value is placed here if the base_type is `0```
+=========================   ======
+
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/timefixed/2/2
+
     [
       {
         "agent_label": "distribution",
@@ -527,3 +588,132 @@ of the device and the index of the agent.
       }
     ]
     $
+
+Route /infoset/api/v1.0/db/data/lastcontacts/<ts_start>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive **all** the most recently posted data values. A starting UTC timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               Timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/lastcontacts/0
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
+
+    ...
+    ...
+    ...
+    ...
+    ...
+    ...
+
+      {
+        "idx_datapoint": 417,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
+      {
+        "idx_datapoint": 418,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      }
+    ]
+
+Route /infoset/api/v1.0/db/data/lastcontactsbydevice/``<idx_deviceagent>``/``<ts_start>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. A starting UTC timestamp also needs to be provided. Searches for contacts are made from starting at this time until the present.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               Timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/lastcontactsbydevice/2/0
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 4,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 5,
+        "timestamp": 1483629900,
+        "value": 9.0
+      }
+    ]
+
+Route /infoset/api/v1.0/db/data/lastcontactsbydeviceagent/``devicename``/``id_agent``/``ts_start``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination. A starting UTC timestamp also needs to be provided. Searches for contacts are made from starting at this time until the present.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               Timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/0
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 4,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 5,
+        "timestamp": 1483629900,
+        "value": 9.0
+      }
+    ]
+

@@ -11,7 +11,7 @@ from sqlalchemy import and_
 from infoset.utils import general
 from infoset.db import db_datapoint
 from infoset.db import db
-from infoset.db.db_orm import Data
+from infoset.db.db_orm import Data, Datapoint
 
 
 class GetIDXData(object):
@@ -167,11 +167,12 @@ class GetIDXData(object):
         return values
 
 
-def get_all_last_contacts(config):
+def last_contacts(ts_start):
     """Get the last time each timeseries datapoint was updated.
 
     Args:
         config: Configuration object
+        ts_start: Timestamp to start from
 
     Returns:
         data: List of dicts of last contact information
@@ -183,7 +184,10 @@ def get_all_last_contacts(config):
 
     # Get start and stop times
     ts_stop = general.normalized_timestamp()
-    ts_start = ts_stop - (config.interval() * 3)
+    if ts_start > ts_stop:
+        ts_start = ts_stop
+    else:
+        ts_start = general.normalized_timestamp(ts_start)
 
     # Establish a database session
     database = db.Database()
@@ -191,6 +195,71 @@ def get_all_last_contacts(config):
     result = session.query(
         Data.value, Data.idx_datapoint, Data.timestamp).filter(
             and_(Data.timestamp >= ts_start, Data.timestamp <= ts_stop)
+        )
+
+    # Add to the list of device idx values
+    for instance in result:
+        idx_datapoint = instance.idx_datapoint
+        timestamp = instance.timestamp
+        value = instance.value
+
+        # Update dictionary
+        if idx_datapoint in last_contact:
+            if timestamp > last_contact[idx_datapoint]['timestamp']:
+                last_contact[idx_datapoint]['timestamp'] = timestamp
+                last_contact[idx_datapoint]['value'] = value
+        else:
+            last_contact[idx_datapoint]['timestamp'] = timestamp
+            last_contact[idx_datapoint]['value'] = value
+
+    # Return the session to the pool after processing
+    database.close()
+
+    # Convert dict to list of dicts
+    for idx_datapoint in last_contact:
+        data_dict = {}
+        data_dict['timestamp'] = timestamp
+        data_dict['value'] = value
+        data_dict['idx_datapoint'] = idx_datapoint
+        data.append(data_dict)
+
+    # Return
+    return data
+
+
+def last_contacts_by_device(idx_deviceagent, ts_start):
+    """Get the last time each timeseries datapoint was updated.
+
+    Args:
+        config: Configuration object
+        ts_start: Timestamp to start from
+
+    Returns:
+        data: List of dicts of last contact information
+
+    """
+    # Initialize key variables
+    data = []
+    last_contact = defaultdict(lambda: defaultdict(dict))
+
+    # Establish a database session
+    # Get start and stop times
+    ts_stop = general.normalized_timestamp()
+    if ts_start > ts_stop:
+        ts_start = ts_stop
+    else:
+        ts_start = general.normalized_timestamp(ts_start)
+
+    # Establish a database session
+    database = db.Database()
+    session = database.session()
+    result = session.query(
+        Data.value, Data.idx_datapoint, Data.timestamp).filter(
+            and_(
+                Datapoint.idx_deviceagent == idx_deviceagent,
+                Datapoint.idx_datapoint == Data.idx_datapoint,
+                Data.timestamp >= ts_start,
+                Data.timestamp <= ts_stop)
         )
 
     # Add to the list of device idx values
