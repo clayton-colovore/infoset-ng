@@ -23,6 +23,7 @@ The introduction will provide useful background information too.
    operation
    api
    troubleshooting
+   bestpractices
    community
 
 

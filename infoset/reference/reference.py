@@ -527,8 +527,9 @@ class ReferenceSampleAgent(object):
             filename for filename in all_filenames if filename.endswith(
                 self.cache_suffix)]
 
-        # Read cache file
-        for filename in filenames:
+        # Read cache file in sorted order.
+        # NOTE: We must post data in timestamp sorted order.
+        for filename in filenames.sorted():
             # Only post files for our own UID value
             if id_agent not in filename:
                 continue
