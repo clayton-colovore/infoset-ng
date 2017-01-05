@@ -29,19 +29,7 @@ from infoset.utils.configuration import Config
 
 
 class ReferenceSampleConfig(Config):
-    """Class gathers all configuration information.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        devices:
-        snmp_auth:
-    """
+    """Class gathers all configuration information."""
 
     def __init__(self):
         """Function for intializing the class.
@@ -60,6 +48,10 @@ class ReferenceSampleConfig(Config):
     def agent_cache_directory(self):
         """Determine the agent_cache_directory.
 
+        This is where the agent will temporarily store its data in the
+        event it cannot contact the API. When contact returns all data
+        cached in this directory will be posted to the API and deleted.
+
         Args:
             None
 
@@ -76,6 +68,9 @@ class ReferenceSampleConfig(Config):
     def agent_name(self):
         """Get agent_name.
 
+        The name of the agent that will be included in the JSON data posted
+        to the API.
+
         Args:
             None
 
@@ -89,6 +84,9 @@ class ReferenceSampleConfig(Config):
 
     def api_server_https(self):
         """Get api_server_https.
+
+        The API will be contacted using HTTPS if this is set to True.
+        Not currently supported.
 
         Args:
             None
@@ -104,6 +102,8 @@ class ReferenceSampleConfig(Config):
     def api_server_name(self):
         """Get api_server_name.
 
+        The name / IP address of the server running the infoset-ng API
+
         Args:
             None
 
@@ -117,6 +117,8 @@ class ReferenceSampleConfig(Config):
 
     def api_server_port(self):
         """Get api_server_port.
+
+        The TCP port on which the infoset-ng API server is expecting requests.
 
         Args:
             None
@@ -132,6 +134,8 @@ class ReferenceSampleConfig(Config):
     def api_server_uri(self):
         """Get api_server_uri.
 
+        The URI prefix to use when contacting the infoset-ng API server.
+
         Args:
             None
 
@@ -145,19 +149,7 @@ class ReferenceSampleConfig(Config):
 
 
 class ReferenceSampleAPI(object):
-    """Class gathers all configuration information.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        devices:
-        snmp_auth:
-    """
+    """Class used to GET and POST data to the infoset-ng API."""
 
     def __init__(self, config):
         """Function for intializing the class.
@@ -185,7 +177,7 @@ class ReferenceSampleAPI(object):
                 config.api_server_port(), fixed_uri)
 
     def _url(self, uri):
-        """Get API URL.
+        """Create API URL.
 
         Args:
             uri: URI to append to prefix
@@ -205,7 +197,7 @@ class ReferenceSampleAPI(object):
         """Get API data.
 
         Args:
-            uri: URI to retrieve
+            uri: URI to retrieve excluding the API prefix.
 
         Returns:
             data: Result of query
@@ -231,7 +223,7 @@ class ReferenceSampleAPI(object):
         """Post API data.
 
         Args:
-            uri: URI to retrieve
+            uri: URI to retrieve excluding the API prefix.
 
         Returns:
             _data: Result of query
@@ -258,19 +250,7 @@ class ReferenceSampleAPI(object):
 
 
 class ReferenceSampleAgent(object):
-    """Infoset reference agent class for posting data.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        populate:
-        post:
-    """
+    """Infoset reference agent class for retreiving and posting data."""
 
     def __init__(self, config, devicename, test=False):
         """Method initializing the class.
@@ -296,7 +276,7 @@ class ReferenceSampleAgent(object):
         self.data['agent'] = agent_name
         self.data['devicename'] = devicename
 
-        # Construct URL for server
+        # Create an object for API interaction
         self._api = ReferenceSampleAPI(config)
 
         # Create the cache directory
@@ -357,13 +337,23 @@ class ReferenceSampleAgent(object):
             self.data['timefixed'].update(data)
 
     def populate_single(self, label, value, base_type=None, source=None):
-        """Populate a single value in the agent.
+        """Add a single value to the data to be posted by the agent.
 
         Args:
-            label: Agent label for data
+            label: Agent label for data. A unique descriptive label for
+                    the datapoint. This could be a string like
+                    "Percent memory used" or a coded value like
+                    "pct_mem_used" that could be used as a key in a
+                    lookup table for multilanguage support.
             value: Value of data
-            source: Source of the data
-            base_type: Base type of data
+            base_type: Base type of data. Modeled on SNMP style base_type
+                (integer, counter32, etc.) Valid values include:
+                None: String data
+                1: Gauge or point in time data like "Percentage memory used"
+                32: 32 bit counter data "Packets seen since booting"
+                64: 63 bit counter data "Packets seen since booting"
+            source: Source of the data as a string. This helps to identify
+                where the data was found. For example "Interface eth0"
 
         Returns:
             None
@@ -381,9 +371,17 @@ class ReferenceSampleAgent(object):
         """Post system data to the central server.
 
         Args:
-            named_tuple: Named tuple with data values
+            named_tuple: Named tuple with data values. Format of the tuple
+                should be:
+                (key1=value1, key2=value2, key3=value3, ...)
+                An example of this would be the results of "psutil.cpu_times()"
             prefix: Prefix to append to data keys when populating the agent
-            base_type: SNMP style base_type (integer, counter32, etc.)
+            base_type: Base type of data. Modeled on SNMP style base_type
+                (integer, counter32, etc.) Valid values include:
+                None: String data
+                1: Gauge or point in time data like "Percentage memory used"
+                32: 32 bit counter data "Packets seen since booting"
+                64: 63 bit counter data "Packets seen since booting"
 
         Returns:
             None
@@ -411,8 +409,21 @@ class ReferenceSampleAgent(object):
 
         Args:
             data_in: Dict of data to post "X[label][source] = value"
+                where:
+                    label = A unique descriptive label for the datapoint.
+                        This could be a string like "Percent memory used" or
+                        a coded value like "pct_mem_used" that could be used
+                        as a key in a lookup table for multilanguage support.
+                    source = Source of the data as a string. This helps to
+                        identify where the data was found. For example
+                        "Interface eth0"
             prefix: Prefix to append to data keys when populating the agent
-            base_type: SNMP style base_type (integer, counter32, etc.)
+            base_type: Base type of data. Modeled on SNMP style base_type
+                (integer, counter32, etc.) Valid values include:
+                None: String data
+                1: Gauge or point in time data like "Percentage memory used"
+                32: 32 bit counter data "Packets seen since booting"
+                64: 63 bit counter data "Packets seen since booting"
 
         Returns:
             None
@@ -443,7 +454,7 @@ class ReferenceSampleAgent(object):
             self.populate(data)
 
     def polled_data(self):
-        """Return that that should be posted.
+        """Return data that should be posted.
 
         Args:
             None
