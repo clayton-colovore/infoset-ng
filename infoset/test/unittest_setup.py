@@ -7,13 +7,6 @@ import os
 import sys
 import yaml
 
-# Infoset libraries
-try:
-    from infoset.utils import log
-except:
-    print('You need to set your PYTHONPATH to include the infoset library')
-    sys.exit(2)
-
 # Initialize GLOBAL variables
 CONFIG_SUFFIX = '.infoset_unittests/config'
 CONFIG_DIRECTORY = '{}/{}'.format(os.environ['HOME'], CONFIG_SUFFIX)
@@ -173,14 +166,16 @@ def _environment():
         log_message = (
             'The INFOSET_CONFIGDIR is not set. Run this command to do so: '
             '"export INFOSET_CONFIGDIR={}"'.format(CONFIG_DIRECTORY))
-        log.log2die_safe(1084, log_message)
+        print(log_message)
+        sys.exit(2)
 
     # Make sure the INFOSET_CONFIGDIR environment variable is set correctly
     if os.environ['INFOSET_CONFIGDIR'] != CONFIG_DIRECTORY:
         log_message = (
             'The INFOSET_CONFIGDIR is not set. Run this command to do so: '
             '"export INFOSET_CONFIGDIR={}"'.format(CONFIG_DIRECTORY))
-        log.log2die_safe(1083, log_message)
+        print(log_message)
+        sys.exit(2)
 
 
 def ready():
