@@ -397,6 +397,11 @@ class _Python(object):
         # Initialize key variables
         username = self.username
 
+        # Don't attempt to install packages if running in the Travis CI
+        # environment
+        if 'TRAVIS' in os.environ and 'CI' in os.environ:
+            return
+
         # Determine whether PIP3 exists
         print('Installing required pip3 packages')
         pip3 = infoset.utils.general.search_file('pip3')
@@ -696,10 +701,10 @@ You can enable infoset-ng daemons to start on system boot with these commands:
 if __name__ == '__main__':
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
-        log_message = (
+        MESSAGE = (
             'Cannot run setup using "sudo". Run as a regular user to '
             'install in this directory or as user "root".')
-        log.log2die_safe(1078, log_message)
+        log.log2die_safe(1078, MESSAGE)
 
     # Run main
     main()
