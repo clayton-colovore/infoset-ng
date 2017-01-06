@@ -2,9 +2,12 @@
 """Test the db_agent library in the infoset.db module."""
 
 import unittest
+import os
+import sys
 
 from infoset.db import db_agent
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestGetIDX(unittest.TestCase):
@@ -14,8 +17,8 @@ class TestGetIDX(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Setup database
-    (_, expected) = unittest_db.setup_db_agent()
+    # Setup database based on the config
+    (_, expected) = unittest_setup_db.setup_db_agent()
 
     # Retrieve data
     good_agent = db_agent.GetIDXAgent(1)
@@ -77,7 +80,7 @@ class TestGetIdentifier(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Setup database
-    (good_id, expected) = unittest_db.setup_db_agent()
+    (good_id, expected) = unittest_setup_db.setup_db_agent()
 
     # Retrieve data
     good_agent = db_agent.GetIDAgent(good_id)
@@ -142,7 +145,7 @@ class Other(unittest.TestCase):
     idx_agent_good = 1
 
     # Setup database
-    (good_id, _) = unittest_db.setup_db_agent()
+    (good_id, _) = unittest_setup_db.setup_db_agent()
 
     # Retrieve data
     good_agent = db_agent.GetIDAgent(good_id)
@@ -173,8 +176,8 @@ class Other(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

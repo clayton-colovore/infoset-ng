@@ -10,15 +10,15 @@ import os
 
 # Infoset imports
 from infoset.cache import validate
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
 from infoset.utils import general
-from infoset.test import unittest_variables
+from infoset.test import unittest_setup
 
 
 class TestValidateCache(unittest.TestCase):
     """Checks all functions and methods."""
     # Initialize key variables
-    data = unittest_variables.TestVariables().cache_data()
+    data = unittest_setup.TestVariables().cache_data()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -33,7 +33,7 @@ class TestValidateCache(unittest.TestCase):
             general.hashstring(general.randomstring()))
 
         # Drop the database and create tables
-        unittest_db.initialize_db()
+        unittest_setup_db.initialize_db()
 
         # Test with valid data
         result = validate.ValidateCache(data=self.data)
@@ -62,7 +62,7 @@ class TestValidateCache(unittest.TestCase):
         #################################################################
         #################################################################
 
-        unittest_db.setup_db_deviceagent(self.data)
+        unittest_setup_db.setup_db_deviceagent(self.data)
 
         # Attempting to insert duplicate data should fail
         with open(filepath, 'w') as f_handle:
@@ -77,7 +77,7 @@ class TestValidateCache(unittest.TestCase):
         #################################################################
 
         # Drop the database and create tables
-        unittest_db.initialize_db()
+        unittest_setup_db.initialize_db()
 
         # Write bad data to file and test
         data_dict = copy.deepcopy(self.data)
@@ -94,7 +94,7 @@ class TestValidateCache(unittest.TestCase):
     def test_getinfo(self):
         """Testing function getinfo."""
         # Drop the database and create tables
-        unittest_db.initialize_db()
+        unittest_setup_db.initialize_db()
 
         # Test with valid data
         result = validate.ValidateCache(data=self.data)
@@ -107,7 +107,7 @@ class TestValidateCache(unittest.TestCase):
     def test_valid(self):
         """Testing function valid."""
         # Drop the database and create tables
-        unittest_db.initialize_db()
+        unittest_setup_db.initialize_db()
 
         # Test with valid data
         result = validate.ValidateCache(data=self.data)
@@ -119,8 +119,8 @@ class TestValidateCache(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

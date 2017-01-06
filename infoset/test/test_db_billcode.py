@@ -4,7 +4,8 @@
 import unittest
 
 from infoset.db import db_billcode
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestGetIDXBillcode(unittest.TestCase):
@@ -15,7 +16,7 @@ class TestGetIDXBillcode(unittest.TestCase):
     #########################################################################
 
     # Setup database
-    expected = unittest_db.setup_db_billcode()
+    expected = unittest_setup_db.setup_db_billcode()
 
     # Retrieve data
     good_agent = db_billcode.GetIDXBillcode(expected['idx_billcode'])
@@ -81,7 +82,7 @@ class TestGetCodeBillcode(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Setup database
-    expected = unittest_db.setup_db_billcode()
+    expected = unittest_setup_db.setup_db_billcode()
 
     # Retrieve data
     good_agent = db_billcode.GetCodeBillcode(expected['code'])
@@ -147,7 +148,7 @@ class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Setup database
-    expected = unittest_db.setup_db_billcode()
+    expected = unittest_setup_db.setup_db_billcode()
 
     def test_code_exists(self):
         """Testing function code_exists."""
@@ -175,8 +176,8 @@ class TestFunctions(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

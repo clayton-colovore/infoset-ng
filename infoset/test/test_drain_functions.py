@@ -6,15 +6,15 @@ import unittest
 
 # Infoset imports
 from infoset.cache import drain
-from infoset.test import unittest_db
-from infoset.test import unittest_variables
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Initialize key variables
-    setup = unittest_variables.TestVariables()
+    setup = unittest_setup.TestVariables()
     data = setup.cache_data()
 
     def test__id_datapoint(self):
@@ -62,7 +62,7 @@ class TestFunctions(unittest.TestCase):
 
 if __name__ == '__main__':
     # Test the configuration variables
-    unittest_db.validate()
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

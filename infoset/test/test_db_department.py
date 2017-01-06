@@ -4,7 +4,8 @@
 import unittest
 
 from infoset.db import db_department
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestGetIDXDepartment(unittest.TestCase):
@@ -15,7 +16,7 @@ class TestGetIDXDepartment(unittest.TestCase):
     #########################################################################
 
     # Setup database
-    expected = unittest_db.setup_db_department()
+    expected = unittest_setup_db.setup_db_department()
 
     # Retrieve data
     good_agent = db_department.GetIDXDepartment(expected['idx_department'])
@@ -81,7 +82,7 @@ class TestGetCodeDepartment(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Setup database
-    expected = unittest_db.setup_db_department()
+    expected = unittest_setup_db.setup_db_department()
 
     # Retrieve data
     good_agent = db_department.GetCodeDepartment(expected['code'])
@@ -147,7 +148,7 @@ class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Setup database
-    expected = unittest_db.setup_db_department()
+    expected = unittest_setup_db.setup_db_department()
 
     def test_code_exists(self):
         """Testing function code_exists."""
@@ -176,8 +177,8 @@ class TestFunctions(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

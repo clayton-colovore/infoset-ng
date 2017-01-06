@@ -10,19 +10,7 @@ from infoset.utils import log
 
 
 class Config(object):
-    """Class gathers all configuration information.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        devices:
-        snmp_auth:
-    """
+    """Class gathers all configuration information."""
 
     def __init__(self):
         """Function for intializing the class.

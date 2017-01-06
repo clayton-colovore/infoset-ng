@@ -10,15 +10,15 @@ import tempfile
 # Infoset imports
 from infoset.utils import general
 from infoset.cache import drain
-from infoset.test import unittest_db
-from infoset.test import unittest_variables
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestDrain(unittest.TestCase):
     """Checks all functions and methods."""
 
     # Initialize key variables
-    setup = unittest_variables.TestVariables()
+    setup = unittest_setup.TestVariables()
     data = setup.cache_data()
 
     # Create valid file filled with valid data
@@ -346,7 +346,7 @@ def _sources(data):
 
 if __name__ == '__main__':
     # Test the configuration variables
-    unittest_db.validate()
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

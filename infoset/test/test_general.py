@@ -10,8 +10,11 @@ import hashlib
 
 # Import non standard library
 import yaml
+
+# Infoset imports
 from infoset.utils import general
 from infoset import infoset
+from infoset.test import unittest_setup
 
 
 class KnownValues(unittest.TestCase):
@@ -275,6 +278,8 @@ class KnownValues(unittest.TestCase):
         pass
 
 if __name__ == '__main__':
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

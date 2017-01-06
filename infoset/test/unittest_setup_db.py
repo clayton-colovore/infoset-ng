@@ -12,6 +12,7 @@ is a test database.
 """
 
 # Standard imports
+import os
 
 # PIP3 imports
 from sqlalchemy_utils.functions import database_exists
@@ -19,6 +20,7 @@ from sqlalchemy_utils.functions import create_database, drop_database
 from sqlalchemy import and_
 
 # Import infoset libraries
+from infoset.test import unittest_setup
 from infoset.utils import configuration
 from infoset.utils import log
 from infoset.utils import general
@@ -41,15 +43,18 @@ class TestDatabase(object):
 
     def __init__(self):
         """Method initializing the class."""
-        # Initialize key variables
+        # Setup database variables
         self.url = URL
         self.engine = TEST_ENGINE
 
-        # Validate the database
-        validate()
-
         # Get configuration
         self.config = configuration.Config()
+
+        # Validate the configuration
+        unittest_setup.ready()
+
+        # Validate the database
+        self.validate()
 
     def drop(self):
         """Drop database if exists."""
@@ -75,22 +80,18 @@ class TestDatabase(object):
         if database_exists(self.url) is True:
             BASE.metadata.create_all(self.engine)
 
-
-def validate():
-    """Make sure we are using a test database."""
-    # Get configuration
-    config = configuration.Config()
-
-    # Only work on test databases
-    if config.db_name().startswith('test_') is False:
-        log_message = (
-            'Test database not found in configuration. '
-            'Try setting your "INFOSET_CONFIGDIR" environment '
-            'variable to a directory with a test configuration')
-        log.log2die(1017, log_message)
+    def validate(self):
+        """Make sure we are using a test database."""
+        # Only work on test databases
+        if self.config.db_name().startswith('test_') is False:
+            log_message = (
+                'Test database not found in configuration. '
+                'Try setting your "INFOSET_CONFIGDIR" environment '
+                'variable to a directory with a test configuration')
+            log.log2die(1017, log_message)
 
 
-def setup_db_deviceagent(data):
+def setup_db_deviceagent(data, initialize=True):
     """Create the database for DeviceAgent table testing.
 
     Args:
@@ -105,6 +106,11 @@ def setup_db_deviceagent(data):
     id_agent = data['id_agent']
     agent_name = data['agent']
     last_timestamp = data['timestamp']
+
+    # Initialize database if requested
+    if initialize is True:
+        # Drop the database and create tables
+        initialize_db()
 
     # Add record to the database
     record = Agent(
@@ -342,7 +348,7 @@ def setup_db_datapoint():
     agent_data['id_agent'] = id_agent
     agent_data['agent'] = agent_name
     agent_data['timestamp'] = timestamp
-    (idx_device, idx_agent) = setup_db_deviceagent(agent_data)
+    (idx_device, idx_agent) = setup_db_deviceagent(agent_data, initialize=False)
 
     # Get DeviceAgent index value
     deviceagent = hagent.GetDeviceAgent(idx_device, idx_agent)
