@@ -8,7 +8,7 @@ branches:
     - master
 env:
   global:
-    - PYTHONPATH=$PWD INFOSET_CONFIGDIR=$PWD/.infoset_unittests/config
+    - PYTHONPATH=./ INFOSET_CONFIGDIR=./.infoset_unittests/config
 before_install:
     - pip install -r requirements.txt
     - infoset/test/create_test_config.py
