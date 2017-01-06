@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Class used to set global variables used by unittests."""
+"""Class used to create the configuration file used for unittesting.
+
+NOTE!! This script CANNOT import any infoset libraries. Doing so risks
+libraries trying to access a configuration or configuration directory that
+doesn't yet exist. This is especially important when running cloud based
+automated tests such as 'Travis CI'
+
+"""
 
 # Standard imports
 import tempfile
