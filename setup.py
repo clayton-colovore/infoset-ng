@@ -19,6 +19,8 @@ import re
 import yaml
 from sqlalchemy import create_engine
 
+print('boo', os.environ['INFOSET_CONFIGDIR'])
+
 # Infoset libraries
 try:
     from infoset.utils import log

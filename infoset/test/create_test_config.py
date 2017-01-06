@@ -5,8 +5,6 @@
 import sys
 import os
 
-print(os.environ['HOME'], os.environ['PWD'], os.environ['PYTHONPATH'])
-
 # Infoset libraries
 try:
     from infoset.test import unittest_setup
@@ -14,6 +12,7 @@ except:
     print('You need to set your PYTHONPATH to include the infoset library')
     sys.exit(2)
 
+print(os.environ['INFOSET_CONFIGDIR'])
 
 def main():
     """Create test configurations."""
