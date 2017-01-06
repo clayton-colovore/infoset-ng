@@ -3,6 +3,9 @@
 
 # Standard imports
 import sys
+import os
+
+print(os.environ['HOME'], os.environ['PWD'], os.environ['PATH'])
 
 # Infoset libraries
 try:
