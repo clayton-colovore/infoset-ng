@@ -3,6 +3,7 @@ language: python
 python:
   - 3.5
 env:
+  - PYTHONPATH=$HOME
   - INFOSET_CONFIGDIR=infoset_unittests/config
 before_install: infoset/test/create_test_config.py
 install: python3 setup.py
