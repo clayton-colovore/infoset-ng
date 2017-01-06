@@ -93,8 +93,8 @@ class TestConfig(object):
                 'sqlalchemy_pool_size': 10,
                 'sqlalchemy_max_overflow': 10,
                 'db_hostname': 'localhost',
-                'db_username': 'test_infoset',
-                'db_password': 'A6azWBWDnvnX5VnF',
+                'db_username': 'travis',
+                'db_password': '',
                 'db_name': 'test_infoset'
             }
         }

@@ -1,6 +1,11 @@
 About Unittests
 ===============
 
+
+create database test_infoset;
+grant all privileges on test_infoset.* to travis@"localhost" identified by password '';
+flush privileges;
+
 This is the UnitTest section of the project. All modifications to code
 must have an associated functional unittest to reduce the risk of bugs.
 
