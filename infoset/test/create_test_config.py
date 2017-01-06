@@ -7,6 +7,8 @@ import os
 
 print(os.environ['HOME'], os.environ['PWD'], os.environ['PYTHONPATH'])
 
+from infoset.test import unittest_setup
+
 # Infoset libraries
 try:
     from infoset.test import unittest_setup
