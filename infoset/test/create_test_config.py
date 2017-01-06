@@ -7,13 +7,11 @@ import os
 
 print(os.environ['HOME'], os.environ['PWD'], os.environ['PYTHONPATH'])
 
-from infoset.test import unittest_setup
-
 # Infoset libraries
 try:
     from infoset.test import unittest_setup
 except:
-    print('xxx You need to set your PYTHONPATH to include the infoset library')
+    print('You need to set your PYTHONPATH to include the infoset library')
     sys.exit(2)
 
 

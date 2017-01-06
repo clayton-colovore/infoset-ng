@@ -9,6 +9,8 @@ branches:
 env:
   global:
     - PYTHONPATH=$PWD INFOSET_CONFIGDIR=$PWD/.infoset_unittests/config
-before_install: infoset/test/create_test_config.py
+before_install:
+    - pip install -r requirements.txt
+    - infoset/test/create_test_config.py
 install: python3 setup.py
 script: infoset/test/_do_all_tests.py
