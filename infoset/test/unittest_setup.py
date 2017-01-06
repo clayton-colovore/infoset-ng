@@ -15,7 +15,8 @@ except:
     sys.exit(2)
 
 # Initialize GLOBAL variables
-CONFIG_DIRECTORY = '{}/.infoset_unittests/config'.format(os.environ['HOME'])
+CONFIG_SUFFIX = '.infoset_unittests/config'
+CONFIG_DIRECTORY = '{}/{}'.format(os.environ['HOME'], CONFIG_SUFFIX)
 
 
 class TestVariables(object):

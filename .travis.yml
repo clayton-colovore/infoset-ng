@@ -2,9 +2,13 @@ sudo: false
 language: python
 python:
   - 3.5
+# Run tests only against the master branch
+branches:
+  only:
+    - master
 env:
-  - PYTHONPATH=$HOME
-  - INFOSET_CONFIGDIR=infoset_unittests/config
-before_install: infoset/test/create_test_config.py
+  - PYTHONPATH=./
+  - INFOSET_CONFIGDIR=./infoset_unittests/config
+before_install: ./infoset/test/create_test_config.py
 install: python3 setup.py
-script: infoset/test/_do_all_tests.py
+script: ./infoset/test/_do_all_tests.py
