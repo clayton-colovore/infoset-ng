@@ -5,7 +5,7 @@
 import sys
 import os
 
-print(os.environ['HOME'], os.environ['PWD'], os.environ['PATH'])
+print(os.environ['HOME'], os.environ['PWD'], os.environ['PYTHONPATH'])
 
 # Infoset libraries
 try:
