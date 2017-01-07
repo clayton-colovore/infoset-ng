@@ -2,10 +2,6 @@ About Unittests
 ===============
 
 
-create database test_infoset;
-grant all privileges on test_infoset.* to travis@"localhost" identified by password '';
-flush privileges;
-
 This is the UnitTest section of the project. All modifications to code
 must have an associated functional unittest to reduce the risk of bugs.
 
@@ -28,21 +24,31 @@ There are some conventions to be followed.
 6. Create the required initial database state for tests to run
    correctly.
 
+Prequisites
+-----------
+
+You will need to create a test database named ``test_infoset`` with a username ``travis`` prior to testing. The SQL commands to this are:
+
+::
+
+    create database test_infoset;
+    grant all privileges on test_infoset.* to travis@"localhost" identified by password '';
+    flush privileges;
+
+This is an important step. Our unittests are run automatically with each pull request. These names, and passwords need to be maintained.
+
 Running Tests
 -------------
 
 There are some important things to know beforehand.
 
-1. You can run all tests by running ``_do_all_tests.py`` from the
+1. Run the ``infoset/test/create_test_config.py`` script once before running the unittests. This will create a temporary test configuration in a directory referenced by the system environment variable ``INFOSET_CONFIGDIR``. The script will tell you how to set this correctly.
+2. You can run all tests by running ``_do_all_tests.py`` from the
    ``infoset/test`` directory
-2. The database tests are destructive. You will need to create a
+3. The database tests are destructive. You will need to create a
    separate ``infoset-ng`` database to run the tests. The database name
-   must start with the string ``test_``
-3. You can ensure that the unittests use a config.yaml file external to
-   the default ``etc/`` directory by specifying a new configuration
-   directory using the ``INFOSET_CONFIGDIR`` environment variable. This
-   will allow you to run tests with a reduced risk of disrupting running
-   ``infoset-ng`` instances.
+   ``test_infoset`` must be used.
+
 
 Mocks
 -----
