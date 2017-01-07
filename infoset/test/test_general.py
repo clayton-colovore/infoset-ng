@@ -277,6 +277,21 @@ class KnownValues(unittest.TestCase):
         # Initialize key variables
         pass
 
+    def test_config_directories(self):
+        """Test function config_directories."""
+        # Initialize key variables
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        result = general.config_directories()
+        self.assertEqual(result, [directory])
+
+        # Try with no INFOSET_CONFIGDIR
+        os.environ.pop('INFOSET_CONFIGDIR', None)
+        directory = '{}/etc'.format(general.root_directory())
+        result = general.config_directories()
+        self.assertEqual(result, [directory])
+
+
 if __name__ == '__main__':
     # Test the environment variables
     unittest_setup.ready()
