@@ -280,18 +280,26 @@ class KnownValues(unittest.TestCase):
     def test_config_directories(self):
         """Test function config_directories."""
         # Initialize key variables
-        return
+        save_directory = None
 
+        if 'INFOSET_CONFIGDIR' in os.environ:
+            save_directory = os.environ['INFOSET_CONFIGDIR']
+
+            # Try with no INFOSET_CONFIGDIR
+            os.environ.pop('INFOSET_CONFIGDIR', None)
+            directory = '{}/etc'.format(general.root_directory())
+            result = general.config_directories()
+            self.assertEqual(result, [directory])
+
+        # Test with INFOSET_CONFIGDIR set
         directory = tempfile.mkdtemp()
         os.environ['INFOSET_CONFIGDIR'] = directory
         result = general.config_directories()
         self.assertEqual(result, [directory])
 
-        # Try with no INFOSET_CONFIGDIR
-        os.environ.pop('INFOSET_CONFIGDIR', None)
-        directory = '{}/etc'.format(general.root_directory())
-        result = general.config_directories()
-        self.assertEqual(result, [directory])
+        # Restore state
+        if save_directory is not None:
+            os.environ['INFOSET_CONFIGDIR'] = save_directory
 
 
 if __name__ == '__main__':
