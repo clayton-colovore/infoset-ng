@@ -1,8 +1,5 @@
 sudo: false
 
-# Run on Ubuntu Trusty
-dist: trusty
-
 # Define the language and versions that infoset is written in
 language: python
 python:
@@ -32,7 +29,7 @@ script: infoset/test/_do_all_tests.py
 
 # Define the services we'll need running
 services:
-  - mariadb
+  - mysql
 
 addons:
   mariadb: '10.0'
