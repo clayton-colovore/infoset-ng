@@ -1,5 +1,8 @@
 sudo: false
 
+# Run on Ubuntu Trusty
+dist: trusty
+
 # Define the language and versions that infoset is written in
 language: python
 python:
