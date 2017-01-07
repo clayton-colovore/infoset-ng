@@ -32,4 +32,7 @@ script: infoset/test/_do_all_tests.py
 
 # Define the services we'll need running
 services:
-  - mysql
+  - mariadb
+
+addons:
+  mariadb: '10.0'
