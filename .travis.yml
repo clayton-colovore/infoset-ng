@@ -1,16 +1,31 @@
 sudo: false
+
+# Define the language and versions that infoset is written in
 language: python
 python:
   - 3.5
+
 # Run tests only against the master branch
 branches:
   only:
     - master
+
+# Setup global environmental variables
 env:
   global:
     - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
+
+# Install PIP packages and create a temporary config file before installing
 before_install:
     - pip install -r requirements.txt
     - infoset/test/create_test_config.py
+
+# Install infoset-ng
 install: python3 setup.py
+
+# Run the unittest scripts
 script: infoset/test/_do_all_tests.py
+
+# Define the services we'll need running
+services:
+  - mysql
