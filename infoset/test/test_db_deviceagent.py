@@ -7,7 +7,8 @@ import time
 # Import infoset stuff
 from infoset.db import db_deviceagent
 from infoset.utils import general
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestGetDeviceAgent(unittest.TestCase):
@@ -25,8 +26,8 @@ class TestGetDeviceAgent(unittest.TestCase):
     data['timestamp'] = int(time.time())
 
     # Setup database
-    unittest_db.initialize_db()
-    (idx_device_good, idx_agent_good) = unittest_db.setup_db_deviceagent(data)
+    unittest_setup_db.initialize_db()
+    (idx_device_good, idx_agent_good) = unittest_setup_db.setup_db_deviceagent(data)
 
     # Create device object
     good_device = db_deviceagent.GetDeviceAgent(
@@ -83,8 +84,8 @@ class TestFunctions(unittest.TestCase):
     data['timestamp'] = int(time.time())
 
     # Setup database
-    unittest_db.initialize_db()
-    (idx_device_good, idx_agent_good) = unittest_db.setup_db_deviceagent(data)
+    unittest_setup_db.initialize_db()
+    (idx_device_good, idx_agent_good) = unittest_setup_db.setup_db_deviceagent(data)
 
     def test_device_agent_exists(self):
         """Testing function device_agent_exists."""
@@ -125,6 +126,8 @@ class TestFunctions(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

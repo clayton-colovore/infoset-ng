@@ -5,7 +5,8 @@ import unittest
 
 # Import infoset stuff
 from infoset.db import db_device
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestGetIDXDevice(unittest.TestCase):
@@ -17,7 +18,7 @@ class TestGetIDXDevice(unittest.TestCase):
 
     # Intstantiate a good agent
     idx_device_good = 1
-    expected = unittest_db.setup_db_device()
+    expected = unittest_setup_db.setup_db_device()
 
     # Create device object
     good_device = db_device.GetIDXDevice(idx_device_good)
@@ -88,7 +89,7 @@ class TestGetDevice(unittest.TestCase):
 
     # Intstantiate a good agent
     idx_device_good = 1
-    expected = unittest_db.setup_db_device()
+    expected = unittest_setup_db.setup_db_device()
 
     # Create device object
     good_device = db_device.GetIDXDevice(idx_device_good)
@@ -159,7 +160,7 @@ class TestFunctions(unittest.TestCase):
 
     # Intstantiate a good agent
     idx_device_good = 1
-    expected = unittest_db.setup_db_device()
+    expected = unittest_setup_db.setup_db_device()
 
     def test_all_devices(self):
         """Testing function all_devices."""
@@ -190,6 +191,8 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(result, False)
 
 if __name__ == '__main__':
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

@@ -7,14 +7,14 @@ import copy
 
 # Infoset imports
 from infoset.cache import validate
-from infoset.test import unittest_db
-from infoset.test import unittest_variables
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestCheckMainKeys(unittest.TestCase):
     """Checks all functions and methods."""
     # Initialize key variables
-    data = unittest_variables.TestVariables().cache_data()
+    data = unittest_setup.TestVariables().cache_data()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -114,8 +114,8 @@ class TestCheckMainKeys(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

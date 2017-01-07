@@ -11,7 +11,8 @@ import os
 # Infoset imports
 from infoset.cache import validate
 from infoset.utils import general
-from infoset.test import unittest_db
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestGeneral(unittest.TestCase):
@@ -108,8 +109,8 @@ class TestGeneral(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

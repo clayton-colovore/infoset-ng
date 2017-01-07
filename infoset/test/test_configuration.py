@@ -67,14 +67,14 @@ main:
             configuration.Config()
 
         # Testing with an empty directory
-        directory = tempfile.mkdtemp()
-        os.environ['INFOSET_CONFIGDIR'] = directory
+        empty_directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = empty_directory
         with self.assertRaises(SystemExit):
             configuration.Config()
 
         # Write bad_config to file
-        config_file = ('%s/test_config.yaml') % (directory)
-        with open(config_file, 'w') as f_handle:
+        empty_config_file = ('%s/test_config.yaml') % (empty_directory)
+        with open(empty_config_file, 'w') as f_handle:
             f_handle.write('')
 
         # Create configuration object
@@ -649,6 +649,10 @@ main:
 
 def _delete_files(directory):
     """Delete all files in directory."""
+    # Verify that directory exists
+    if os.path.isdir(directory) is False:
+        return
+
     # Cleanup files in temp directories
     filenames = [filename for filename in os.listdir(
         directory) if os.path.isfile(

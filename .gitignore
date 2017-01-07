@@ -32,6 +32,9 @@ __pycache__/
 *.infoset
 *.status
 
+# Ignore hidden files used in unittesting
+*.infoset_unittests
+
 # Ignore files in these directories and ALL subdirectories
 etc/**
 log/**

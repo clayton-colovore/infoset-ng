@@ -10,19 +10,7 @@ from infoset.utils import log
 
 
 class Config(object):
-    """Class gathers all configuration information.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        devices:
-        snmp_auth:
-    """
+    """Class gathers all configuration information."""
 
     def __init__(self):
         """Function for intializing the class.
@@ -34,19 +22,8 @@ class Config(object):
             None
 
         """
-        #####################################################################
-        # Update the configuration directory
-        # 'INFOSET_CONFIGDIR' is used for setting a non-default config
-        # directory location. A good example of this is using a new config
-        # directory for unit testing
-        #####################################################################
-        if 'INFOSET_CONFIGDIR' in os.environ:
-            config_directory = os.environ['INFOSET_CONFIGDIR']
-        else:
-            config_directory = ('%s/etc') % (general.root_directory())
-        directories = [config_directory]
-
-        # Return
+        # Initialize key variables
+        directories = general.config_directories()
         self.config_dict = general.read_yaml_files(directories)
 
     def ingest_cache_directory(self):

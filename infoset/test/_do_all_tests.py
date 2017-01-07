@@ -22,7 +22,7 @@ import subprocess
 
 # Import Colovore libraries
 from infoset.utils import general
-from infoset.test import unittest_db
+from infoset.test import unittest_setup
 
 
 def main():
@@ -116,12 +116,12 @@ def run_script(cli_string):
             print(string2print)
 
         # All done
-        sys.exit(0)
+        sys.exit(2)
 
 
 if __name__ == '__main__':
     # Test the configuration variables
-    unittest_db.validate()
+    unittest_setup.ready()
 
     # Do the unit test
     main()

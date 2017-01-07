@@ -136,7 +136,8 @@ def validate_timestamp(timestamp):
     """
     # Initialize key variables
     valid = False
-    interval = configuration.Config().interval()
+    config = configuration.Config()
+    interval = config.interval()
 
     # Process data
     test = (int(timestamp) // interval) * interval
@@ -158,7 +159,8 @@ def normalized_timestamp(timestamp=None):
 
     """
     # Initialize key variables
-    interval = configuration.Config().interval()
+    config = configuration.Config()
+    interval = config.interval()
 
     # Process data
     if timestamp is None:
@@ -388,3 +390,29 @@ def delete_yaml_files(directory):
     """
     # Delete files
     delete_files(directory, extension='.yaml')
+
+
+def config_directories():
+    """Get the directories where we expect to find configuration files.
+
+    Args:
+        None
+
+    Returns:
+        directories: List of directories
+
+    """
+    #####################################################################
+    # Update the configuration directory
+    # 'INFOSET_CONFIGDIR' is used for setting a non-default config
+    # directory location. A good example of this is using a new config
+    # directory for unit testing
+    #####################################################################
+    if 'INFOSET_CONFIGDIR' in os.environ:
+        config_directory = os.environ['INFOSET_CONFIGDIR']
+    else:
+        config_directory = ('%s/etc') % (root_directory())
+    directories = [config_directory]
+
+    # Return
+    return directories

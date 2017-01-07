@@ -15,14 +15,14 @@ from infoset.db import db
 from infoset.db import db_deviceagent as hagent
 from infoset.db import db_agent
 from infoset.db.db_orm import Agent, Device, DeviceAgent
-from infoset.test import unittest_db
-from infoset.test import unittest_variables
+from infoset.test import unittest_setup_db
+from infoset.test import unittest_setup
 
 
 class TestCheckDuplicates(unittest.TestCase):
     """Checks all functions and methods."""
     # Initialize key variables
-    data = unittest_variables.TestVariables().cache_data()
+    data = unittest_setup.TestVariables().cache_data()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -39,7 +39,7 @@ class TestCheckDuplicates(unittest.TestCase):
         last_timestamp = self.data['timestamp']
 
         # Drop the database and create tables
-        unittest_db.initialize_db()
+        unittest_setup_db.initialize_db()
 
         # Add record to the database
         record = Agent(
@@ -96,8 +96,8 @@ class TestCheckDuplicates(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_db.validate()
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

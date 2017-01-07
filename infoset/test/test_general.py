@@ -10,8 +10,11 @@ import hashlib
 
 # Import non standard library
 import yaml
+
+# Infoset imports
 from infoset.utils import general
 from infoset import infoset
+from infoset.test import unittest_setup
 
 
 class KnownValues(unittest.TestCase):
@@ -274,7 +277,34 @@ class KnownValues(unittest.TestCase):
         # Initialize key variables
         pass
 
+    def test_config_directories(self):
+        """Test function config_directories."""
+        # Initialize key variables
+        save_directory = None
+
+        if 'INFOSET_CONFIGDIR' in os.environ:
+            save_directory = os.environ['INFOSET_CONFIGDIR']
+
+            # Try with no INFOSET_CONFIGDIR
+            os.environ.pop('INFOSET_CONFIGDIR', None)
+            directory = '{}/etc'.format(general.root_directory())
+            result = general.config_directories()
+            self.assertEqual(result, [directory])
+
+        # Test with INFOSET_CONFIGDIR set
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        result = general.config_directories()
+        self.assertEqual(result, [directory])
+
+        # Restore state
+        if save_directory is not None:
+            os.environ['INFOSET_CONFIGDIR'] = save_directory
+
+
 if __name__ == '__main__':
+    # Test the environment variables
+    unittest_setup.ready()
 
     # Do the unit test
     unittest.main()

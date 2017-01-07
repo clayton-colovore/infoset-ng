@@ -234,7 +234,14 @@ class _Database(object):
 
 
 class _Configuration(object):
-    """Class to setup configuration."""
+    """Class to setup configuration.
+
+    NOTE! We cannot use the configuration.Config class here. The aim
+    of this class is to read in the configuration found in etc/ or
+    $INFOSET_CONFIGDIR and set any missing values to values that are
+    known to work in most cases.
+
+    """
 
     def __init__(self):
         """Function for intializing the class.
@@ -247,8 +254,8 @@ class _Configuration(object):
 
         """
         # Read configuration into dictionary
-        self.directory = ('%s/etc') % (general.root_directory())
-        self.config = general.read_yaml_files([self.directory])
+        self.directories = general.config_directories()
+        self.config = general.read_yaml_files(self.directories)
 
     def setup(self):
         """Update the configuration with good defaults.
@@ -264,7 +271,7 @@ class _Configuration(object):
         valid = True
         updated_list = []
         config = copy.deepcopy(self.config)
-        directory = self.directory
+        directory = self.directories[0]
 
         # Update log_directory and ingest_cache_directory
         if isinstance(config, dict) is True:
@@ -286,13 +293,15 @@ class _Configuration(object):
         # Gracefully exit if things are not OK
         if valid is False:
             log_message = (
-                'Configuration file found in {} is invalid'.format(directory))
+                'Configuration files found in {} is invalid'
+                ''.format(self.directories))
             log.log2die_safe(1015, log_message)
 
         # Update configuration file if required
         if len(updated_list) == updated_list.count(True):
-            # Delete all YAML files in the directory
-            general.delete_yaml_files(directory)
+            for next_directory in self.directories:
+                # Delete all YAML files in the directory
+                general.delete_yaml_files(next_directory)
 
             # Write config back to directory
             filepath = ('%s/config.yaml') % (directory)
@@ -396,6 +405,11 @@ class _Python(object):
         """
         # Initialize key variables
         username = self.username
+
+        # Don't attempt to install packages if running in the Travis CI
+        # environment
+        if 'TRAVIS' in os.environ and 'CI' in os.environ:
+            return
 
         # Determine whether PIP3 exists
         print('Installing required pip3 packages')
@@ -689,6 +703,19 @@ You can enable infoset-ng daemons to start on system boot with these commands:
 """
         print(suggestions)
 
+    # Outline the versions of MySQL and MariaDB that are required
+    suggestions = """\
+
+infoset-ng requires:
+
+    MySQL >= 5.5
+    MariaDB >= 10
+
+Please verify.
+
+"""
+    print(suggestions)
+
     # All done
     print('\nOK\n')
 
@@ -696,10 +723,10 @@ You can enable infoset-ng daemons to start on system boot with these commands:
 if __name__ == '__main__':
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
-        log_message = (
+        MESSAGE = (
             'Cannot run setup using "sudo". Run as a regular user to '
             'install in this directory or as user "root".')
-        log.log2die_safe(1078, log_message)
+        log.log2die_safe(1078, MESSAGE)
 
     # Run main
     main()
