@@ -3,22 +3,16 @@ Installation
 
 This section outlines how to install and do basic configuration of ``infoset-ng``.
 
-Pre-Requisites
---------------
-
-``infoset-ng`` has the following requirements:
-
-* python >= 3.4
-* MySQL >= 5.5
-* MariaDB >= 10.0
-
-It will not work with lower versions.
-
 Dependencies
 ------------
 
-The dependencies required for successful ``infoset-ng`` installation are
-``python3`` and python's ``pip3``.
+``infoset-ng`` has the following requirements:
+
+* python >= 3.5
+* python3-pip
+* MySQL >= 5.7 OR MariaDB >= 10.0
+
+It will not work with lower versions.
 
 Ubuntu / Debian / Mint
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -27,8 +21,15 @@ The commands for installing the dependencies are:
 
 ::
 
-    # sudo apt-get install python3 python3-pip python3-dev python3-yaml mysql-server
-    # pip3 install --user sqlalchemy yaml
+    $ sudo apt-get -y install python3 python3-pip python3-dev 
+
+Select either of these commands to install MySQL server or MariaDB server 
+
+::
+
+    $ sudo apt-get -y install mysql-server
+    $ sudo apt-get -y install mariadb-server
+
 
 Centos / Fedora
 ~~~~~~~~~~~~~~~
@@ -37,22 +38,35 @@ The commands for installing the dependencies are:
 
 ::
 
-    # sudo dnf install python3 python3-pip python3-dev python3-yaml mysql-server
-    # pip3 install --user sqlalchemy yaml
+    $ sudo dnf -y install python3 python3-pip python3-dev 
+
+Select either of these commands to install MySQL server or MariaDB server 
+
+::
+
+    $ sudo dnf -y install mysql-server
+    $ sudo dnf -y install mariadb-server
 
 Installation
 ------------
 
-Installation is simple. The first thing to do is verify that your system
-is running python 3.5 or higher. If not, you will need to upgrade. Use
-this command to check:
+Installation is simple. Follow these steps
+
+Verify Dependencies
+-------------------
+
+The first thing to do is verify that your system has the correct prerequisites. Run this command to make sure all is OK:
 
 ::
 
-    $ python3 --version
+    $ bin/tools/prerequisites.py
 
-Setup Database
-~~~~~~~~~~~~~~
+Do the appropriate remediation to fix any reported issues. Run any commands this script suggests.
+
+Be prepared to install ``infoset-ng`` on a newer version of your operating system.
+
+Setup the Database
+~~~~~~~~~~~~~~~~~~
 
 Next create the MySQL or MariaDB database. Make sure the database server is running.
 
