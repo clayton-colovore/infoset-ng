@@ -19,6 +19,7 @@ env:
 before_install:
     - pip install -r requirements.txt
     - infoset/test/create_test_config.py
+    - echo 'create database test_infoset' | mysql -u root -p
 
 # Install infoset-ng
 install: python3 setup.py
