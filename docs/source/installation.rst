@@ -3,6 +3,17 @@ Installation
 
 This section outlines how to install and do basic configuration of ``infoset-ng``.
 
+Pre-Requisites
+--------------
+
+``infoset-ng`` has the following requirements:
+
+* python >= 3.4
+* MySQL >= 5.5
+* MariaDB >= 10.0
+
+It will not work with lower versions.
+
 Dependencies
 ------------
 

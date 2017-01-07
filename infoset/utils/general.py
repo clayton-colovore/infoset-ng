@@ -136,7 +136,8 @@ def validate_timestamp(timestamp):
     """
     # Initialize key variables
     valid = False
-    interval = configuration.Config().interval()
+    config = configuration.Config()
+    interval = config.interval()
 
     # Process data
     test = (int(timestamp) // interval) * interval
@@ -158,7 +159,8 @@ def normalized_timestamp(timestamp=None):
 
     """
     # Initialize key variables
-    interval = configuration.Config().interval()
+    config = configuration.Config()
+    interval = config.interval()
 
     # Process data
     if timestamp is None:
