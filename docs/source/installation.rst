@@ -53,7 +53,7 @@ Installation
 Installation is simple. Follow these steps
 
 Verify Dependencies
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 The first thing to do is verify that your system has the correct prerequisites. Run this command to make sure all is OK:
 
