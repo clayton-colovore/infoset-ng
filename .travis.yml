@@ -12,8 +12,9 @@ branches:
 
 # Setup global environmental variables
 env:
-  global:
     - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
+#  global:
+#    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
 
 # Install PIP packages and create a temporary config file before installing
 before_install:

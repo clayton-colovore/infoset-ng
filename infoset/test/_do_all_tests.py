@@ -116,7 +116,7 @@ def run_script(cli_string):
             print(string2print)
 
         # All done
-        sys.exit(0)
+        sys.exit(2)
 
 
 if __name__ == '__main__':

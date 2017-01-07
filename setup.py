@@ -703,6 +703,19 @@ You can enable infoset-ng daemons to start on system boot with these commands:
 """
         print(suggestions)
 
+    # Outline the versions of MySQL and MariaDB that are required
+    suggestions = """\
+
+infoset-ng requires:
+
+    MySQL >= 5.5
+    MariaDB >= 10
+
+Please verify.
+
+"""
+    print(suggestions)
+
     # All done
     print('\nOK\n')
 
