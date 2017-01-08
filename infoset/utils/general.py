@@ -374,8 +374,17 @@ def delete_files(directory, extension='.yaml'):
 
     # Delete files
     for delete_file in filelist:
-        delete_path = ('%s/%s') % (directory, delete_file)
-        os.remove(delete_path)
+        file_path = ('%s/%s') % (directory, delete_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as exception_error:
+            log_message = ('Error: deleting files in %s. Error: %s') % (
+                target_dir, exception_error)
+            log.log2die_safe(1014, log_message)
+        except:
+            log_message = ('Unexpected error')
+            log.log2die_safe(1015, log_message)
 
 
 def delete_yaml_files(directory):
