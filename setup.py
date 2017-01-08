@@ -8,7 +8,6 @@ Manages connection pooling among other things.
 # Main python libraries
 import sys
 import os
-from pathlib import Path
 import getpass
 from pwd import getpwnam
 import grp
