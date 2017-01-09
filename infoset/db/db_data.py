@@ -208,6 +208,8 @@ def last_contacts(ts_start):
             if timestamp > last_contact[idx_datapoint]['timestamp']:
                 last_contact[idx_datapoint]['timestamp'] = timestamp
                 last_contact[idx_datapoint]['value'] = value
+            else:
+                continue
         else:
             last_contact[idx_datapoint]['timestamp'] = timestamp
             last_contact[idx_datapoint]['value'] = value
@@ -218,9 +220,9 @@ def last_contacts(ts_start):
     # Convert dict to list of dicts
     for idx_datapoint in last_contact:
         data_dict = {}
-        data_dict['timestamp'] = timestamp
-        data_dict['value'] = value
         data_dict['idx_datapoint'] = idx_datapoint
+        data_dict['timestamp'] = last_contact[idx_datapoint]['timestamp']
+        data_dict['value'] = last_contact[idx_datapoint]['value']
         data.append(data_dict)
 
     # Return
@@ -273,6 +275,8 @@ def last_contacts_by_device(idx_deviceagent, ts_start):
             if timestamp > last_contact[idx_datapoint]['timestamp']:
                 last_contact[idx_datapoint]['timestamp'] = timestamp
                 last_contact[idx_datapoint]['value'] = value
+            else:
+                continue
         else:
             last_contact[idx_datapoint]['timestamp'] = timestamp
             last_contact[idx_datapoint]['value'] = value
@@ -283,9 +287,9 @@ def last_contacts_by_device(idx_deviceagent, ts_start):
     # Convert dict to list of dicts
     for idx_datapoint in last_contact:
         data_dict = {}
-        data_dict['timestamp'] = timestamp
-        data_dict['value'] = value
         data_dict['idx_datapoint'] = idx_datapoint
+        data_dict['timestamp'] = last_contact[idx_datapoint]['timestamp']
+        data_dict['value'] = last_contact[idx_datapoint]['value']
         data.append(data_dict)
 
     # Return
