@@ -12,7 +12,6 @@ except:
     print('You need to set your PYTHONPATH to include the infoset library')
     sys.exit(2)
 
-print(os.environ['INFOSET_CONFIGDIR'])
 
 def main():
     """Create test configurations."""

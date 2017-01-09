@@ -21,7 +21,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo apt-get -y install python3 python3-pip python3-dev 
+    $ sudo apt-get -y install python3 python3-pip python3-dev memcached
 
 Select either of these commands to install MySQL server or MariaDB server 
 
@@ -38,7 +38,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo dnf -y install python3 python3-pip python3-dev 
+    $ sudo dnf -y install python3 python3-pip python3-dev memcached
 
 Select either of these commands to install MySQL server or MariaDB server 
 

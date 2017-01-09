@@ -6,6 +6,8 @@ main:
     listen_address: 0.0.0.0
     bind_port: 6000
     interval: 300
+    memcached_hostname: localhost
+    memcached_port: 11211
     sqlalchemy_pool_size: 10
     sqlalchemy_max_overflow: 10
     db_hostname: localhost

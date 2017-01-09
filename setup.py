@@ -8,7 +8,6 @@ Manages connection pooling among other things.
 # Main python libraries
 import sys
 import os
-from pathlib import Path
 import getpass
 from pwd import getpwnam
 import grp
@@ -29,7 +28,6 @@ except:
     sys.exit(2)
 from infoset.utils import configuration
 from infoset.utils import general
-import infoset.utils
 from infoset.db.db_orm import BASE, Agent, Department, Device, Billcode
 from infoset.db.db_orm import Configuration, DeviceAgent, Datapoint
 from infoset.db import URL
@@ -413,15 +411,14 @@ class _Python(object):
 
         # Determine whether PIP3 exists
         print('Installing required pip3 packages')
-        pip3 = infoset.utils.general.search_file('pip3')
+        pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
             log.log2die_safe(1052, log_message)
 
         # Install required PIP packages
-        utils_directory = infoset.utils.__path__[0]
-        requirements_file = ('%s/requirements.txt') % (
-            Path(utils_directory).parents[1])
+        requirements_file = (
+            '%s/requirements.txt') % (general.root_directory())
 
         if username == 'root':
             script_name = (
@@ -431,7 +428,7 @@ class _Python(object):
             script_name = (
                 'pip3 install --user --upgrade --requirement %s'
                 '') % (requirements_file)
-        infoset.utils.general.run_script(script_name)
+        general.run_script(script_name)
 
 
 class _Daemon(object):

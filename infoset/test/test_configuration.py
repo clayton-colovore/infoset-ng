@@ -29,6 +29,8 @@ main:
     interval: 300
     sqlalchemy_pool_size: 10
     sqlalchemy_max_overflow: 10
+    memcached_hostname: localhost
+    memcached_port: 22122
     db_hostname: localhost
     db_username: test_infoset
     db_password: test_B3bFHgxQfsEy86TN
@@ -442,6 +444,108 @@ main:
         config = configuration.Config()
         result = config.sqlalchemy_max_overflow()
         self.assertEqual(result, 10)
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_memcached_port(self):
+        """Testing method memcached_port."""
+        # Testing memcached_port with good_dictionary
+        # good key and key_value
+        result = self.config.memcached_port()
+        self.assertEqual(result, 22122)
+        self.assertEqual(result, self.good_dict['main']['memcached_port'])
+
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing memcached_port with blank key and blank key_value
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.memcached_port()
+
+        # Testing memcached_port with good key and blank key_value
+        key = 'memcached_port:'
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        result = config.memcached_port()
+        self.assertEqual(result, 11211)
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_memcached_hostname(self):
+        """Testing method memcached_hostname."""
+        result = self.config.memcached_hostname()
+        self.assertEqual(result, 'localhost')
+        self.assertEqual(result, self.good_dict['main']['memcached_hostname'])
+
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing memcached_hostname with blank key and blank key_value
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.memcached_hostname()
+
+        # Testing memcached_hostname with good key and blank key_value
+        key = 'memcached_hostname:'
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object defaults to 'localhost'
+        config = configuration.Config()
+        result = config.memcached_hostname()
+        self.assertEqual(result, 'localhost')
 
         # Cleanup files in temp directories
         _delete_files(directory)
