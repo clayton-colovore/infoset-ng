@@ -261,6 +261,48 @@ class Config(object):
             result = int(intermediate)
         return result
 
+    def memcached_port(self):
+        """Get memcached_port.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = 'main'
+        sub_key = 'memcached_port'
+        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
+
+        # Set default
+        if intermediate is None:
+            result = 11211
+        else:
+            result = int(intermediate)
+        return result
+
+    def memcached_hostname(self):
+        """Get memcached_hostname.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = 'main'
+        sub_key = 'memcached_hostname'
+        result = _key_sub_key(key, sub_key, self.config_dict, die=False)
+
+        # Default to localhost
+        if result is None:
+            result = 'localhost'
+        return result
+
     def sqlalchemy_max_overflow(self):
         """Get sqlalchemy_max_overflow.
 
@@ -389,7 +431,9 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     if key in config_dict:
         # Make sure we don't have a None value
         if config_dict[key] is None:
-            log_message = ('%s: value in configuration is blank. Please fix')
+            log_message = (
+                'Configuration value {}: is blank. Please fix.'
+                ''.format(key))
             log.log2die_safe(1022, log_message)
 
         # Get value we need

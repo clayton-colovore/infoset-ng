@@ -27,6 +27,8 @@ The ``main`` section governs the general operation of ``infoset-ng``.
         bind_port: 6000
         sqlalchemy_pool_size: 10
         sqlalchemy_max_overflow: 10
+        memcached_hostname: localhost
+        memcached_port: 11211
         db_hostname: localhost
         db_username: infoset_ng
         db_password: PASSWORD
@@ -47,6 +49,8 @@ Parameter                           Description
 ``bind_port:``                      The TCP port the API will be listening on
 ``sqlalchemy_pool_size:``           The SQLAlchemy pool size. This is the largest number of connections that ``infoset-ng`` will be keep persistently with the MySQL database
 ``sqlalchemy_max_overflow:``        The SQLAlchemy maximum overflow size. When the number of connections reaches the size set in ``sqlalchemy_pool_size``, additional connections will be returned up to this limit. This is the floating number of additional database connections to be made available.
+``memcached_hostname: localhost``   The hostname of our ``memcached`` cache server
+``memcached_port: 11211``           The port which ``memcached`` is running on
 ``db_hostname:``                    The devicename or IP address of the database server.
 ``db_username:``                    The database username
 ``db_password:``                    The database password

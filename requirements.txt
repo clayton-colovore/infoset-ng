@@ -26,6 +26,7 @@ pylint
 PyMySQL
 pysmi
 python-dateutil
+python-memcached
 pytz
 PyYAML
 requests
