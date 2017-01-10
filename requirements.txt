@@ -15,12 +15,12 @@ mock
 nose
 numpy
 pbr
-pep257
 pep8
 ply
 psutil
 pyasn1
 pycrypto
+pydocstyle
 pyflakes
 pylint
 PyMySQL

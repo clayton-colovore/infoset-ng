@@ -9,7 +9,7 @@ import hashlib
 import random
 import string
 from datetime import datetime
-from pytz import timezone
+from pytz import timezone, exceptions
 
 # PIP libraries
 import yaml
@@ -440,7 +440,8 @@ def server_to_agent_timestamp(timestamp_local):
 
     """
     # Initialize key variables
-    agent_timezone = timezone('US/Eastern')
+    config = configuration.Config()
+    agent_timezone = timezone(config.agent_timezone())
 
     # Convert timestamp to equivalent datetime object in agent's timezone
     datetime_agent = datetime.fromtimestamp(timestamp_local, tz=agent_timezone)
@@ -450,3 +451,31 @@ def server_to_agent_timestamp(timestamp_local):
 
     # Return
     return timestamp_agent
+
+
+def timezone_exists(zona):
+    """Determine whether the timezone exists.
+
+    Args:
+        zona: Linux format timezone string
+
+    Returns:
+        exists: True if exists
+
+    """
+    # Initialize key variables
+    exists = True
+
+    # Verify existence
+    if isinstance(zona, str) is False:
+        exists = False
+    else:
+        try:
+            timezone(zona)
+        except exceptions.UnknownTimeZoneError:
+            exists = False
+        except:
+            exists = False
+
+    # Return
+    return exists

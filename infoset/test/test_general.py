@@ -7,12 +7,16 @@ import random
 import os
 import string
 import hashlib
+from datetime import datetime
+import time
 
 # Import non standard library
 import yaml
+from pytz import timezone
 
 # Infoset imports
 from infoset.utils import general
+from infoset.utils import configuration
 from infoset import infoset
 from infoset.test import unittest_setup
 
@@ -173,7 +177,7 @@ class KnownValues(unittest.TestCase):
         os.removedirs(directory)
 
     def test_delete_file(self):
-        """Test function delete_file"""
+        """Test function delete_file."""
         # Testing with a known invalid directory
         directory = self.random_string
         with self.assertRaises(SystemExit):
@@ -215,7 +219,7 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(os.path.isdir(directory), False)
 
     def test_delete_yaml_files(self):
-        """Test function delete_yaml_files"""
+        """Test function delete_yaml_files."""
         # Testing with a known invalid directory
         directory = self.random_string
         with self.assertRaises(SystemExit):
@@ -272,11 +276,6 @@ class KnownValues(unittest.TestCase):
         result = general.search_file('cat')
         self.assertEqual(result, '/bin/cat')
 
-    def test_run_script(self):
-        """Test function run_script."""
-        # Initialize key variables
-        pass
-
     def test_config_directories(self):
         """Test function config_directories."""
         # Initialize key variables
@@ -300,6 +299,31 @@ class KnownValues(unittest.TestCase):
         # Restore state
         if save_directory is not None:
             os.environ['INFOSET_CONFIGDIR'] = save_directory
+
+    def test_timezone_exists(self):
+        """Test function timezone_exists."""
+        # Test with good value
+        zone = 'GMT'
+        result = general.timezone_exists(zone)
+        self.assertEqual(result, True)
+
+        # Test with bad value
+        zone = 'bogus'
+        result = general.timezone_exists(zone)
+        self.assertEqual(result, False)
+
+    def test_server_to_agent_timestamp(self):
+        """Test function server_to_agent_timestamp."""
+        # Test with good value - Configuration timezone is UTC
+        timestamp_local = int(time.time())
+        result = general.server_to_agent_timestamp(timestamp_local)
+        timestamp_utc = datetime.utcfromtimestamp(timestamp_local).timestamp()
+        self.assertEqual(result, timestamp_utc)
+
+    def test_run_script(self):
+        """Test function run_script."""
+        # Initialize key variables
+        pass
 
 
 if __name__ == '__main__':

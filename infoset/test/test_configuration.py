@@ -27,7 +27,7 @@ main:
     ingest_pool_size: 20
     bind_port: 3000
     interval: 300
-    agent_timezone: Paris
+    agent_timezone: US/Pacific
     sqlalchemy_pool_size: 10
     sqlalchemy_max_overflow: 10
     memcached_hostname: localhost
@@ -206,7 +206,7 @@ main:
         _delete_files(directory)
 
     def test_ingest_cache_directory(self):
-        """Testing method ingest_cache_directory"""
+        """Testing method ingest_cache_directory."""
         # Testing ingest_cache_directory with temp directory
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
@@ -504,7 +504,7 @@ main:
     def test_agent_timezone(self):
         """Testing method agent_timezone."""
         result = self.config.agent_timezone()
-        self.assertEqual(result, 'Paris')
+        self.assertEqual(result, 'US/Pacific')
         self.assertEqual(result, self.good_dict['main']['agent_timezone'])
 
         # Set the environmental variable for the configuration directory
@@ -533,6 +533,24 @@ main:
         # Testing agent_timezone with good key and blank key_value
         key = 'agent_timezone:'
         key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object defaults to 'UTC'
+        config = configuration.Config()
+        result = config.agent_timezone()
+        self.assertEqual(result, 'UTC')
+
+        # Testing agent_timezone with good key and blank key_value
+        key = 'agent_timezone:'
+        key_value = 'bogus'
         bad_config = ("""\
 main:
     %s %s
