@@ -4,7 +4,6 @@ main:
     ingest_cache_directory:
     ingest_pool_size: 20
     listen_address: 0.0.0.0
-    agent_timezone:
     bind_port: 6000
     interval: 300
     memcached_hostname: localhost

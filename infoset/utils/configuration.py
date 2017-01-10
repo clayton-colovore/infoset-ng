@@ -195,36 +195,6 @@ class Config(object):
             result = int(intermediate)
         return result
 
-    def agent_timezone(self):
-        """Get agent_timezone.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Initialize key variables
-        default = 'UTC'
-
-        # Get result
-        key = 'main'
-        sub_key = 'agent_timezone'
-        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
-
-        # Default to UTC
-        if intermediate is None:
-            result = default
-        else:
-            if general.timezone_exists(intermediate) is True:
-                result = intermediate
-            else:
-                result = default
-
-        # Return
-        return result
-
     def bind_port(self):
         """Get bind_port.
 

@@ -12,7 +12,6 @@ automated tests such as 'Travis CI'
 import tempfile
 import os
 import sys
-import datetime
 
 # PIP3 imports
 import yaml
@@ -92,7 +91,6 @@ class TestConfig(object):
                 'log_level': 'debug',
                 'ingest_cache_directory': self._ingest_cache_directory,
                 'ingest_pool_size': 20,
-                'agent_timezone': 'UTC',
                 'bind_port': 3000,
                 'interval': 300,
                 'sqlalchemy_pool_size': 10,

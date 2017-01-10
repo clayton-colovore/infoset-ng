@@ -7,16 +7,12 @@ import random
 import os
 import string
 import hashlib
-from datetime import datetime
-import time
 
 # Import non standard library
 import yaml
-from pytz import timezone
 
 # Infoset imports
 from infoset.utils import general
-from infoset.utils import configuration
 from infoset import infoset
 from infoset.test import unittest_setup
 
@@ -299,26 +295,6 @@ class KnownValues(unittest.TestCase):
         # Restore state
         if save_directory is not None:
             os.environ['INFOSET_CONFIGDIR'] = save_directory
-
-    def test_timezone_exists(self):
-        """Test function timezone_exists."""
-        # Test with good value
-        zone = 'GMT'
-        result = general.timezone_exists(zone)
-        self.assertEqual(result, True)
-
-        # Test with bad value
-        zone = 'bogus'
-        result = general.timezone_exists(zone)
-        self.assertEqual(result, False)
-
-    def test_server_to_agent_timestamp(self):
-        """Test function server_to_agent_timestamp."""
-        # Test with good value - Configuration timezone is UTC
-        timestamp_local = int(time.time())
-        result = general.server_to_agent_timestamp(timestamp_local)
-        timestamp_utc = datetime.utcfromtimestamp(timestamp_local).timestamp()
-        self.assertEqual(result, timestamp_utc)
 
     def test_run_script(self):
         """Test function run_script."""

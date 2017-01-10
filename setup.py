@@ -13,11 +13,9 @@ from pwd import getpwnam
 import grp
 import copy
 import re
-import datetime
 
 # PIP3 imports
 import yaml
-from pytz import reference
 from sqlalchemy import create_engine
 
 # Infoset libraries
@@ -286,8 +284,6 @@ class _Configuration(object):
                     'ingest_cache_directory', config)
                 updated_list.append(updated)
 
-                # Setup agent timezone value
-                (updated, config) = self._create_timezone_entries(config)
             else:
                 valid = False
         else:
@@ -344,40 +340,6 @@ class _Configuration(object):
                 updated = True
         else:
             config['main'][key] = ('%s/%s') % (directory, dir_dict[key])
-            updated = True
-
-        # Return
-        return (updated, config)
-
-    def _create_timezone_entries(self, config):
-        """Update the configuration with good defaults for directories.
-
-        Args:
-            config: Configuration dictionary
-
-        Returns:
-            updated: True if we have to update a value
-
-        """
-        # Initialize key variables
-        updated = False
-        key = 'agent_timezone'
-
-        # Get local timzone
-        today = datetime.datetime.now()
-        localtime_timezone = reference.LocalTimezone().tzname(today)
-
-        # Setup the key value to a known good defaults if required
-        if key in config['main']:
-            # Verify whether configuration value is valid
-            if general.timezone_exists(key) is False:
-                # Create
-                config['main'][key] = localtime_timezone
-                updated = True
-            else:
-                pass
-        else:
-            config['main'][key] = localtime_timezone
             updated = True
 
         # Return

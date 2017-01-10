@@ -2,14 +2,12 @@
 """Infoset general library."""
 
 import os
-import time
 import subprocess
 import locale
 import hashlib
 import random
 import string
 from datetime import datetime
-from pytz import timezone, exceptions
 
 # PIP libraries
 import yaml
@@ -166,7 +164,7 @@ def normalized_timestamp(timestamp=None):
 
     # Process data
     if timestamp is None:
-        value = (int(time.time()) // interval) * interval
+        value = (int(datetime.utcnow().timestamp()) // interval) * interval
     else:
         value = (int(timestamp) // interval) * interval
     # Return
@@ -427,55 +425,3 @@ def config_directories():
 
     # Return
     return directories
-
-
-def server_to_agent_timestamp(timestamp_local):
-    """Convert this server's timestamp to equivalent in agent's timezone.
-
-    Args:
-        datetime_object: Datetime object created using a UTC time string
-
-    Returns:
-        timestamp_agent: Epoch timestamp
-
-    """
-    # Initialize key variables
-    config = configuration.Config()
-    agent_timezone = timezone(config.agent_timezone())
-
-    # Convert timestamp to equivalent datetime object in agent's timezone
-    datetime_agent = datetime.fromtimestamp(timestamp_local, tz=agent_timezone)
-
-    # Convert agent datetime to timestamp
-    timestamp_agent = int(time.mktime(datetime_agent.timetuple()))
-
-    # Return
-    return timestamp_agent
-
-
-def timezone_exists(zona):
-    """Determine whether the timezone exists.
-
-    Args:
-        zona: Linux format timezone string
-
-    Returns:
-        exists: True if exists
-
-    """
-    # Initialize key variables
-    exists = True
-
-    # Verify existence
-    if isinstance(zona, str) is False:
-        exists = False
-    else:
-        try:
-            timezone(zona)
-        except exceptions.UnknownTimeZoneError:
-            exists = False
-        except:
-            exists = False
-
-    # Return
-    return exists
