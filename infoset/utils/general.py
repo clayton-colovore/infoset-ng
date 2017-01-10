@@ -8,6 +8,8 @@ import locale
 import hashlib
 import random
 import string
+from datetime import datetime
+from pytz import timezone
 
 # PIP libraries
 import yaml
@@ -380,7 +382,7 @@ def delete_files(directory, extension='.yaml'):
                 os.unlink(file_path)
         except Exception as exception_error:
             log_message = ('Error: deleting files in %s. Error: %s') % (
-                target_dir, exception_error)
+                directory, exception_error)
             log.log2die_safe(1014, log_message)
         except:
             log_message = ('Unexpected error')
@@ -425,3 +427,26 @@ def config_directories():
 
     # Return
     return directories
+
+
+def server_to_agent_timestamp(timestamp_local):
+    """Convert this server's timestamp to equivalent in agent's timezone.
+
+    Args:
+        datetime_object: Datetime object created using a UTC time string
+
+    Returns:
+        timestamp_agent: Epoch timestamp
+
+    """
+    # Initialize key variables
+    agent_timezone = timezone('US/Eastern')
+
+    # Convert timestamp to equivalent datetime object in agent's timezone
+    datetime_agent = datetime.fromtimestamp(timestamp_local, tz=agent_timezone)
+
+    # Convert agent datetime to timestamp
+    timestamp_agent = int(time.mktime(datetime_agent.timetuple()))
+
+    # Return
+    return timestamp_agent

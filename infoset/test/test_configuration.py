@@ -27,6 +27,7 @@ main:
     ingest_pool_size: 20
     bind_port: 3000
     interval: 300
+    agent_timezone: Paris
     sqlalchemy_pool_size: 10
     sqlalchemy_max_overflow: 10
     memcached_hostname: localhost
@@ -496,6 +497,56 @@ main:
         config = configuration.Config()
         result = config.memcached_port()
         self.assertEqual(result, 11211)
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_agent_timezone(self):
+        """Testing method agent_timezone."""
+        result = self.config.agent_timezone()
+        self.assertEqual(result, 'Paris')
+        self.assertEqual(result, self.good_dict['main']['agent_timezone'])
+
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing agent_timezone with blank key and blank key_value
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.agent_timezone()
+
+        # Testing agent_timezone with good key and blank key_value
+        key = 'agent_timezone:'
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object defaults to 'UTC'
+        config = configuration.Config()
+        result = config.agent_timezone()
+        self.assertEqual(result, 'UTC')
 
         # Cleanup files in temp directories
         _delete_files(directory)
