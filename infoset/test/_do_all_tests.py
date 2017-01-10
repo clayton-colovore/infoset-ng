@@ -20,8 +20,12 @@ import os
 import sys
 import subprocess
 
-# Import Colovore libraries
-from infoset.utils import general
+# Infoset libraries
+try:
+    from infoset.utils import general
+except:
+    print('You need to set your PYTHONPATH to include the infoset library')
+    sys.exit(2)
 from infoset.test import unittest_setup
 
 

@@ -3,6 +3,13 @@ Using the API
 
 This section outlines how to use the API
 
+Why Infoset-ng Expects UTC Timestamps
+-------------------------------------
+
+There is a good reason for this. According to the python datetime documentation page, `The rules for time adjustment across the world are more political than rational, change frequently, and there is no standard suitable for every application aside from UTC.`
+
+We cannot guarantee the python timezone libraries will be always up to date, so we default to UTC as recommended.
+
 Posting Data to the API
 -----------------------
 

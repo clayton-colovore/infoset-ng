@@ -173,8 +173,11 @@ def _environment():
     # Make sure the INFOSET_CONFIGDIR environment variable is set
     if 'INFOSET_CONFIGDIR' not in os.environ:
         log_message = (
-            'The INFOSET_CONFIGDIR is not set. Run this command to do so: '
-            '"export INFOSET_CONFIGDIR={}". Then run this command again'
+            '\nThe INFOSET_CONFIGDIR is set to the wrong directory. '
+            'Run this command to do so:\n\n'
+            '$ export INFOSET_CONFIGDIR={}'
+            '\n\nThen run this command again, followed by.\n\n'
+            '$ ./_do_all_tests.py\n'
             ''.format(CONFIG_DIRECTORY))
         print(log_message)
         sys.exit(2)
@@ -182,9 +185,10 @@ def _environment():
     # Make sure the INFOSET_CONFIGDIR environment variable is set correctly
     if os.environ['INFOSET_CONFIGDIR'] != CONFIG_DIRECTORY:
         log_message = (
-            'The INFOSET_CONFIGDIR is set to the wrong directory ("{}"). '
-            'Run this command to do so: '
-            '"export INFOSET_CONFIGDIR={}".Then run this command again'
+            '\nThe INFOSET_CONFIGDIR is set to the wrong directory ("{}"). '
+            'Run this command to do so:\n\n'
+            '$ export INFOSET_CONFIGDIR={}'
+            '\n\nThen run this command again, followed by.\n\n'
             ''.format(
                 os.environ['INFOSET_CONFIGDIR'], CONFIG_DIRECTORY))
         print(log_message)
