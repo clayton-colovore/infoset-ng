@@ -7,6 +7,7 @@ import random
 import os
 import string
 import hashlib
+from datetime import datetime
 
 # Import non standard library
 import yaml
@@ -59,6 +60,12 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(result, 300)
         result = general.normalized_timestamp(599)
         self.assertEqual(result, 300)
+
+        # Test that we get a UTC timestamp when no timestamp value is provided.
+        result = general.normalized_timestamp()
+        expected = general.normalized_timestamp(
+            int(datetime.utcnow().timestamp()))
+        self.assertEqual(result, expected)
 
     def test_hashstring(self):
         """Create a UTF encoded SHA hash string."""
