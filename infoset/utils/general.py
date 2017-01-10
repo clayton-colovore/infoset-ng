@@ -2,12 +2,12 @@
 """Infoset general library."""
 
 import os
-import time
 import subprocess
 import locale
 import hashlib
 import random
 import string
+from datetime import datetime
 
 # PIP libraries
 import yaml
@@ -164,7 +164,7 @@ def normalized_timestamp(timestamp=None):
 
     # Process data
     if timestamp is None:
-        value = (int(time.time()) // interval) * interval
+        value = (int(datetime.utcnow().timestamp()) // interval) * interval
     else:
         value = (int(timestamp) // interval) * interval
     # Return
@@ -380,7 +380,7 @@ def delete_files(directory, extension='.yaml'):
                 os.unlink(file_path)
         except Exception as exception_error:
             log_message = ('Error: deleting files in %s. Error: %s') % (
-                target_dir, exception_error)
+                directory, exception_error)
             log.log2die_safe(1014, log_message)
         except:
             log_message = ('Unexpected error')

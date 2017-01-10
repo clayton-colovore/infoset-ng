@@ -3,6 +3,7 @@
 
 # Standard imports
 import json
+import time
 
 # Flask imports
 from flask import Flask, jsonify, request, abort
@@ -15,10 +16,12 @@ from infoset.db import db_data
 from infoset.db import db_datapoint
 from infoset.db import db_device
 from infoset.db import db_deviceagent
+from infoset.api import cache
 
 # Define the API global variable
 API = Flask(__name__)
 CONFIG = configuration.Config()
+CACHE = cache.Cache(CONFIG)
 
 
 @API.route('/infoset/api/v1.0/')
@@ -87,8 +90,8 @@ def receive(id_agent):
         abort(404)
 
 
-@API.route('/infoset/api/v1.0/db/data/lastcontacts/<ts_start>')
-def db_data_last_contacts(ts_start):
+@API.route('/infoset/api/v1.0/db/data/ts_lastcontacts/<ts_start>')
+def db_ts_dlc(ts_start):
     """Get last contact data from the DB.
 
     Args:
@@ -98,15 +101,25 @@ def db_data_last_contacts(ts_start):
         Agent data
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/data/ts_lastcontacts/{}'.format(ts_start))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_data.last_contacts(int(ts_start))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_data.last_contacts(int(ts_start))
     return jsonify(data)
 
 
 @API.route(
-    '/infoset/api/v1.0/db/data/lastcontactsbydevice/'
+    '/infoset/api/v1.0/db/data/ts_lastcontactsbydevice/'
     '<idx_deviceagent>/<ts_start>')
-def db_data_last_contacts_device(idx_deviceagent, ts_start):
+def db_dlc_ts_device(idx_deviceagent, ts_start):
     """Get last contact data from the DB.
 
     Args:
@@ -117,16 +130,137 @@ def db_data_last_contacts_device(idx_deviceagent, ts_start):
         Agent data
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/data/ts_lastcontactsbydevice/{}/{}'
+           ''.format(idx_deviceagent, ts_start))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_data.last_contacts_by_device(
+            int(idx_deviceagent), int(ts_start))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_data.last_contacts_by_device(
-        int(idx_deviceagent), int(ts_start))
+    return jsonify(data)
+
+
+@API.route(
+    '/infoset/api/v1.0/db/data/ts_lastcontactsbydeviceagent/'
+    '<devicename>/<id_agent>/<ts_start>')
+def db_dlc_ts_deviceagent(devicename, id_agent, ts_start):
+    """Get last contact data from the DB.
+
+    Args:
+        ts_start: Timestamp to start from
+
+    Returns:
+        Agent data
+
+    """
+    # Get data from cache
+    key = ('infoset.api.api:db/data/ts_lastcontactsbydeviceagent/{}/{}/{}'
+           ''.format(devicename, id_agent, ts_start))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        # Get idx_device and idx_agent
+        device = db_device.GetDevice(devicename)
+        if device.exists() is True:
+            # Device Found
+            idx_device = device.idx_device()
+
+            # Now find idx_agent
+            agent = db_agent.GetIDAgent(id_agent)
+            if agent.exists() is True:
+                idx_agent = agent.idx_agent()
+
+            # Now get the idx_deviceagent
+            deviceagent = db_deviceagent.GetDeviceAgent(idx_device, idx_agent)
+            if deviceagent.exists() is True:
+                idx_deviceagent = deviceagent.idx_deviceagent()
+
+                # Now get the data
+                data = db_data.last_contacts_by_device(
+                    int(idx_deviceagent), int(ts_start))
+                CACHE.set(key, data)
+    else:
+        data = cache_value
+
+    # Return
+    return jsonify(data)
+
+
+@API.route('/infoset/api/v1.0/db/data/lastcontacts')
+def db_dlc():
+    """Get last contact data from the DB.
+
+    Args:
+        None
+
+    Returns:
+        Agent data
+
+    """
+    # Initialize key variables
+    ts_start = int(time.time())
+
+    # Get data from cache
+    key = ('infoset.api.api:db/data/lastcontacts')
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_data.last_contacts(int(ts_start))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
+    # Return
+    return jsonify(data)
+
+
+@API.route(
+    '/infoset/api/v1.0/db/data/lastcontactsbydevice/'
+    '<idx_deviceagent>')
+def db_dlc_device(idx_deviceagent):
+    """Get last contact data from the DB.
+
+    Args:
+        idx_deviceagent: Index from the DeviceAgent table
+        ts_start: Timestamp to start from
+
+    Returns:
+        Agent data
+
+    """
+    # Initialize key variables
+    ts_start = int(time.time())
+
+    # Get data from cache
+    key = ('infoset.api.api:db/data/lastcontactsbydevice/{}'
+           ''.format(idx_deviceagent))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_data.last_contacts_by_device(
+            int(idx_deviceagent), int(ts_start))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
+    # Return
     return jsonify(data)
 
 
 @API.route(
     '/infoset/api/v1.0/db/data/lastcontactsbydeviceagent/'
-    '<devicename>/<id_agent>/<ts_start>')
-def db_dlc_deviceagent(devicename, id_agent, ts_start):
+    '<devicename>/<id_agent>')
+def db_dlc_deviceagent(devicename, id_agent):
     """Get last contact data from the DB.
 
     Args:
@@ -137,27 +271,37 @@ def db_dlc_deviceagent(devicename, id_agent, ts_start):
 
     """
     # Initialize key variables
-    data = []
+    ts_start = int(time.time())
 
-    # Get idx_device and idx_agent
-    device = db_device.GetDevice(devicename)
-    if device.exists() is True:
-        # Device Found
-        idx_device = device.idx_device()
+    # Get data from cache
+    key = ('infoset.api.api:db/data/lastcontactsbydeviceagent/{}/{}'
+           ''.format(devicename, id_agent))
+    cache_value = CACHE.get(key)
 
-        # Now find idx_agent
-        agent = db_agent.GetIDAgent(id_agent)
-        if agent.exists() is True:
-            idx_agent = agent.idx_agent()
+    # Process cache miss
+    if cache_value is None:
+        # Get idx_device and idx_agent
+        device = db_device.GetDevice(devicename)
+        if device.exists() is True:
+            # Device Found
+            idx_device = device.idx_device()
 
-        # Now get the idx_deviceagent
-        deviceagent = db_deviceagent.GetDeviceAgent(idx_device, idx_agent)
-        if deviceagent.exists() is True:
-            idx_deviceagent = deviceagent.idx_deviceagent()
+            # Now find idx_agent
+            agent = db_agent.GetIDAgent(id_agent)
+            if agent.exists() is True:
+                idx_agent = agent.idx_agent()
 
-            # Now get the data
-            data = db_data.last_contacts_by_device(
-                int(idx_deviceagent), int(ts_start))
+            # Now get the idx_deviceagent
+            deviceagent = db_deviceagent.GetDeviceAgent(idx_device, idx_agent)
+            if deviceagent.exists() is True:
+                idx_deviceagent = deviceagent.idx_deviceagent()
+
+                # Now get the data
+                data = db_data.last_contacts_by_device(
+                    int(idx_deviceagent), int(ts_start))
+                CACHE.set(key, data)
+    else:
+        data = cache_value
 
     # Return
     return jsonify(data)
@@ -177,10 +321,21 @@ def db_getidxdata(value, ts_start, ts_stop):
         Home Page
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/data/getidxdata/{}/{}/{}'
+           ''.format(value, ts_start, ts_stop))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_data.GetIDXData(
+            CONFIG, _integer(value), _integer(ts_start), _integer(ts_stop))
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_data.GetIDXData(
-        CONFIG, _integer(value), _integer(ts_start), _integer(ts_stop))
-    data = query.everything()
     return jsonify(data)
 
 
@@ -195,9 +350,19 @@ def db_getidxagent(value):
         data: JSON data for the selected agent
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/agent/getidxagent/{}'.format(value))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_agent.GetIDXAgent(_integer(value))
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_agent.GetIDXAgent(_integer(value))
-    data = query.everything()
     return jsonify(data)
 
 
@@ -212,9 +377,19 @@ def db_agent_getid_agent(value):
         Home Page
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/agent/getidagent/{}'.format(value))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_agent.GetIDAgent(value)
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_agent.GetIDAgent(value)
-    data = query.everything()
     return jsonify(data)
 
 
@@ -229,8 +404,18 @@ def db_agent_get_all_agents():
         Agent data
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/agent/getallagents')
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_agent.get_all_agents()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_agent.get_all_agents()
     return jsonify(data)
 
 
@@ -245,9 +430,19 @@ def db_datapoint_getiddatapoint(value):
         Home Page
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/datapoint/getiddatapoint/{}'.format(value))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_datapoint.GetIDDatapoint(value)
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_datapoint.GetIDDatapoint(value)
-    data = query.everything()
     return jsonify(data)
 
 
@@ -262,9 +457,19 @@ def db_getidxdatapoint(value):
         Home Page
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/datapoint/getidxdatapoint/{}'.format(value))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_datapoint.GetIDXDatapoint(_integer(value))
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_datapoint.GetIDXDatapoint(_integer(value))
-    data = query.everything()
     return jsonify(data)
 
 
@@ -279,9 +484,19 @@ def db_getidxdevice(value):
         Home Page
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/device/getidxdevice/{}'.format(value))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_device.GetIDXDevice(_integer(value))
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_device.GetIDXDevice(_integer(value))
-    data = query.everything()
     return jsonify(data)
 
 
@@ -296,9 +511,19 @@ def db_getidxdeviceagent(value):
         data: JSON data for the selected deviceagent
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/deviceagent/getidxdeviceagent/{}'.format(value))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        query = db_deviceagent.GetIDXDeviceAgent(_integer(value))
+        data = query.everything()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    query = db_deviceagent.GetIDXDeviceAgent(_integer(value))
-    data = query.everything()
     return jsonify(data)
 
 
@@ -313,8 +538,18 @@ def db_deviceagent_alldeviceindices():
         Home Page
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/deviceagent/alldeviceindices')
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_deviceagent.all_device_indices()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_deviceagent.all_device_indices()
     return jsonify(data)
 
 
@@ -329,8 +564,18 @@ def db_deviceagent_agentindices(idx_device):
         List of agent indices reporting on the device
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/deviceagent/agentindices/{}'.format(idx_device))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_deviceagent.agent_indices(_integer(idx_device))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_deviceagent.agent_indices(_integer(idx_device))
     return jsonify(data)
 
 
@@ -345,8 +590,18 @@ def db_devagt_get_all_device_agents():
         Agent data
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/deviceagent/getalldeviceagents')
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_deviceagent.get_all_device_agents()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_deviceagent.get_all_device_agents()
     return jsonify(data)
 
 
@@ -363,8 +618,20 @@ def db_datapoint_timeseries(idx_device, idx_agent):
         List of agent indices reporting on the device
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/datapoint/timeseries/{}/{}'
+           ''.format(idx_device, idx_agent))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_datapoint.timeseries(
+            _integer(idx_device), _integer(idx_agent))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_datapoint.timeseries(_integer(idx_device), _integer(idx_agent))
     return jsonify(data)
 
 
@@ -380,8 +647,20 @@ def db_datapoint_timefixed(idx_device, idx_agent):
         List of agent indices reporting on the device
 
     """
+    # Get data from cache
+    key = ('infoset.api.api:db/datapoint/timefixed/{}/{}'
+           ''.format(idx_device, idx_agent))
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_datapoint.timefixed(
+            _integer(idx_device), _integer(idx_agent))
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
     # Return
-    data = db_datapoint.timefixed(_integer(idx_device), _integer(idx_agent))
     return jsonify(data)
 
 

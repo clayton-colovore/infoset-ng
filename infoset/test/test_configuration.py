@@ -205,7 +205,7 @@ main:
         _delete_files(directory)
 
     def test_ingest_cache_directory(self):
-        """Testing method ingest_cache_directory"""
+        """Testing method ingest_cache_directory."""
         # Testing ingest_cache_directory with temp directory
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()

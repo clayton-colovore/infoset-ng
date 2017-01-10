@@ -7,6 +7,7 @@ import random
 import os
 import string
 import hashlib
+from datetime import datetime
 
 # Import non standard library
 import yaml
@@ -59,6 +60,12 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(result, 300)
         result = general.normalized_timestamp(599)
         self.assertEqual(result, 300)
+
+        # Test that we get a UTC timestamp when no timestamp value is provided.
+        result = general.normalized_timestamp()
+        expected = general.normalized_timestamp(
+            int(datetime.utcnow().timestamp()))
+        self.assertEqual(result, expected)
 
     def test_hashstring(self):
         """Create a UTF encoded SHA hash string."""
@@ -173,7 +180,7 @@ class KnownValues(unittest.TestCase):
         os.removedirs(directory)
 
     def test_delete_file(self):
-        """Test function delete_file"""
+        """Test function delete_file."""
         # Testing with a known invalid directory
         directory = self.random_string
         with self.assertRaises(SystemExit):
@@ -215,7 +222,7 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(os.path.isdir(directory), False)
 
     def test_delete_yaml_files(self):
-        """Test function delete_yaml_files"""
+        """Test function delete_yaml_files."""
         # Testing with a known invalid directory
         directory = self.random_string
         with self.assertRaises(SystemExit):
@@ -272,11 +279,6 @@ class KnownValues(unittest.TestCase):
         result = general.search_file('cat')
         self.assertEqual(result, '/bin/cat')
 
-    def test_run_script(self):
-        """Test function run_script."""
-        # Initialize key variables
-        pass
-
     def test_config_directories(self):
         """Test function config_directories."""
         # Initialize key variables
@@ -300,6 +302,11 @@ class KnownValues(unittest.TestCase):
         # Restore state
         if save_directory is not None:
             os.environ['INFOSET_CONFIGDIR'] = save_directory
+
+    def test_run_script(self):
+        """Test function run_script."""
+        # Initialize key variables
+        pass
 
 
 if __name__ == '__main__':

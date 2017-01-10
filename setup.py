@@ -14,7 +14,7 @@ import grp
 import copy
 import re
 
-# Pip3 libraries
+# PIP3 imports
 import yaml
 from sqlalchemy import create_engine
 
@@ -283,6 +283,7 @@ class _Configuration(object):
                 (updated, config) = self._create_directory_entries(
                     'ingest_cache_directory', config)
                 updated_list.append(updated)
+
             else:
                 valid = False
         else:
