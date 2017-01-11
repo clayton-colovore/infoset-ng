@@ -94,63 +94,11 @@ main:
         result = self.config.log_file()
         self.assertEqual(result, ('%s/infoset-ng.log') % (self.log_directory))
 
-        # Set the environmental variable for the configuration directory
-        directory = tempfile.mkdtemp()
-        os.environ['INFOSET_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
-
-        # Testing log_file with blank key and blank key_value
-        key = ''
-        key_value = ''
-        bad_config = ("""\
-main:
-    %s %s
-""") % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
-
-        # Write bad_config to file
-        with open(config_file, 'w') as f_handle:
-            yaml.dump(bad_dict, f_handle, default_flow_style=True)
-
-        # Create configuration object
-        config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.log_file()
-
-        # Cleanup files in temp directories
-        _delete_files(directory)
-
     def test_web_log_file(self):
         """Testing method web_log_file ."""
         # Testing web_log_file with a good dictionary.
         result = self.config.web_log_file()
         self.assertEqual(result, ('%s/api-web.log') % (self.log_directory))
-
-        # Set the environmental variable for the configuration directory
-        directory = tempfile.mkdtemp()
-        os.environ['INFOSET_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
-
-        # Testing web_log_file with blank key and blank key_value
-        key = ''
-        key_value = ''
-        bad_config = ("""\
-main:
-    %s %s
-""") % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
-
-        # Write bad_config to file
-        with open(config_file, 'w') as f_handle:
-            yaml.dump(bad_dict, f_handle, default_flow_style=True)
-
-        # Create configuration object
-        config = configuration.Config()
-        with self.assertRaises(SystemExit):
-            config.web_log_file()
-
-        # Cleanup files in temp directories
-        _delete_files(directory)
 
     def test_log_level(self):
         """Testing method log_level."""
@@ -200,6 +148,34 @@ main:
         config = configuration.Config()
         with self.assertRaises(SystemExit):
             config.log_level()
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_log_directory(self):
+        """Testing method log_directory."""
+        # Testing log_directory with temp directory
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['INFOSET_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing log_directory with blank key_value(filepath)
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.log_directory()
 
         # Cleanup files in temp directories
         _delete_files(directory)
