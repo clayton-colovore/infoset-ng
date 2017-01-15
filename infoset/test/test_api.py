@@ -5,7 +5,7 @@ import unittest
 import os
 import sys
 
-from infoset.api import api
+from infoset.api import API
 from infoset.test import unittest_setup_db
 from infoset.test import unittest_setup
 
@@ -18,8 +18,8 @@ class APITestCase(unittest.TestCase):
     #########################################################################
     def setUp(self):
         """Setup the environment prior to testing."""
-        api.API.config['TESTING'] = True
-        self.API = api.API.test_client()
+        API.config['TESTING'] = True
+        self.API = API.test_client()
 
     def test_index(self):
         """Testing method / function index."""
