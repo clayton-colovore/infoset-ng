@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-"""infoset-ng api."""
+"""infoset-ng api tester."""
 
 # Standard imports
 import sys
