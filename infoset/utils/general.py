@@ -425,3 +425,23 @@ def config_directories():
 
     # Return
     return directories
+
+
+def integerize(value):
+    """Convert value to integer.
+
+    Args:
+        value: Value to convert
+
+    Returns:
+        result: Value converted to iteger
+
+    """
+    # Try conversion
+    try:
+        result = int(value)
+    except:
+        result = None
+
+    # Return
+    return result
