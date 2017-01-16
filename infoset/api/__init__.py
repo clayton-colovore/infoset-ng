@@ -3,11 +3,11 @@
 # Import PIP3 libraries
 from flask import Flask
 
-# Import configuration
+# Import configuration. This has to be done before all other infoset imports.
 from infoset.utils import configuration
 CONFIG = configuration.Config()
 
-# Setup memcache
+# Setup memcache. Required for all API imports
 from infoset.api import cache
 CACHE = cache.Cache(CONFIG)
 
@@ -17,6 +17,7 @@ from infoset.api.db.db_agent import DB_AGENT
 from infoset.api.db.db_datapoint import DB_DATAPOINT
 from infoset.api.db.db_device import DB_DEVICE
 from infoset.api.db.db_deviceagent import DB_DEVICEAGENT
+from infoset.api.db.db_multitable import DB_MUTLTITABLE
 from infoset.api.post import POST
 from infoset.api.version import VERSION
 
@@ -29,5 +30,6 @@ API.register_blueprint(DB_AGENT, url_prefix=API_PREFIX)
 API.register_blueprint(DB_DATAPOINT, url_prefix=API_PREFIX)
 API.register_blueprint(DB_DEVICE, url_prefix=API_PREFIX)
 API.register_blueprint(DB_DEVICEAGENT, url_prefix=API_PREFIX)
+API.register_blueprint(DB_MUTLTITABLE, url_prefix=API_PREFIX)
 API.register_blueprint(POST, url_prefix=API_PREFIX)
 API.register_blueprint(VERSION, url_prefix=API_PREFIX)

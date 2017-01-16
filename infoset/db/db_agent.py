@@ -1,8 +1,5 @@
-"""Module of infoset database functions.
+"""Module of infoset database functions. Agent table."""
 
-Classes for agent data
-
-"""
 # Python standard libraries
 from collections import defaultdict
 
