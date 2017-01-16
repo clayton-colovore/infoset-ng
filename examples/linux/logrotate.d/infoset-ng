@@ -1,4 +1,4 @@
-# Sample logrotate file for infosetd
+# Sample logrotate file for infoset-ng
 
 /opt/infoset-ng/log/*.log {
     daily
