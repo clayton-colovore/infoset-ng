@@ -2,6 +2,7 @@
 
 # Standard imports
 import time
+from datetime import datetime
 
 # Flask imports
 from flask import Blueprint, jsonify
@@ -134,7 +135,7 @@ def db_dlc():
 
     """
     # Initialize key variables
-    ts_start = int(time.time())
+    ts_start = _default_start_timestamp()
 
     # Get data from cache
     key = ('infoset.api:db/data/lastcontacts')
@@ -166,7 +167,7 @@ def db_dlc_device(idx_deviceagent):
 
     """
     # Initialize key variables
-    ts_start = int(time.time())
+    ts_start = _default_start_timestamp()
 
     # Get data from cache
     key = ('infoset.api:db/data/lastcontactsbydevice/{}'
@@ -199,7 +200,7 @@ def db_dlc_deviceagent(devicename, id_agent):
 
     """
     # Initialize key variables
-    ts_start = int(time.time())
+    ts_start = _default_start_timestamp()
 
     # Get data from cache
     key = ('infoset.api:db/data/lastcontactsbydeviceagent/{}/{}'
@@ -268,3 +269,19 @@ def db_getidxdata(value, ts_start, ts_stop):
 
     # Return
     return jsonify(data)
+
+
+def _default_start_timestamp():
+    """Determine the default starting timestamp when not provided.
+
+    Args:
+        None
+
+    Returns:
+        ts_start: Timestamp
+
+    """
+    # Provide a UTC timestamp 10x the configured interval
+    interval = CONFIG.interval()
+    ts_start = int(datetime.utcnow().timestamp()) - (interval * 10)
+    return ts_start

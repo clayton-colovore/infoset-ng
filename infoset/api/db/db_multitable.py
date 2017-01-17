@@ -13,33 +13,7 @@ from infoset.api import CACHE
 DB_MUTLTITABLE = Blueprint('DB_MUTLTITABLE', __name__)
 
 
-@DB_MUTLTITABLE.route('/db/multitable/datapoint_summary_list')
-def db_datapoint_summary_list():
-    """Get Agent data from the DB by idx value.
-
-    Args:
-        None
-
-    Returns:
-        data: JSON data for the selected agent
-
-    """
-    # Get data from cache
-    key = ('infoset.api.api:db/multitable/datapoint_summary_list')
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        data = db_multitable.datapoint_summary_list()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
-
-    # Return
-    return jsonify(data)
-
-
-@DB_MUTLTITABLE.route('/db/multitable/datapoint_summary')
+@DB_MUTLTITABLE.route('/db/multitable/datapointsummary')
 def db_datapoint_summary():
     """Get Agent data from the DB by id_agent value.
 
@@ -51,7 +25,7 @@ def db_datapoint_summary():
 
     """
     # Get data from cache
-    key = ('infoset.api.api:db/multitable/datapoint_summary')
+    key = ('infoset.api.api:db/multitable/datapointsummary')
     cache_value = CACHE.get(key)
 
     # Process cache miss
