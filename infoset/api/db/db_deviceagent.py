@@ -14,7 +14,7 @@ DB_DEVICEAGENT = Blueprint('DB_DEVICEAGENT', __name__)
 
 
 @DB_DEVICEAGENT.route(
-    '/infoset/api/v1.0/db/deviceagent/getidxdeviceagent/<value>')
+    '/db/deviceagent/getidxdeviceagent/<value>')
 def db_getidxdeviceagent(value):
     """Get DeviceAgent data from the DB by idx value.
 
@@ -41,7 +41,7 @@ def db_getidxdeviceagent(value):
     return jsonify(data)
 
 
-@DB_DEVICEAGENT.route('/infoset/api/v1.0/db/deviceagent/alldeviceindices')
+@DB_DEVICEAGENT.route('/db/deviceagent/alldeviceindices')
 def db_deviceagent_alldeviceindices():
     """Get all device indices from the DB.
 
@@ -68,7 +68,7 @@ def db_deviceagent_alldeviceindices():
 
 
 @DB_DEVICEAGENT.route(
-    '/infoset/api/v1.0/db/deviceagent/agentindices/<idx_device>')
+    '/db/deviceagent/agentindices/<idx_device>')
 def db_deviceagent_agentindices(idx_device):
     """Get all agent indices from the DB.
 
@@ -94,7 +94,7 @@ def db_deviceagent_agentindices(idx_device):
     return jsonify(data)
 
 
-@DB_DEVICEAGENT.route('/infoset/api/v1.0/db/deviceagent/getalldeviceagents')
+@DB_DEVICEAGENT.route('/db/deviceagent/getalldeviceagents')
 def db_devagt_get_all_device_agents():
     """Get all DeviceAgent data from the DB.
 
