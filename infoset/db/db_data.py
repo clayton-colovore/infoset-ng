@@ -1,5 +1,8 @@
-"""Module of infoset database functions. Data table."""
+"""Module of infoset database functions.
 
+Classes for agent data
+
+"""
 # Python standard libraries
 from collections import defaultdict
 from sqlalchemy import and_

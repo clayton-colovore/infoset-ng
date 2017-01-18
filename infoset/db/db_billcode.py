@@ -1,4 +1,8 @@
-"""Module of infoset database functions. Billcode table."""
+"""Module of infoset database functions.
+
+Classes for agent data
+
+"""
 
 # Python standard libraries
 from collections import defaultdict

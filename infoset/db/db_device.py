@@ -1,4 +1,8 @@
-"""Module of infoset database functions. Device table."""
+"""Module of infoset database functions.
+
+Classes for agent data
+
+"""
 
 # Python standard libraries
 from collections import defaultdict
@@ -186,8 +190,7 @@ class GetIDXDevice(object):
             # Establish a database session
             database = db.Database()
             session = database.session()
-            result = session.query(
-                Device).filter(Device.idx_device == idx_device)
+            result = session.query(Device).filter(Device.idx_device == idx_device)
 
             # Massage data
             if result.count() == 1:

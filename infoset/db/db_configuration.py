@@ -1,4 +1,8 @@
-"""Module of infoset database functions. Configuration table."""
+"""Module of infoset database functions.
+
+Classes for agent data
+
+"""
 
 # Python standard libraries
 from collections import defaultdict
