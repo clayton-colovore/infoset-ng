@@ -3,11 +3,11 @@
 # Flask imports
 from flask import Blueprint
 
-# Define the VERSION global variable
-VERSION = Blueprint('VERSION', __name__)
+# Define the STATUS global variable
+STATUS = Blueprint('STATUS', __name__)
 
 
-@VERSION.route('/version')
+@STATUS.route('/status')
 def index():
     """Function for handling home route.
 
