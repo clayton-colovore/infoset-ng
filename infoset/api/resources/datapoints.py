@@ -1,6 +1,7 @@
 """infoset-ng database API. Datapoint table."""
 
 # Standard imports
+from copy import deepcopy
 
 # Flask imports
 from flask import Blueprint, jsonify, request, abort
@@ -68,7 +69,9 @@ def datapoints_query():
         # Process cache miss
         if cache_value is None:
             query = db_datapoint.GetIDDatapoint(id_datapoint)
-            data = query.everything()
+            intermediate = query.everything()
+            data = []
+            data.append(intermediate)
             CACHE.set(key, data)
         else:
             data = cache_value

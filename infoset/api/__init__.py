@@ -13,7 +13,7 @@ CACHE = cache.Cache(CONFIG)
 
 # Do remaining infoset-ng importations
 from infoset.api.post import POST
-from infoset.api.version import VERSION
+from infoset.api.status import STATUS
 
 from infoset.api.resources.agents import AGENTS
 from infoset.api.resources.datapoints import DATAPOINTS
@@ -28,7 +28,7 @@ API_PREFIX = '/infoset/api/v1'
 # Register Blueprints
 API = Flask(__name__)
 API.register_blueprint(POST, url_prefix=API_PREFIX)
-API.register_blueprint(VERSION, url_prefix=API_PREFIX)
+API.register_blueprint(STATUS, url_prefix=API_PREFIX)
 API.register_blueprint(DATAPOINTS, url_prefix=API_PREFIX)
 API.register_blueprint(AGENTS, url_prefix=API_PREFIX)
 API.register_blueprint(LASTCONTACTS, url_prefix=API_PREFIX)

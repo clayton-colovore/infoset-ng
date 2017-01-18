@@ -16,10 +16,10 @@ Posting Data to the API
 Posting data to the API is. Add the prefix ``http://SERVER_IP:6000`` to
 all the examples below to update data in your instance of ``infoset-ng``
 
-Route /infoset/api/v1.0/receive/``<id_agent>``
+Route /infoset/api/v1/receive/``<id_agent>``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-JSON data needs to be posted to the ``http://SERVER_IP:6000/infoset/api/v1.0/receive/<id_agent>`` URL where ``id_agent`` is a unique identifier of the software script that is posting the data. This ``id_agent`` must be unique and consistent for each **script** or **application** posting data to ``infoset-ng``. For example, if you have three data collection scripts running across two devices, then each script must report a unique ``id_agent``, three unique IDs in total. We suggest using a hash of a random string to generate your ``id_agent``. There is a 512 character limit on the size of the ``agent_id``.
+JSON data needs to be posted to the ``http://SERVER_IP:6000/infoset/api/v1/receive/<id_agent>`` URL where ``id_agent`` is a unique identifier of the software script that is posting the data. This ``id_agent`` must be unique and consistent for each **script** or **application** posting data to ``infoset-ng``. For example, if you have three data collection scripts running across two devices, then each script must report a unique ``id_agent``, three unique IDs in total. We suggest using a hash of a random string to generate your ``id_agent``. There is a 512 character limit on the size of the ``agent_id``.
 
 The example below explains the expected JSON format:
 
@@ -117,8 +117,24 @@ Routes
 
 Data is retrieved by making HTTP requests to well known URIs or ``routes``. These are covered next.
 
-Route /infoset/api/v1.0/db/agent/getallagents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/db/deviceagent/alldeviceindices
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive data on all devices that have posted data to
+the API. It is returned as a list of index values.
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/deviceagent/alldeviceindices
+
+    [
+      1,
+      2
+    ]
+    $
+
+Route /infoset/api/v1/agents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive data on all agents that have ever posted data
 to the API. It is returned in the form of a list of lists.
@@ -138,7 +154,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/agent/getallagents
+    $ curl http://SERVER_IP:6000/infoset/api/v1/agents
 
     [
       {
@@ -159,96 +175,9 @@ Example:
       },
     ]
 
-Route /infoset/api/v1.0/db/deviceagent/alldeviceindices
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive data on all devices that have posted data to
-the API. It is returned as a list of index values.
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/deviceagent/alldeviceindices
-
-    [
-      1,
-      2
-    ]
-    $
-
-Route /infoset/api/v1.0/db/deviceagent/getalldeviceagents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The same agent could be installed on multiple devices. This route
-returns data that tracks each unique device and agent combination have
-posted information to the API. It is returned as a list of dicts.
-
-=========================   ======
-Field                       Description
-=========================   ======
-idx_agent                   The index value of the agent
-idx_device                  The index value of the device
-=========================   ======
-
-Example:
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/deviceagent/getalldeviceagents
-
-    [
-      {
-        "idx_agent": 1,
-        "idx_device": 1
-      },
-      {
-        "idx_agent": 2,
-        "idx_device": 2
-      },
-      {
-        "idx_agent": 3,
-        "idx_device": 2
-      },
-      {
-        "idx_agent": 4,
-        "idx_device": 2
-      }
-    ]
-    $
-
-Route /infoset/api/v1.0/db/device/getidxdevice/``<idx_device>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This route retrieves information for a specific device index value.
-
-=========================   ======
-Field                       Description
-=========================   ======
-``enabled``                 True if enabled, False if not
-``exists``                  True if the requested index value exists in the database
-``devicename``              Unique devicename in the``infoset-ng`` database
-``idx_device``              The unique index of the device in the database
-``ip_address``              The IP address of the device
-=========================   ======
-
-
-Example:
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/device/getidxdevice/2
-
-    {
-      "description": null,
-      "enabled": true,
-      "exists": true,
-      "devicename": "afimidis",
-      "idx_device": 2,
-      "ip_address": null
-    }
-    $
-
-Route /infoset/api/v1.0/db/device/getidxagent/``<idx_agent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/agents/``<idx_agent>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific agent index value.
 
@@ -260,6 +189,7 @@ Field                       Description
 ``id_agent``                The unique Agent ID
 ``idx_agent``               The unique index of the agent in the database
 ``devicename``              Unique devicename in the `infoset-ng` database
+``name``                    The agent name
 ``last_timestamp``          The **UTC** timestamp of the the most recent data posted by the agent to the API
 =========================   ======
 
@@ -267,7 +197,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/agent/getidxagent/3
+    $ curl http://SERVER_IP:6000/infoset/api/v1/agents/3
 
     {
       "enabled": true,
@@ -279,8 +209,8 @@ Example:
     }
     $
 
-Route /infoset/api/v1.0/db/agent/getidagent/``<id_agent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/agents?id_agent=``<id_agent>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific ``id_agent`` value.
 
@@ -306,7 +236,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/agent/getidagent/70f2d9061f3ccc96915e19c13817c8207e2005d05f23959ac4c225b6a5bfe557
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/agents?id_agent=70f2d9061f3ccc96915e19c13817c8207e2005d05f23959ac4c225b6a5bfe557"
 
     {
       "enabled": true,
@@ -318,13 +248,87 @@ Example:
     }
     $
 
-Route /infoset/api/v1.0/db/datapoint/getidxdatapoint/``<idx_datapoint>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Route /infoset/api/v1/db/deviceagents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The same agent could be installed on multiple devices. This route
+returns data that tracks each unique device and agent combination have
+posted information to the API. It is returned as a list of dicts.
+
+=========================   ======
+Field                       Description
+=========================   ======
+idx_agent                   The index value of the agent
+idx_device                  The index value of the device
+=========================   ======
+
+Example:
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/deviceagents
+
+    [
+      {
+        "idx_agent": 1,
+        "idx_device": 1
+      },
+      {
+        "idx_agent": 2,
+        "idx_device": 2
+      },
+      {
+        "idx_agent": 3,
+        "idx_device": 2
+      },
+      {
+        "idx_agent": 4,
+        "idx_device": 2
+      }
+    ]
+    $
+
+Route /infoset/api/v1/db/devices/``<idx_device>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route retrieves information for a specific device index value.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``enabled``                 True if enabled, False if not
+``exists``                  True if the requested index value exists in the database
+``devicename``              Unique devicename in the``infoset-ng`` database
+``idx_device``              The unique index of the device in the database
+``ip_address``              The IP address of the device
+=========================   ======
+
+
+Example:
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/devices/2
+
+    {
+      "description": null,
+      "enabled": true,
+      "exists": true,
+      "devicename": "afimidis",
+      "idx_device": 2,
+      "ip_address": null
+    }
+    $
+
+
+Route /infoset/api/v1/datapoints/``<idx_datapoint>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific datapoint index value
 value.
 
-Please read section on the API's ``/infoset/api/v1.0/receive`` route for
+Please read section on the API's ``/infoset/api/v1/receive`` route for
 further clarification of the field description in the table below.
 
 
@@ -351,7 +355,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/getidxdatapoint/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints/2
 
     {
       "agent_label": "cpu_count",
@@ -371,13 +375,65 @@ Example:
     }
     $
 
-Route /infoset/api/v1.0/db/datapoint/getiddatapoint/``<id_datapoint>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/datapoints/``<idx_datapoint>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route retrieves information for a specific datapoint index value
+value.
+
+Please read section on the API's ``/infoset/api/v1/receive`` route for
+further clarification of the field description in the table below.
+
+
+=========================   ======
+Field                       Description
+=========================   ======
+``agent_label``             Label that the agent assigned to the datapoint
+``agent_source``            The source of the data
+``devicename``              Unique devicename in the `infoset-ng` database
+``id_agent``                The unique Agent ID
+``id_datapoint``            The unique datapoint ID
+``idx_datapoint``           The unique datapoint index
+``idx_deviceagent``         The unique index of the deviceagent in the database
+``name``                    The agent name
+=========================   ======
+
+Example:
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints/all/summary
+    [    
+      {
+        "agent_label": "system", 
+        "agent_source": null, 
+        "devicename": "palisadoes", 
+        "id_agent": "f32eda632703ac9d94d80b43d5dd54d0198cd0dabf541dae97b94e5b75b851d5", 
+        "idx_datapoint": 417, 
+        "idx_deviceagent": 4, 
+        "name": "remote_linux_passive"
+      }, 
+      {
+        "agent_label": "version", 
+        "agent_source": null, 
+        "devicename": "palisadoes", 
+        "id_agent": "f32eda632703ac9d94d80b43d5dd54d0198cd0dabf541dae97b94e5b75b851d5", 
+        "idx_datapoint": 418, 
+        "idx_deviceagent": 4,
+        "name": "remote_linux_passive"
+      }
+    ]
+    $
+
+
+
+Route /infoset/api/v1/db/datapoints&id_datapoint=``<id_datapoint>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific datapoint ID value
 value.
 
-Please read section on the API's ``/infoset/api/v1.0/receive`` route for
+Please read section on the API's ``/infoset/api/v1/receive`` route for
 further clarification of the field description in the table below.
 
 =========================   ======
@@ -403,7 +459,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/getiddatapoint/fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/datapoint/getiddatapoint/fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f
 
     {
       "agent_label": "cpu_count",
@@ -423,8 +479,8 @@ Example:
     }
     $
 
-Route /infoset/api/v1.0/db/deviceagent/agentindices/``<idx_device>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/devices/``<idx_device>``/agents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive data on all the agents that have reported data
 from a specific device. The agent data returned are their index values,
@@ -434,7 +490,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/deviceagent/agentindices/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1/devices/2/agents
 
     [
       2,
@@ -443,14 +499,14 @@ Example:
     ]
     $
 
-Route /infoset/api/v1.0/db/datapoint/timeseries/``<idx_device>``/``<idx_agent>``
+Route /infoset/api/v1/db/datapoint/timeseries/``<idx_device>``/``<idx_agent>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive **timeseries** datapoint data for a specific agent
 running on a specific device. The query is done based on the index of
 the device and the index of the agent.
 
-Please read section on the API's ``/infoset/api/v1.0/receive`` route for
+Please read section on the API's ``/infoset/api/v1/receive`` route for
 further clarification of the field description in the table below.
 
 =========================   ======
@@ -474,7 +530,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/timeseries/2/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/datapoint/timeseries/2/2
 
     [
       {
@@ -511,14 +567,14 @@ Field                       Description
       }, ]
       $
 
-Route /infoset/api/v1.0/db/datapoint/timefixed/``<idx_device>``/``<idx_agent>``
+Route /infoset/api/v1/db/datapoint/timefixed/``<idx_device>``/``<idx_agent>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive **timefixed** datapoint data for a specific
 agent running on a specific device. The query is done based on the index
 of the device and the index of the agent.
 
-Please read section on the API's ``/infoset/api/v1.0/receive`` route for
+Please read section on the API's ``/infoset/api/v1/receive`` route for
 further clarification of the field description in the table below.
 
 =========================   ======
@@ -542,7 +598,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/datapoint/timefixed/2/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/datapoint/timefixed/2/2
 
     [
       {
@@ -596,14 +652,14 @@ Field                       Description
     ]
     $
 
-Route /infoset/api/v1.0/db/data/ts_lastcontacts/<ts_start>
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/lastcontacts?lookback=<seconds>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive **all** the most recently posted data values. 
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
-This route does not use the cache as efficiently as ``/infoset/api/v1.0/db/data/lastcontacts``, which is the preferred method of getting this data.
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts``, which is the preferred method of getting this data.
 
 =========================   ======
 Field                       Description
@@ -615,7 +671,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/ts_lastcontacts/0
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/ts_lastcontacts/0
 
     [
       {
@@ -648,14 +704,14 @@ Field                       Description
       }
     ]
 
-Route /infoset/api/v1.0/db/data/ts_lastcontactsbydevice/``<idx_deviceagent>``/``<ts_start>``
+Route /infoset/api/v1/db/data/ts_lastcontactsbydevice/``<idx_deviceagent>``/``<ts_start>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
-This route does not use the cache as efficiently as ``/infoset/api/v1.0/db/data/lastcontactsbydevice``, which is the preferred method of getting this data.
+This route does not use the cache as efficiently as ``/infoset/api/v1/db/data/lastcontactsbydevice``, which is the preferred method of getting this data.
 
 =========================   ======
 Field                       Description
@@ -667,7 +723,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/ts_lastcontactsbydevice/2/0
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/ts_lastcontactsbydevice/2/0
 
     [
       {
@@ -692,14 +748,14 @@ Field                       Description
       }
     ]
 
-Route /infoset/api/v1.0/db/data/ts_lastcontactsbydeviceagent/``devicename``/``id_agent``/``ts_start``
+Route /infoset/api/v1/db/data/ts_lastcontactsbydeviceagent/``devicename``/``id_agent``/``ts_start``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.  
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
-This route does not use the cache as efficiently as ``/infoset/api/v1.0/db/data/lastcontactsbydeviceagent``, which is the preferred method of getting this data.
+This route does not use the cache as efficiently as ``/infoset/api/v1/db/data/lastcontactsbydeviceagent``, which is the preferred method of getting this data.
 
 =========================   ======
 Field                       Description
@@ -711,7 +767,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/ts_lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/0
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/ts_lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/0
 
     [
       {
@@ -739,14 +795,14 @@ Field                       Description
 
 
 
-Route /infoset/api/v1.0/db/data/lastcontacts
+Route /infoset/api/v1/db/data/lastcontacts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive **all** the most recently posted data values.  
 
 Data is queried starting from an hour ago until the present. 
 
-Data is queried starting from an hour ago until the present. This is a more efficient query than ``/infoset/api/v1.0/db/data/ts_lastcontacts`` and should be the preferred route for getting this type of data.
+Data is queried starting from an hour ago until the present. This is a more efficient query than ``/infoset/api/v1/db/data/ts_lastcontacts`` and should be the preferred route for getting this type of data.
 
 =========================   ======
 Field                       Description
@@ -758,7 +814,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/lastcontacts
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/lastcontacts
 
     [
       {
@@ -791,14 +847,14 @@ Field                       Description
       }
     ]
 
-Route /infoset/api/v1.0/db/data/lastcontactsbydevice/``<idx_deviceagent>``
+Route /infoset/api/v1/db/data/lastcontactsbydevice/``<idx_deviceagent>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Searches for contacts are made starting from an hour ago to the present. from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
 
 Data is queried starting from an hour ago until the present. 
 
-This is a more efficient query than ``/infoset/api/v1.0/db/data/ts_lastcontactsbydevice`` and should be the preferred route for getting this type of data.
+This is a more efficient query than ``/infoset/api/v1/db/data/ts_lastcontactsbydevice`` and should be the preferred route for getting this type of data.
 
 =========================   ======
 Field                       Description
@@ -810,7 +866,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/lastcontactsbydevice/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/lastcontactsbydevice/2
 
     [
       {
@@ -835,14 +891,14 @@ Field                       Description
       }
     ]
 
-Route /infoset/api/v1.0/db/data/lastcontactsbydeviceagent/``devicename``/``id_agent``
+Route /infoset/api/v1/db/data/lastcontactsbydeviceagent/``devicename``/``id_agent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Searches for contacts are made starting from an hour ago to the present. from a specific ``devicename`` and ``id_agent`` combination. 
 
 Data is queried starting from an hour ago until the present. 
 
-This is a more efficient query than ``/infoset/api/v1.0/db/data/ts_lastcontactsbydeviceagent`` and should be the preferred route for getting this type of data.
+This is a more efficient query than ``/infoset/api/v1/db/data/ts_lastcontactsbydeviceagent`` and should be the preferred route for getting this type of data.
 
 =========================   ======
 Field                       Description
@@ -854,7 +910,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0/db/data/lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
+    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
 
     [
       {
