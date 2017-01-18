@@ -7,7 +7,7 @@ from flask import Blueprint
 VERSION = Blueprint('VERSION', __name__)
 
 
-@VERSION.route('/')
+@VERSION.route('/version')
 def index():
     """Function for handling home route.
 
