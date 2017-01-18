@@ -100,7 +100,7 @@ class Drain(object):
 
                         # Convert values to float if this is
                         # data that could be charted
-                        if base_type != None:
+                        if base_type is not None:
                             value = float(value)
 
                         # Update the data
