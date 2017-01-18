@@ -31,11 +31,11 @@ from infoset.utils.configuration import Config
 class ReferenceSampleConfig(Config):
     """Class gathers all configuration information."""
 
-    def __init__(self):
+    def __init__(self, agent_name='_INFOSET_TEST_'):
         """Function for intializing the class.
 
         Args:
-            None
+            agent_name: Name of agent
 
         Returns:
             None
@@ -43,7 +43,7 @@ class ReferenceSampleConfig(Config):
         """
         # Initialize key variables
         Config.__init__(self)
-        self.prefix = '_INFOSET_TEST_'
+        self.prefix = agent_name
 
     def agent_cache_directory(self):
         """Determine the agent_cache_directory.
@@ -392,7 +392,10 @@ class ReferenceSampleAgent(object):
         for label, value in system_dict.items():
             # Convert the dict to two dimensional dict keyed by [label][source]
             # for use by self.populate_dict
-            new_label = ('%s_%s') % (prefix, label)
+            if (bool(prefix)) is True:
+                new_label = ('%s_%s') % (prefix, label)
+            else:
+                new_label = label
 
             # Initialize data
             data = defaultdict(lambda: defaultdict(dict))
@@ -436,7 +439,10 @@ class ReferenceSampleAgent(object):
         for label in data_input.keys():
             # Initialize tuple list to use by agent.populate
             value_sources = []
-            new_label = ('%s_%s') % (prefix, label)
+            if (bool(prefix)) is True:
+                new_label = ('%s_%s') % (prefix, label)
+            else:
+                new_label = label
 
             # Initialize data
             data = defaultdict(lambda: defaultdict(dict))

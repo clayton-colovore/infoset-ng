@@ -588,46 +588,12 @@ def idx_datapoint_exists(idx_datapoint):
     return exists
 
 
-def timeseries(idx_device, idx_agent):
-    """List of timeseries datapoint data for a specific idx_device, idx_agent.
-
-    Args:
-        idx_device: Device index
-        idx_agent: Agent index
-
-    Returns:
-        dict_list: List of dicts containing data
-
-    """
-    # Initialize key variables
-    dict_list = _dp_device_agent(idx_device, idx_agent, timeseries_data=True)
-    return dict_list
-
-
-def timefixed(idx_device, idx_agent):
-    """List of timefixed datapoint data for a specific idx_device, idx_agent.
-
-    Args:
-        idx_device: Device index
-        idx_agent: Agent index
-
-    Returns:
-        dict_list: List of dicts containing data
-
-    """
-    # Initialize key variables
-    dict_list = _dp_device_agent(idx_device, idx_agent, timeseries_data=False)
-    return dict_list
-
-
-def _dp_device_agent(idx_device, idx_agent, timeseries_data=True):
+def listing(idx_deviceagent, base_type=None):
     """List of datapoint data for a specific idx_device, idx_agent combination.
 
     Args:
-        idx_device: Device index
-        idx_agent: Agent index
-        timeseries_data: Return data for timeseries points if True.
-            TimeFixed if False.
+        idx_deviceagent: DeviceAgent index
+        base_type: base_type to filter by
 
     Returns:
         dict_list: List of dicts containing data
@@ -636,25 +602,19 @@ def _dp_device_agent(idx_device, idx_agent, timeseries_data=True):
     # Initialize key variables
     dict_list = []
 
-    # Get idx_deviceagent
-    if db_deviceagent.device_agent_exists(idx_device, idx_agent) is True:
-        # Get device agent index
-        idx_deviceagent = db_deviceagent.GetDeviceAgent(
-            idx_device, idx_agent).idx_deviceagent()
-
+    # Process information
+    deviceagent = db_deviceagent.GetIDXDeviceAgent(idx_deviceagent)
+    if deviceagent.exists() is True:
         # Establish a database session
         database = db.Database()
         session = database.session()
-        if timeseries_data is True:
+        if base_type is None:
             result = session.query(Datapoint).filter(
-                and_(
-                    Datapoint.base_type >= 1,
-                    Datapoint.idx_deviceagent == idx_deviceagent)
-                )
+                Datapoint.idx_deviceagent == idx_deviceagent)
         else:
             result = session.query(Datapoint).filter(
                 and_(
-                    Datapoint.base_type == 0,
+                    Datapoint.base_type == base_type,
                     Datapoint.idx_deviceagent == idx_deviceagent)
                 )
 

@@ -294,7 +294,7 @@ class _Configuration(object):
             log_message = (
                 'Configuration files found in {} is invalid'
                 ''.format(self.directories))
-            log.log2die_safe(1015, log_message)
+            log.log2die_safe(1007, log_message)
 
         # Update configuration file if required
         if len(updated_list) == updated_list.count(True):

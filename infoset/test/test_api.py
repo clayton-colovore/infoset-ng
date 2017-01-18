@@ -25,7 +25,7 @@ class APITestCase(unittest.TestCase):
         """Testing method / function index."""
         # Initializing key variables
         expected = b'Infoset API v1.0 Operational.\n'
-        response = self.API.get('/infoset/api/v1.0/')
+        response = self.API.get('/infoset/api/v1/status')
 
         # Verify reponses
         self.assertEqual(response.status_code, 200)

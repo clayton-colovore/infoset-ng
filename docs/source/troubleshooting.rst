@@ -28,7 +28,7 @@ You can test the operation of the API by using the ``curl`` command which is oft
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1.0
+    $ curl http://SERVER_IP:6000/infoset/api/v1/status
     infoset-ng API Operational.
     $
 
@@ -70,7 +70,7 @@ In this example we are testing to see whether we are receiving traffic from IP a
 
     $ sudo tcpdump -ni tcp port 6000 and host 192.168.1.100
 
-You can also use the basic ``telnet`` command to determine whether the remote device or network can communicate with the ``API``. In this example we are testing to see whether we can communicate with the ``API`` running on a server with IP address 192.168.1.200 on the default TCP port 6000. 
+You can also use the basic ``telnet`` command to determine whether the remote device or network can communicate with the ``API``. In this example we are testing to see whether we can communicate with the ``API`` running on a server with IP address 192.168.1.200 on the default TCP port 6000.
 
 ::
 
