@@ -75,30 +75,47 @@ def main():
         log.log2see(1015, log_message)
 
         # Try to retrieve data
-        uri = ('db/agent/getidagent/%s') % (id_agent)
+        uri = ('/agents?id_agent=%s') % (id_agent)
         results = api.get(uri)
 
-        # print results
-        if results['exists'] is True:
-            log_message = (
-                'Successfully retrieved test data for agent ID %s'
-                '') % (id_agent)
-            log.log2see(1034, log_message)
-            print('\nOK\n')
-        else:
-            log_message = (
-                'WARNING: Contacted this infoset server. '
-                'The data for the test agent ID %s is not present '
-                'in the database. Ingester has not added agent to '
-                'the database'
-                '') % (id_agent)
-            log.log2see(1035, log_message)
-            print("""\
-
+        if bool(results) is True:
+            if isinstance(results, dict) is True:
+                # print results
+                if results['exists'] is True:
+                    log_message = (
+                        'Successfully retrieved test data for agent ID %s'
+                        '') % (id_agent)
+                    log.log2see(1034, log_message)
+                    print('\nOK\n')
+                else:
+                    log_message = (
+                        'WARNING: Contacted this infoset server. '
+                        'The data for the test agent ID %s is not present '
+                        'in the database. Ingester has not added agent to '
+                        'the database'
+                        '') % (id_agent)
+                    log.log2see(1035, log_message)
+                    print("""\
 OK, but Ingester has not updated the database yet. \
 Run test in a minute and this message should change. \
 If not, the Ingester may not be running.
 """)
+            else:
+                log_message = (
+                    'Failed to retrieve posted data to the local infoset '
+                    'server. Review the installation steps '
+                    'and verify whether the API is running.')
+                log.log2die(1039, log_message)
+                print('\nFail\n')
+
+        else:
+            log_message = (
+                'Failed to retrieve posted data to the local infoset '
+                'server. Review the installation steps '
+                'and verify whether the API is running.')
+            log.log2die(1039, log_message)
+            print('\nFail\n')
+
     else:
         log_message = (
             'Failed to post data to the local infoset server. '

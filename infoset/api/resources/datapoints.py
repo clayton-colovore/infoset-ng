@@ -1,7 +1,6 @@
 """infoset-ng database API. Datapoint table."""
 
 # Standard imports
-from copy import deepcopy
 
 # Flask imports
 from flask import Blueprint, jsonify, request, abort
