@@ -144,7 +144,7 @@ class ReferenceSampleConfig(Config):
 
         """
         # Get result
-        result = 'infoset/api/v1.0'
+        result = 'infoset/api/v1'
         return result
 
 

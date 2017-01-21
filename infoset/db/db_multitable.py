@@ -12,6 +12,7 @@ from collections import defaultdict
 from sqlalchemy import and_
 
 # Infoset libraries
+from infoset.utils import general
 from infoset.db import db
 from infoset.db.db_orm import Datapoint, Device, Agent, DeviceAgent
 
@@ -84,11 +85,11 @@ def _datapoint_summary(aslist=False):
     for row in rows:
         idx_datapoint = row.idx_datapoint
         data_dict = {}
-        data_dict['agent_label'] = row.agent_label
-        data_dict['agent_source'] = row.agent_source
+        data_dict['agent_label'] = general.decode(row.agent_label)
+        data_dict['agent_source'] = general.decode(row.agent_source)
+        data_dict['id_agent'] = general.decode(row.id_agent)
+        data_dict['devicename'] = general.decode(row.devicename)
         data_dict['idx_deviceagent'] = row.idx_deviceagent
-        data_dict['id_agent'] = row.id_agent
-        data_dict['devicename'] = row.devicename
 
         # Assign values to data structures dependent on 'aslist' value
         if aslist is True:

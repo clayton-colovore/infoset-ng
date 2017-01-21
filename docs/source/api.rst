@@ -117,22 +117,6 @@ Routes
 
 Data is retrieved by making HTTP requests to well known URIs or ``routes``. These are covered next.
 
-Route /infoset/api/v1/db/deviceagent/alldeviceindices
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This route will retreive data on all devices that have posted data to
-the API. It is returned as a list of index values.
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/deviceagent/alldeviceindices
-
-    [
-      1,
-      2
-    ]
-    $
-
 Route /infoset/api/v1/agents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -249,8 +233,8 @@ Example:
     $
 
 
-Route /infoset/api/v1/db/deviceagents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/deviceagents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The same agent could be installed on multiple devices. This route
 returns data that tracks each unique device and agent combination have
@@ -289,8 +273,48 @@ Example:
     ]
     $
 
-Route /infoset/api/v1/db/devices/``<idx_device>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/deviceagents/``idx_deviceagent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The same agent could be installed on multiple devices. This route
+returns data that tracks each unique device and agent combination have
+posted information to the API, filtered by ``idx_deviceagent``. It is returned as a list of dicts.
+
+=========================   ======
+Field                       Description
+=========================   ======
+idx_agent                   The index value of the agent
+idx_device                  The index value of the device
+=========================   ======
+
+Example:
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/deviceagents
+
+    [
+      {
+        "idx_agent": 1,
+        "idx_device": 1
+      },
+      {
+        "idx_agent": 2,
+        "idx_device": 2
+      },
+      {
+        "idx_agent": 3,
+        "idx_device": 2
+      },
+      {
+        "idx_agent": 4,
+        "idx_device": 2
+      }
+    ]
+    $
+
+Route /infoset/api/v1/devices/``<idx_device>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific device index value.
 
@@ -375,11 +399,116 @@ Example:
     }
     $
 
-Route /infoset/api/v1/datapoints/``<idx_datapoint>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/datapoints?id_datapoint=<id_datapoint>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route retrieves information for a specific datapoint index value
+This route retrieves information for a specific id_datapoint value
 value.
+
+Please read section on the API's ``/infoset/api/v1/receive`` route for
+further clarification of the field description in the table below.
+
+
+=========================   ======
+Field                       Description
+=========================   ======
+``agent_label``             Label that the agent assigned to the datapoint
+``agent_source``            The source of the data
+``base_type``               Base type of the data
+``billable``                True if billable, false if not.
+``enabled``                 True if enabled, False if not
+``exists``                  True if the requested index value exists in the database
+``id_datapoint``            The unique datapoint ID
+``idx_datapoint``           The unique datapoint index
+``idx_agent``               The unique index of the agent that reported on this datapoint
+``idx_billcode``            The index of the billing code to be applied to the datapoint
+``idx_department``          The index value of the department to which the billing code should be applied
+``idx_device``              The unique index of the device in the database
+``last_timestamp``          The **UTC** timestamp of the the most recent data posted by the agent to the API
+``timefixed_value``         Some datapoints may track unchanging numbers such as the version of an operating system. This value is placed here if the base_type is `0```
+=========================   ======
+
+Example:
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints?id_datapoint=fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f
+
+    {
+      "agent_label": "cpu_count",
+      "agent_source": null,
+      "base_type": 1,
+      "billable": false,
+      "enabled": true,
+      "exists": true,
+      "id_datapoint": "fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f",
+      "idx_agent": 2,
+      "idx_billcode": 1,
+      "idx_datapoint": 2,
+      "idx_department": 1,
+      "idx_device": 2,
+      "last_timestamp": 1480611600,
+      "timefixed_value": null
+    }
+    $
+
+Route /infoset/api/v1/datapoints?idx_deviceagent=<idx_deviceagent>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route retrieves information for a specific idx_deviceagent value
+value.
+
+Please read section on the API's ``/infoset/api/v1/receive`` route for
+further clarification of the field description in the table below.
+
+
+=========================   ======
+Field                       Description
+=========================   ======
+``agent_label``             Label that the agent assigned to the datapoint
+``agent_source``            The source of the data
+``base_type``               Base type of the data
+``billable``                True if billable, false if not.
+``enabled``                 True if enabled, False if not
+``exists``                  True if the requested index value exists in the database
+``id_datapoint``            The unique datapoint ID
+``idx_datapoint``           The unique datapoint index
+``idx_deviceagent``         The unique index of the device agent that reported on this datapoint
+``idx_billcode``            The index of the billing code to be applied to the datapoint
+``idx_department``          The index value of the department to which the billing code should be applied
+``idx_device``              The unique index of the device in the database
+``last_timestamp``          The **UTC** timestamp of the the most recent data posted by the agent to the API
+``timefixed_value``         Some datapoints may track unchanging numbers such as the version of an operating system. This value is placed here if the base_type is `0```
+=========================   ======
+
+Example:
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints?idx_deviceagent=2
+
+    {
+      "agent_label": "cpu_count",
+      "agent_source": null,
+      "base_type": 1,
+      "billable": false,
+      "enabled": true,
+      "exists": true,
+      "id_datapoint": "fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f",
+      "idx_deviceagent": 2,
+      "idx_billcode": 1,
+      "idx_datapoint": 2,
+      "idx_department": 1,
+      "idx_device": 2,
+      "last_timestamp": 1480611600,
+      "timefixed_value": null
+    }
+    $
+
+Route /infoset/api/v1/datapoints/all/summary
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route retrieves dummary information about all datapoints.
 
 Please read section on the API's ``/infoset/api/v1/receive`` route for
 further clarification of the field description in the table below.
@@ -427,7 +556,7 @@ Example:
 
 
 
-Route /infoset/api/v1/db/datapoints&id_datapoint=``<id_datapoint>``
+Route /infoset/api/v1/datapoints&id_datapoint=``<id_datapoint>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific datapoint ID value
@@ -459,7 +588,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/datapoint/getiddatapoint/fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/datapoints?id_datapoint=fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f"
 
     {
       "agent_label": "cpu_count",
@@ -499,161 +628,112 @@ Example:
     ]
     $
 
-Route /infoset/api/v1/db/datapoint/timeseries/``<idx_device>``/``<idx_agent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive **timeseries** datapoint data for a specific agent
-running on a specific device. The query is done based on the index of
-the device and the index of the agent.
+Route /infoset/api/v1/lastcontacts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Please read section on the API's ``/infoset/api/v1/receive`` route for
-further clarification of the field description in the table below.
+This route will retreive **all** the most recently posted data values.  
+
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+
 
 =========================   ======
 Field                       Description
 =========================   ======
-``agent_label``             Label that the agent assigned to the datapoint
-``agent_source``            The source of the data
-``base_type``               Base type of the data
-``billable``                True if billable, false if not.
-``enabled``                 True if enabled, False if not
-``exists``                  True if the requested index value exists in the database
-``id_datapoint``            The unique datapoint ID
-``idx_datapoint``           The unique datapoint index
-``idx_agent``               The unique index of the agent that reported on this datapoint
-``idx_billcode``            The index of the billing code to be applied to the datapoint
-``idx_department``          The index value of the department to which the billing code should be applied
-``idx_device``              The unique index of the device in the database
-``last_timestamp``          The **UTC** timestamp of the the most recent data posted by the agent to the API
-``timefixed_value``         Some datapoints may track unchanging numbers such as the version of an operating system. This value is placed here if the base_type is `0```
+``idx_datapoint``           The datapoint index value
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
 =========================   ======
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/datapoint/timeseries/2/2
+    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts
 
     [
       {
-        "agent_label": "cpu_count",
-        "agent_source": null,
-        "base_type": 1,
-        "billable": false,
-        "enabled": true,
-        "exists": true,
-        "id_datapoint": "fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f",
-        "idx_agent": 2,
-        "idx_billcode": 1,
         "idx_datapoint": 2,
-        "idx_department": 1,
-        "idx_device": 2,
-        "last_timestamp": 1480612800,
-        "timefixed_value": null
+        "timestamp": 1483629900,
+        "value": 60370900.0
       },
       {
-        "agent_label": "cpu_stats_ctx_switches",
-        "agent_source": null,
-        "base_type": 64,
-        "billable": false,
-        "enabled": true,
-        "exists": true,
-        "id_datapoint": "2339ea7eec2a5ea6f794c3790690c848c8e4a1828887b7570793d0ccc4c520fa",
-        "idx_agent": 2,
-        "idx_billcode": 1,
         "idx_datapoint": 3,
-        "idx_department": 1,
-        "idx_device": 2,
-        "last_timestamp": 1480612800,
-        "timefixed_value": null
-      }, ]
-      $
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
 
-Route /infoset/api/v1/db/datapoint/timefixed/``<idx_device>``/``<idx_agent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...
+    ...
+    ...
+    ...
+    ...
+    ...
 
-This route will retreive **timefixed** datapoint data for a specific
-agent running on a specific device. The query is done based on the index
-of the device and the index of the agent.
-
-Please read section on the API's ``/infoset/api/v1/receive`` route for
-further clarification of the field description in the table below.
-
-=========================   ======
-Field                       Description
-=========================   ======
-``agent_label``             Label that the agent assigned to the datapoint
-``agent_source``            The source of the data
-``base_type``               Base type of the data
-``billable``                True if billable, false if not.
-``enabled``                 True if enabled, False if not
-``exists``                  True if the requested index value exists in the database
-``id_datapoint``            The unique datapoint ID
-``idx_datapoint``           The unique datapoint index
-``idx_agent``               The unique index of the agent that reported on this datapoint
-``idx_billcode``            The index of the billing code to be applied to the datapoint
-``idx_department``          The index value of the department to which the billing code should be applied
-``idx_device``              The unique index of the device in the database
-``last_timestamp``          The **UTC** timestamp of the the most recent data posted by the agent to the API
-``timefixed_value``         Some datapoints may track unchanging numbers such as the version of an operating system. This value is placed here if the base_type is `0```
-=========================   ======
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/datapoint/timefixed/2/2
-
-    [
       {
-        "agent_label": "distribution",
-        "agent_source": null,
-        "base_type": 0,
-        "billable": false,
-        "enabled": true,
-        "exists": true,
-        "id_datapoint": "830b1b1430ded05383ece39e8bcd29efc2a9d696f46fe990526fec414b2ed90c",
-        "idx_agent": 2,
-        "idx_billcode": 1,
-        "idx_datapoint": 125,
-        "idx_department": 1,
-        "idx_device": 2,
-        "last_timestamp": 1480613100,
-        "timefixed_value": "Ubuntu 16.04 xenial"
+        "idx_datapoint": 417,
+        "timestamp": 1483629900,
+        "value": 60370900.0
       },
       {
-        "agent_label": "release",
-        "agent_source": null,
-        "base_type": 0,
-        "billable": false,
-        "enabled": true,
-        "exists": true,
-        "id_datapoint": "5b68e2718d14c6b705ed773e2cfd534a203330e1e739be437dfa026e9732255c",
-        "idx_agent": 2,
-        "idx_billcode": 1,
-        "idx_datapoint": 126,
-        "idx_department": 1,
-        "idx_device": 2,
-        "last_timestamp": 1480613100,
-        "timefixed_value": "4.4.0-42-generic"
-      },
-      {
-        "agent_label": "version",
-        "agent_source": null,
-        "base_type": 0,
-        "billable": false,
-        "enabled": true,
-        "exists": true,
-        "id_datapoint": "4b2bc6fe126d32ca0ea2489106f4d82d92f324606915f4021ed3c49d0c6555b1",
-        "idx_agent": 2,
-        "idx_billcode": 1,
-        "idx_datapoint": 128,
-        "idx_department": 1,
-        "idx_device": 2,
-        "last_timestamp": 1480613100,
-        "timefixed_value": "#62-Ubuntu SMP Fri Oct 7 23:11:45 UTC 2016"
+        "idx_datapoint": 418,
+        "timestamp": 1483629900,
+        "value": 60370900.0
       }
     ]
-    $
 
-Route /infoset/api/v1/lastcontacts?lookback=<seconds>
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/lastcontacts?secondsago=<seconds>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive **all** the most recently posted data values. 
+
+The query starts looking for contacts as of ``secondsago`` seconds ago.
+
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts``, which is the preferred method of getting this data.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts?secondsago=3600
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
+
+    ...
+    ...
+    ...
+    ...
+    ...
+    ...
+
+      {
+        "idx_datapoint": 417,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      },
+      {
+        "idx_datapoint": 418,
+        "timestamp": 1483629900,
+        "value": 60370900.0
+      }
+    ]
+
+Route /infoset/api/v1/lastcontacts?ts_start=``timestamp``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive **all** the most recently posted data values. 
 
@@ -671,7 +751,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/ts_lastcontacts/0
+    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts?ts_start=0
 
     [
       {
@@ -704,26 +784,26 @@ Field                       Description
       }
     ]
 
-Route /infoset/api/v1/db/data/ts_lastcontactsbydevice/``<idx_deviceagent>``/``<ts_start>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
+Route /infoset/api/v1/lastcontacts/``<idx_deviceagent>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
+Searches for contacts are made starting from an hour ago to the present. from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
 
-This route does not use the cache as efficiently as ``/infoset/api/v1/db/data/lastcontactsbydevice``, which is the preferred method of getting this data.
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+
 
 =========================   ======
 Field                       Description
 =========================   ======
 ``idx_datapoint``           The datapoint index value
-``timestamp``               **UTC** timestamp of the most recent contact
+``timestamp``               **UTC**  timestamp of the most recent contact
 ``value``                   Value of the datapoint reading at the timestamp's point in time
 =========================   ======
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/ts_lastcontactsbydevice/2/0
+    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts/2
 
     [
       {
@@ -748,14 +828,151 @@ Field                       Description
       }
     ]
 
-Route /infoset/api/v1/db/data/ts_lastcontactsbydeviceagent/``devicename``/``id_agent``/``ts_start``
+
+Route /infoset/api/v1/lastcontacts/``<idx_deviceagent>``?secondsago=``seconds``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
+
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts``, which is the preferred method of getting this data.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/2?secondsago=0"
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 4,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 5,
+        "timestamp": 1483629900,
+        "value": 9.0
+      }
+    ]
+    $
+
+
+Route /infoset/api/v1/lastcontacts/``<idx_deviceagent>``?ts_start=``timestamp``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
+
+A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
+
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts``, which is the preferred method of getting this data.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/2?ts_start=0"
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 4,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 5,
+        "timestamp": 1483629900,
+        "value": 9.0
+      }
+    ]
+    $
+
+
+Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_agent>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Searches for contacts are made starting from an hour ago to the present. from a specific ``devicename`` and ``id_agent`` combination. 
+
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+
+=========================   ======
+Field                       Description
+=========================   ======
+``idx_datapoint``           The datapoint index value
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/devicenames/_INFOSET_TEST_/id_agents/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
+
+    [
+      {
+        "idx_datapoint": 2,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 3,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 4,
+        "timestamp": 1483629900,
+        "value": 9.0
+      },
+      {
+        "idx_datapoint": 5,
+        "timestamp": 1483629900,
+        "value": 9.0
+      }
+    ]
+
+
+Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_agent>``
+?ts_start=``timestamp`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.  
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
-This route does not use the cache as efficiently as ``/infoset/api/v1/db/data/lastcontactsbydeviceagent``, which is the preferred method of getting this data.
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts/devicenames/<devicename>/id_agents/<id_agent>``, which is the preferred method of getting this data.
 
 =========================   ======
 Field                       Description
@@ -767,8 +984,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/ts_lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/0
-
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/devicenames/_INFOSET_TEST_/id_agent/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/?ts_start=0"
     [
       {
         "idx_datapoint": 2,
@@ -791,70 +1007,18 @@ Field                       Description
         "value": 9.0
       }
     ]
+    $
 
+Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_agent>``
+?secondsago=``seconds``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.  
 
+A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
-Route /infoset/api/v1/db/data/lastcontacts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts/devicenames/<devicename>/id_agents/<id_agent>``, which is the preferred method of getting this data.
 
-This route will retreive **all** the most recently posted data values.  
-
-Data is queried starting from an hour ago until the present. 
-
-Data is queried starting from an hour ago until the present. This is a more efficient query than ``/infoset/api/v1/db/data/ts_lastcontacts`` and should be the preferred route for getting this type of data.
-
-=========================   ======
-Field                       Description
-=========================   ======
-``idx_datapoint``           The datapoint index value
-``timestamp``               **UTC** timestamp of the most recent contact
-``value``                   Value of the datapoint reading at the timestamp's point in time
-=========================   ======
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/lastcontacts
-
-    [
-      {
-        "idx_datapoint": 2,
-        "timestamp": 1483629900,
-        "value": 60370900.0
-      },
-      {
-        "idx_datapoint": 3,
-        "timestamp": 1483629900,
-        "value": 60370900.0
-      },
-
-    ...
-    ...
-    ...
-    ...
-    ...
-    ...
-
-      {
-        "idx_datapoint": 417,
-        "timestamp": 1483629900,
-        "value": 60370900.0
-      },
-      {
-        "idx_datapoint": 418,
-        "timestamp": 1483629900,
-        "value": 60370900.0
-      }
-    ]
-
-Route /infoset/api/v1/db/data/lastcontactsbydevice/``<idx_deviceagent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Searches for contacts are made starting from an hour ago to the present. from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
-
-Data is queried starting from an hour ago until the present. 
-
-This is a more efficient query than ``/infoset/api/v1/db/data/ts_lastcontactsbydevice`` and should be the preferred route for getting this type of data.
 
 =========================   ======
 Field                       Description
@@ -866,7 +1030,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/lastcontactsbydevice/2
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/devicenames/_INFOSET_TEST_/id_agent/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/?secondsago=0"
 
     [
       {
@@ -890,48 +1054,4 @@ Field                       Description
         "value": 9.0
       }
     ]
-
-Route /infoset/api/v1/db/data/lastcontactsbydeviceagent/``devicename``/``id_agent``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Searches for contacts are made starting from an hour ago to the present. from a specific ``devicename`` and ``id_agent`` combination. 
-
-Data is queried starting from an hour ago until the present. 
-
-This is a more efficient query than ``/infoset/api/v1/db/data/ts_lastcontactsbydeviceagent`` and should be the preferred route for getting this type of data.
-
-=========================   ======
-Field                       Description
-=========================   ======
-``idx_datapoint``           The datapoint index value
-``timestamp``               **UTC** timestamp of the most recent contact
-``value``                   Value of the datapoint reading at the timestamp's point in time
-=========================   ======
-
-::
-
-    $ curl http://SERVER_IP:6000/infoset/api/v1/db/data/lastcontactsbydeviceagent/_INFOSET_TEST_/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749
-
-    [
-      {
-        "idx_datapoint": 2,
-        "timestamp": 1483629900,
-        "value": 9.0
-      },
-      {
-        "idx_datapoint": 3,
-        "timestamp": 1483629900,
-        "value": 9.0
-      },
-      {
-        "idx_datapoint": 4,
-        "timestamp": 1483629900,
-        "value": 9.0
-      },
-      {
-        "idx_datapoint": 5,
-        "timestamp": 1483629900,
-        "value": 9.0
-      }
-    ]
-
+    $

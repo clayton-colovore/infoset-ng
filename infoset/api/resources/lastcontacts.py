@@ -29,12 +29,16 @@ def lastcontacts():
         data: JSON data for the selected agent
 
     """
-    # Initialize key variables
-    lookback = general.integerize(request.args.get('lookback'))
-    ts_start = _start_timestamp(lookback)
+    # Get starting timestamp
+    secondsago = general.integerize(request.args.get('secondsago'))
+    timestamp = general.integerize(request.args.get('ts_start'))
+    if bool(timestamp) is True:
+        ts_start = _start_timestamp(timestamp, relative=False)
+    else:
+        ts_start = _start_timestamp(secondsago)
 
     # Get data from cache
-    key = ('DB/Data/lookback/{}'.format(lookback))
+    key = ('DB/Data/secondsago/{}'.format(secondsago))
     cache_value = CACHE.get(key)
 
     if cache_value is None:
@@ -61,11 +65,17 @@ def deviceagents(value):
     """
     # Initialize key variables
     idx_deviceagent = int(value)
-    lookback = general.integerize(request.args.get('lookback'))
-    ts_start = _start_timestamp(lookback)
+
+    # Get starting timestamp
+    secondsago = general.integerize(request.args.get('secondsago'))
+    timestamp = general.integerize(request.args.get('ts_start'))
+    if bool(timestamp) is True:
+        ts_start = _start_timestamp(timestamp, relative=False)
+    else:
+        ts_start = _start_timestamp(secondsago)
 
     # Get data from cache
-    key = ('DB/DeviceAgent/lookback/{}'.format(lookback))
+    key = ('DB/DeviceAgent/secondsago/{}'.format(secondsago))
     cache_value = CACHE.get(key)
 
     # Process cache miss
@@ -92,14 +102,18 @@ def devicename_agents(devicename, id_agent):
         data: JSON data for the selected agent
 
     """
-    # Initialize key variables
-    lookback = general.integerize(request.args.get('lookback'))
-    ts_start = _start_timestamp(lookback)
+    # Get starting timestamp
+    secondsago = general.integerize(request.args.get('secondsago'))
+    timestamp = general.integerize(request.args.get('ts_start'))
+    if bool(timestamp) is True:
+        ts_start = _start_timestamp(timestamp, relative=False)
+    else:
+        ts_start = _start_timestamp(secondsago)
 
     # Get data from cache
     key = (
-        'DB/Multitable/devicename/{}/id_agent/{}/lookback/{}'
-        ''.format(devicename, id_agent, lookback))
+        'DB/Multitable/devicename/{}/id_agent/{}/secondsago/{}'
+        ''.format(devicename, id_agent, secondsago))
     cache_value = CACHE.get(key)
 
     # Process cache miss
@@ -131,7 +145,7 @@ def devicename_agents(devicename, id_agent):
     return jsonify(data)
 
 
-def _start_timestamp(lookback=None):
+def _start_timestamp(secondsago=None, relative=False):
     """Determine the default starting timestamp when not provided.
 
     Args:
@@ -144,11 +158,13 @@ def _start_timestamp(lookback=None):
     # Provide a UTC timestamp 10x the configured interval
     interval = CONFIG.interval()
 
-    if (bool(lookback) is False) or (lookback < 0):
+    if (bool(secondsago) is False) or (secondsago < 0):
         timestamp = int(datetime.utcnow().timestamp()) - (interval * 10)
-        print(timestamp)
     else:
-        timestamp = int(datetime.utcnow().timestamp()) - lookback
+        if bool(relative) is True:
+            timestamp = int(datetime.utcnow().timestamp()) - secondsago
+        else:
+            timestamp = abs(secondsago)
 
     # Return
     ts_start = general.normalized_timestamp(timestamp)
