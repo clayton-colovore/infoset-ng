@@ -1,6 +1,7 @@
 """infoset-ng database API. Datapoint table."""
 
 # Standard imports
+from datetime import datetime
 
 # Flask imports
 from flask import Blueprint, jsonify, request, abort
@@ -110,14 +111,32 @@ def getdata(value):
     """
     # Initialize key variables
     idx_datapoint = int(value)
-    ts_start = general.normalized_timestamp(
-        general.integerize(request.args.get('ts_start'))
-        )
-    ts_stop = general.normalized_timestamp(
-        general.integerize(request.args.get('ts_stop'))
-        )
+    secondsago = general.integerize(request.args.get('secondsago'))
+    ts_stop = general.integerize(request.args.get('ts_start'))
+    ts_start = general.integerize(request.args.get('ts_start'))
+
+    # Process start and stop times
+    if bool(secondsago) is True:
+        ts_stop = int(datetime.utcnow().timestamp())
+        ts_start = ts_stop - abs(secondsago)
+    else:
+        if bool(ts_start) is True and bool(ts_stop) is True:
+            ts_start = abs(general.normalized_timestamp(
+                general.integerize(request.args.get('ts_start'))
+                ))
+            ts_stop = abs(general.normalized_timestamp(
+                general.integerize(request.args.get('ts_stop'))
+                ))
+        else:
+            abort(404)
+
+    # Fix start and stop times
     if ts_start > ts_stop:
         ts_start = ts_stop
+
+    # Fail if more than a year of data is being requested
+    if ts_stop - ts_start >= 31536000:
+        abort(404)
 
     # Get data from cache
     key = (

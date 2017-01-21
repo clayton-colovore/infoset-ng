@@ -168,5 +168,4 @@ def _start_timestamp(secondsago=None, relative=False):
 
     # Return
     ts_start = general.normalized_timestamp(timestamp)
-    print(ts_start, int(datetime.utcnow().timestamp()))
     return ts_start
