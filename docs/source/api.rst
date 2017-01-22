@@ -74,24 +74,9 @@ You can test each route using the command:
     $ curl http://SERVER_IP:6000/route
 
 
-API Route Naming Schema
-^^^^^^^^^^^^^^^^^^^^^^^
 
-The API routes for retrieving database data have a simple naming scheme.
+The json fields in the results received from the API are explained in the ``infoset/db/db_orm.py`` file.
 
-::
-
-    /db/<table_name>/<function or class>/<other arguments>
-
-Here's some insight into this scheme.
-
-===================================     ========
-Field                                   Descripton
-===================================     ========
-``table name``                          Name of the table in the MySQL database
-``funtion or class``                    The ``infoset.db`` python module contains files related to each database table. The naming convention is ``db_<table_name>``. Each file has funtions or classes in them. These are the names used in the API routes. You can review the files in the module for more details.
-``other arguments``                     Required module Class or function arguments
-===================================     ========
 
 Database Table Names
 ^^^^^^^^^^^^^^^^^^^^
@@ -193,8 +178,8 @@ Example:
     }
     $
 
-Route /infoset/api/v1/agents?id_agent=``<id_agent>``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route /infoset/api/v1/agents?id_agent=<id_agent>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This route retrieves information for a specific ``id_agent`` value.
 
@@ -432,7 +417,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints?id_datapoint=fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/datapoints?id_datapoint=fef5fb0c60f6ecdd010c99f14d120598d322151b9d942962e6877945f1f14b5f"
 
     {
       "agent_label": "cpu_count",
@@ -485,7 +470,7 @@ Example:
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints?idx_deviceagent=2
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/datapoints?idx_deviceagent=2"
 
     {
       "agent_label": "cpu_count",
@@ -699,7 +684,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts?secondsago=3600
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts?secondsago=3600"
 
     [
       {
@@ -751,7 +736,7 @@ Field                       Description
 
 ::
 
-    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts?ts_start=0
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts?ts_start=0"
 
     [
       {
@@ -848,7 +833,7 @@ Field                       Description
 
 ::
 
-    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/2?secondsago=0"
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/2?secondsago=3600"
 
     [
       {
@@ -1030,7 +1015,7 @@ Field                       Description
 
 ::
 
-    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/devicenames/_INFOSET_TEST_/id_agent/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/?secondsago=0"
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/devicenames/_INFOSET_TEST_/id_agent/558bb0055d7b4299c2ebe6abcc53de64a9ec4847b3f82238b3682cad575c7749/?secondsago=3600"
 
     [
       {
