@@ -74,6 +74,7 @@ def _datapoint_summary(aslist=False):
         Datapoint.agent_source,
         DeviceAgent.idx_deviceagent,
         Agent.id_agent,
+        Agent.name,
         Device.devicename).filter(
             and_(
                 Datapoint.idx_deviceagent == DeviceAgent.idx_deviceagent,
@@ -85,6 +86,7 @@ def _datapoint_summary(aslist=False):
     for row in rows:
         idx_datapoint = row.idx_datapoint
         data_dict = {}
+        data_dict['name'] = general.decode(row.name)
         data_dict['agent_label'] = general.decode(row.agent_label)
         data_dict['agent_source'] = general.decode(row.agent_source)
         data_dict['id_agent'] = general.decode(row.id_agent)
