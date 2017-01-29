@@ -36,7 +36,9 @@ class GetIDXDeviceAgent(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_deviceagent', 'idx_agent', 'enabled', 'idx_device']
+        keys = [
+            'last_timestamp', 'idx_deviceagent',
+            'idx_agent', 'idx_device', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -59,6 +61,7 @@ class GetIDXDeviceAgent(object):
                 for instance in result:
                     self.data_dict['idx_deviceagent'] = idx_deviceagent
                     self.data_dict['idx_agent'] = instance.idx_agent
+                    self.data_dict['last_timestamp'] = instance.last_timestamp
                     self.data_dict['enabled'] = bool(instance.enabled)
                     self.data_dict['idx_device'] = instance.idx_device
                     self.data_dict['exists'] = True
@@ -109,6 +112,34 @@ class GetIDXDeviceAgent(object):
         value = self.data_dict['idx_agent']
         return value
 
+    def idx_device(self):
+        """Get agent idx_device.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_device']
+        return value
+
+    def last_timestamp(self):
+        """Get last_timestamp value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['last_timestamp']
+        return value
+
     def enabled(self):
         """Get agent enabled.
 
@@ -123,20 +154,6 @@ class GetIDXDeviceAgent(object):
         value = self.data_dict['enabled']
 
         # Return
-        return value
-
-    def idx_device(self):
-        """Get agent idx_device.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['idx_device']
         return value
 
     def everything(self):
@@ -180,7 +197,9 @@ class GetDeviceAgent(object):
         """
         # Initialize key variables
         self.data_dict = defaultdict(dict)
-        keys = ['last_timestamp', 'idx_deviceagent', 'enabled']
+        keys = [
+            'last_timestamp', 'idx_deviceagent',
+            'idx_agent', 'idx_device', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -203,6 +222,8 @@ class GetDeviceAgent(object):
             for instance in result:
                 self.data_dict['last_timestamp'] = instance.last_timestamp
                 self.data_dict['idx_deviceagent'] = instance.idx_deviceagent
+                self.data_dict['idx_device'] = instance.idx_device
+                self.data_dict['idx_agent'] = instance.idx_agent
                 self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['exists'] = True
                 break
@@ -264,6 +285,34 @@ class GetDeviceAgent(object):
         """
         # Initialize key variables
         value = self.data_dict['idx_deviceagent']
+        return value
+
+    def idx_agent(self):
+        """Get idx_agent value.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_agent']
+        return value
+
+    def idx_device(self):
+        """Get agent idx_device.
+
+        Args:
+            None
+
+        Returns:
+            value: Value to return
+
+        """
+        # Initialize key variables
+        value = self.data_dict['idx_device']
         return value
 
 

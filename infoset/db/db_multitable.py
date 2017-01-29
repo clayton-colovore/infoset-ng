@@ -14,7 +14,7 @@ from sqlalchemy import and_
 # Infoset libraries
 from infoset.utils import general
 from infoset.db import db
-from infoset.db.db_orm import Datapoint, Device, Agent, DeviceAgent
+from infoset.db.db_orm import Datapoint, Device, Agent, DeviceAgent, AgentName
 
 
 def datapoint_summary_list():
@@ -44,7 +44,7 @@ def datapoint_summary():
 
     """
     # Return
-    return_value = _datapoint_summary(aslist=True)
+    return_value = _datapoint_summary(aslist=False)
     return return_value
 
 
@@ -73,12 +73,13 @@ def _datapoint_summary(aslist=False):
         Datapoint.agent_label,
         Datapoint.agent_source,
         DeviceAgent.idx_deviceagent,
+        AgentName.name,
         Agent.id_agent,
-        Agent.name,
         Device.devicename).filter(
             and_(
                 Datapoint.idx_deviceagent == DeviceAgent.idx_deviceagent,
                 Agent.idx_agent == DeviceAgent.idx_agent,
+                Agent.idx_agentname == AgentName.idx_agentname,
                 Device.idx_device == DeviceAgent.idx_device)
             )
 

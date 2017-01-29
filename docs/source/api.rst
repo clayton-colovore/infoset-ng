@@ -310,7 +310,6 @@ Field                       Description
 ``exists``                  True if the requested index value exists in the database
 ``devicename``              Unique devicename in the``infoset-ng`` database
 ``idx_device``              The unique index of the device in the database
-``ip_address``              The IP address of the device
 =========================   ======
 
 
@@ -325,8 +324,7 @@ Example:
       "enabled": true,
       "exists": true,
       "devicename": "afimidis",
-      "idx_device": 2,
-      "ip_address": null
+      "idx_device": 2x
     }
     $
 
@@ -517,22 +515,22 @@ Example:
 ::
 
     $ curl http://SERVER_IP:6000/infoset/api/v1/datapoints/all/summary
-    [    
+    [
       {
-        "agent_label": "system", 
-        "agent_source": null, 
-        "devicename": "palisadoes", 
-        "id_agent": "f32eda632703ac9d94d80b43d5dd54d0198cd0dabf541dae97b94e5b75b851d5", 
-        "idx_datapoint": 417, 
-        "idx_deviceagent": 4, 
+        "agent_label": "system",
+        "agent_source": null,
+        "devicename": "palisadoes",
+        "id_agent": "f32eda632703ac9d94d80b43d5dd54d0198cd0dabf541dae97b94e5b75b851d5",
+        "idx_datapoint": 417,
+        "idx_deviceagent": 4,
         "name": "remote_linux_passive"
-      }, 
+      },
       {
-        "agent_label": "version", 
-        "agent_source": null, 
-        "devicename": "palisadoes", 
-        "id_agent": "f32eda632703ac9d94d80b43d5dd54d0198cd0dabf541dae97b94e5b75b851d5", 
-        "idx_datapoint": 418, 
+        "agent_label": "version",
+        "agent_source": null,
+        "devicename": "palisadoes",
+        "id_agent": "f32eda632703ac9d94d80b43d5dd54d0198cd0dabf541dae97b94e5b75b851d5",
+        "idx_datapoint": 418,
         "idx_deviceagent": 4,
         "name": "remote_linux_passive"
       }
@@ -617,9 +615,9 @@ Example:
 Route /infoset/api/v1/lastcontacts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive **all** the most recently posted data values.  
+This route will retreive **all** the most recently posted data values.
 
-Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present.
 
 
 =========================   ======
@@ -668,7 +666,7 @@ Field                       Description
 Route /infoset/api/v1/lastcontacts?secondsago=<seconds>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive **all** the most recently posted data values. 
+This route will retreive **all** the most recently posted data values.
 
 The query starts looking for contacts as of ``secondsago`` seconds ago.
 
@@ -720,7 +718,7 @@ Field                       Description
 Route /infoset/api/v1/lastcontacts?ts_start=``timestamp``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive **all** the most recently posted data values. 
+This route will retreive **all** the most recently posted data values.
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
@@ -773,9 +771,9 @@ Field                       Description
 Route /infoset/api/v1/lastcontacts/``<idx_deviceagent>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Searches for contacts are made starting from an hour ago to the present. from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
+Searches for contacts are made starting from an hour ago to the present. from a specific Device Agent combination. The query is done based on the device's deviceagent index.
 
-Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present.
 
 
 =========================   ======
@@ -817,9 +815,9 @@ Field                       Description
 Route /infoset/api/v1/lastcontacts/``<idx_deviceagent>``?secondsago=``seconds``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
+This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index.
 
-Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present.
 
 This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts``, which is the preferred method of getting this data.
 
@@ -863,7 +861,7 @@ Field                       Description
 Route /infoset/api/v1/lastcontacts/``<idx_deviceagent>``?ts_start=``timestamp``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index. 
+This route will retreive the most recently posted data values from a specific Device Agent combination. The query is done based on the device's deviceagent index.
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
@@ -909,9 +907,9 @@ Field                       Description
 Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_agent>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Searches for contacts are made starting from an hour ago to the present. from a specific ``devicename`` and ``id_agent`` combination. 
+Searches for contacts are made starting from an hour ago to the present. from a specific ``devicename`` and ``id_agent`` combination.
 
-Data is queried starting from 10X the interval value in your configuration file seconds ago until the present. 
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present.
 
 =========================   ======
 Field                       Description
@@ -953,7 +951,7 @@ Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_
 ?ts_start=``timestamp`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.  
+This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 
@@ -998,7 +996,7 @@ Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_
 ?secondsago=``seconds``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.  
+This route will retreive the most recently posted data values from a specific ``devicename`` and ``id_agent`` combination.
 
 A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
 

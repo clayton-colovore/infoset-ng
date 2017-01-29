@@ -15,9 +15,11 @@ from sqlalchemy import and_
 # Infoset libraries
 from infoset.db import db
 from infoset.db.db_orm import Data, Datapoint, Agent, Device, DeviceAgent
-from infoset.db import db_agent as agent
-from infoset.db import db_device as ddevice
-from infoset.db import db_deviceagent as hagent
+from infoset.db.db_orm import AgentName
+from infoset.db import db_agent
+from infoset.db import db_agentname
+from infoset.db import db_device
+from infoset.db import db_deviceagent
 from infoset.utils import configuration
 from infoset.utils import general
 from infoset.utils import log
@@ -247,7 +249,7 @@ class _PrepareDatabase(object):
         # Device and agent are not already there
         self._idx_agent = self.idx_agent()
         self._idx_device = self.idx_device()
-        self._idx_deviceagent = hagent.GetDeviceAgent(
+        self._idx_deviceagent = db_deviceagent.GetDeviceAgent(
             self._idx_device, self._idx_agent).idx_deviceagent()
 
     def idx_agent(self):
@@ -265,23 +267,39 @@ class _PrepareDatabase(object):
         id_agent = self.agent_data['id_agent']
 
         # Get information on agent from database
-        data = agent.GetIDAgent(id_agent)
+        agent_data = db_agent.GetIDAgent(id_agent)
 
         # Return if agent already exists in the table
-        if data.exists() is True:
-            idx_agent = data.idx_agent()
+        if agent_data.exists() is True:
+            idx_agent = agent_data.idx_agent()
             return idx_agent
 
+        # Get information on agent from database
+        name_data = db_agentname.GetAgentName(agent_name)
+
+        # Insert data into table if required
+        # Get idx_agentname
+        if name_data.exists() is False:
+            record = AgentName(
+                name=general.encode(agent_name))
+            database = db.Database()
+            database.add(record, 1081)
+
+            new_name_data = db_agentname.GetAgentName(agent_name)
+            idx_agentname = new_name_data.idx_agentname()
+        else:
+            idx_agentname = name_data.idx_agentname()
+
         # Add record to the database
-        record = Agent(
+        new_record = Agent(
             id_agent=general.encode(id_agent),
-            name=general.encode(agent_name))
+            idx_agentname=idx_agentname)
         database = db.Database()
-        database.add(record, 1081)
+        database.add(new_record, 1081)
 
         # Get idx_agent value from database
-        data = agent.GetIDAgent(id_agent)
-        idx_agent = data.idx_agent()
+        new_agent_data = db_agent.GetIDAgent(id_agent)
+        idx_agent = new_agent_data.idx_agent()
         return idx_agent
 
     def idx_device(self):
@@ -298,7 +316,7 @@ class _PrepareDatabase(object):
         devicename = self.agent_data['devicename']
 
         # Get information on agent from database
-        device = ddevice.GetDevice(devicename)
+        device = db_device.GetDevice(devicename)
 
         # Determine index value for device
         if device.exists() is True:
@@ -310,12 +328,12 @@ class _PrepareDatabase(object):
             database.add(record, 1080)
 
             # Get idx of newly added device
-            device_info = ddevice.GetDevice(devicename)
+            device_info = db_device.GetDevice(devicename)
             idx_device = device_info.idx_device()
 
         # Update DeviceAgent table
         idx_agent = self._idx_agent
-        if hagent.device_agent_exists(idx_device, idx_agent) is False:
+        if db_deviceagent.device_agent_exists(idx_device, idx_agent) is False:
             # Add to DeviceAgent table
             new_record = DeviceAgent(
                 idx_device=idx_device, idx_agent=idx_agent)
@@ -339,7 +357,7 @@ class _PrepareDatabase(object):
         new_datapoint_ids = []
 
         # Add newly found datapoints to database if agent is enabled
-        agent_object = agent.GetIDXAgent(self._idx_agent)
+        agent_object = db_agent.GetIDXAgent(self._idx_agent)
         if agent_object.enabled() is True:
             # Create map of DIDs to database row index values
             dp_metadata = self.get_datapoints()
@@ -682,7 +700,7 @@ class _UpdateLastTimestamp(object):
         idx_device = self.idx_device
         last_timestamp = self.last_timestamp
         data_dict = {'last_timestamp': last_timestamp}
-        idx_deviceagent = hagent.GetDeviceAgent(
+        idx_deviceagent = db_deviceagent.GetDeviceAgent(
             idx_device, idx_agent).idx_deviceagent()
 
         # Access the database

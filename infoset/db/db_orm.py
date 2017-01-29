@@ -39,8 +39,6 @@ class Device(BASE):
 
     enabled = Column(INTEGER(unsigned=True), server_default='1')
 
-    ip_address = Column(VARBINARY(512), nullable=True, default=None)
-
     ts_modified = Column(
         DATETIME, server_default=text(
             'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),)
@@ -119,7 +117,37 @@ class Agent(BASE):
         BIGINT(unsigned=True), primary_key=True,
         autoincrement=True, nullable=False)
 
+    idx_agentname = Column(
+        BIGINT(unsigned=True), ForeignKey('iset_agentname.idx_agentname'),
+        nullable=False, server_default='1')
+
     id_agent = Column(VARBINARY(512), unique=True, nullable=True, default=None)
+
+    enabled = Column(INTEGER(unsigned=True), server_default='1')
+
+    ts_modified = Column(
+        DATETIME, server_default=text(
+            'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),)
+
+    ts_created = Column(
+        DATETIME, server_default=text('CURRENT_TIMESTAMP'))
+
+
+class AgentName(BASE):
+    """Class defining the iset_agentname table of the database."""
+
+    __tablename__ = 'iset_agentname'
+    __table_args__ = (
+        UniqueConstraint(
+            'name'),
+        {
+            'mysql_engine': 'InnoDB'
+        }
+        )
+
+    idx_agentname = Column(
+        BIGINT(unsigned=True), primary_key=True,
+        autoincrement=True, nullable=False)
 
     name = Column(VARBINARY(512), nullable=True, default=None)
 

@@ -1,4 +1,4 @@
-"""Module of infoset database functions. Agent table."""
+"""Module of infoset database functions. AgentName table."""
 
 # Python standard libraries
 from collections import defaultdict
@@ -6,10 +6,10 @@ from collections import defaultdict
 # Infoset libraries
 from infoset.utils import general
 from infoset.db import db
-from infoset.db.db_orm import Agent
+from infoset.db.db_orm import AgentName
 
 
-class GetIDXAgent(object):
+class GetIDXAgentName(object):
     """Class to return agent data.
 
     Args:
@@ -22,11 +22,11 @@ class GetIDXAgent(object):
 
     """
 
-    def __init__(self, idx_agent):
+    def __init__(self, idx_agentname):
         """Function for intializing the class.
 
         Args:
-            idx_agent: Agent idx_agent
+            idx_agentname: AgentName idx_agentname
 
         Returns:
             None
@@ -34,30 +34,29 @@ class GetIDXAgent(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_agent', 'idx_agentname', 'id_agent', 'enabled']
+        keys = ['idx_agentname', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
 
         # Fix values passed
-        if isinstance(idx_agent, int) is False:
-            idx_agent = None
+        if isinstance(idx_agentname, int) is False:
+            idx_agentname = None
 
         # Only work if the value is an integer
-        if isinstance(idx_agent, int) is True and idx_agent is not None:
+        if (isinstance(idx_agentname, int) is True) and (
+                idx_agentname is not None):
             # Get the result
             database = db.Database()
             session = database.session()
-            result = session.query(Agent).filter(
-                Agent.idx_agent == idx_agent)
+            result = session.query(AgentName).filter(
+                AgentName.idx_agentname == idx_agentname)
 
             # Massage data
             if result.count() == 1:
                 for instance in result:
-                    self.data_dict['idx_agent'] = idx_agent
-                    self.data_dict['idx_agentname'] = instance.idx_agentname
-                    self.data_dict[
-                        'id_agent'] = general.decode(instance.id_agent)
+                    self.data_dict['idx_agentname'] = idx_agentname
+                    self.data_dict['name'] = general.decode(instance.name)
                     self.data_dict['enabled'] = bool(instance.enabled)
                     self.data_dict['exists'] = True
                     break
@@ -79,20 +78,6 @@ class GetIDXAgent(object):
         value = self.data_dict['exists']
         return value
 
-    def idx_agent(self):
-        """Get idx_agent value.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['idx_agent']
-        return value
-
     def idx_agentname(self):
         """Get idx_agentname value.
 
@@ -107,8 +92,8 @@ class GetIDXAgent(object):
         value = self.data_dict['idx_agentname']
         return value
 
-    def id_agent(self):
-        """Get id_agent value.
+    def name(self):
+        """Get agent name.
 
         Args:
             None
@@ -118,7 +103,7 @@ class GetIDXAgent(object):
 
         """
         # Initialize key variables
-        value = self.data_dict['id_agent']
+        value = self.data_dict['name']
         return value
 
     def enabled(self):
@@ -152,7 +137,7 @@ class GetIDXAgent(object):
         return value
 
 
-class GetIDAgent(object):
+class GetAgentName(object):
     """Class to return agent data.
 
     Args:
@@ -165,11 +150,11 @@ class GetIDAgent(object):
 
     """
 
-    def __init__(self, id_agent):
+    def __init__(self, name):
         """Function for intializing the class.
 
         Args:
-            id_agent: Identifier of agent
+            name: Name of agent
 
         Returns:
             None
@@ -177,28 +162,24 @@ class GetIDAgent(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_agent', 'idx_agentname', 'id_agent', 'enabled']
+        keys = ['idx_agentname', 'name', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
 
-        # Encode the id_agent
-        if isinstance(id_agent, str) is True:
-            value = id_agent.encode()
-        else:
-            value = None
+        # Encode the Name
+        value = '{}'.format(name).encode()
 
         # Establish a database session
         database = db.Database()
         session = database.session()
-        result = session.query(Agent).filter(Agent.id_agent == value)
+        result = session.query(AgentName).filter(AgentName.name == value)
 
         # Massage data
         if result.count() == 1:
             for instance in result:
-                self.data_dict['id_agent'] = id_agent
-                self.data_dict['idx_agent'] = instance.idx_agent
                 self.data_dict['idx_agentname'] = instance.idx_agentname
+                self.data_dict['name'] = name
                 self.data_dict['enabled'] = bool(instance.enabled)
                 self.data_dict['exists'] = True
                 break
@@ -220,20 +201,6 @@ class GetIDAgent(object):
         value = self.data_dict['exists']
         return value
 
-    def idx_agent(self):
-        """Get idx_agent value.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['idx_agent']
-        return value
-
     def idx_agentname(self):
         """Get idx_agentname value.
 
@@ -248,8 +215,8 @@ class GetIDAgent(object):
         value = self.data_dict['idx_agentname']
         return value
 
-    def id_agent(self):
-        """Get id_agent value.
+    def name(self):
+        """Get agent name.
 
         Args:
             None
@@ -259,7 +226,7 @@ class GetIDAgent(object):
 
         """
         # Initialize key variables
-        value = self.data_dict['id_agent']
+        value = self.data_dict['name']
         return value
 
     def enabled(self):
@@ -293,11 +260,11 @@ class GetIDAgent(object):
         return value
 
 
-def id_agent_exists(id_agent):
+def name_exists(name):
     """Determine whether the Identifier exists.
 
     Args:
-        id_agent: Identifier value for agent
+        name: Identifier value for agent
 
     Returns:
         exists: True if exists
@@ -307,8 +274,8 @@ def id_agent_exists(id_agent):
     exists = False
 
     # Get information on agent from database
-    value = '{}'.format(id_agent)
-    data = GetIDAgent(value)
+    value = '{}'.format(name)
+    data = GetAgentName(value)
     if data.exists() is True:
         exists = True
 
@@ -316,11 +283,11 @@ def id_agent_exists(id_agent):
     return exists
 
 
-def idx_agent_exists(idx_agent):
-    """Determine whether the idx_agent exists.
+def idx_agentname_exists(idx_agentname):
+    """Determine whether the idx_agentname exists.
 
     Args:
-        idx_agent: idx_agent value for datapoint
+        idx_agentname: idx_agentname value for datapoint
 
     Returns:
         exists: True if exists
@@ -330,11 +297,11 @@ def idx_agent_exists(idx_agent):
     exists = False
 
     # Fix values passed
-    if isinstance(idx_agent, int) is False:
-        idx_agent = None
+    if isinstance(idx_agentname, int) is False:
+        idx_agentname = None
 
     # Get information on agent from database
-    data = GetIDXAgent(idx_agent)
+    data = GetIDXAgentName(idx_agentname)
     if data.exists() is True:
         exists = True
 
@@ -342,8 +309,8 @@ def idx_agent_exists(idx_agent):
     return exists
 
 
-def get_all_agents():
-    """Get data on all agents in the database.
+def get_all_names():
+    """Get data on all names in the database.
 
     Args:
         None
@@ -358,14 +325,13 @@ def get_all_agents():
     # Establish a database session
     database = db.Database()
     session = database.session()
-    result = session.query(Agent)
+    result = session.query(AgentName)
 
     # Massage data
     for instance in result:
         # Get next record
         data_dict = defaultdict(dict)
-        data_dict['id_agent'] = general.decode(instance.id_agent)
-        data_dict['idx_agent'] = instance.idx_agent
+        data_dict['name'] = general.decode(instance.name)
         data_dict['idx_agentname'] = instance.idx_agentname
         data_dict['enabled'] = bool(instance.enabled)
         data_dict['exists'] = True
