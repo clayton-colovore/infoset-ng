@@ -10,7 +10,6 @@ import tempfile
 # Infoset imports
 from infoset.utils import general
 from infoset.cache import drain
-from infoset.test import unittest_setup_db
 from infoset.test import unittest_setup
 
 

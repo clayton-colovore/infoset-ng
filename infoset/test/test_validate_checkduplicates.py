@@ -35,16 +35,14 @@ class TestCheckDuplicates(unittest.TestCase):
         # Initialize key variables
         devicename = self.data['devicename']
         id_agent = self.data['id_agent']
-        agent_name = self.data['agent']
         last_timestamp = self.data['timestamp']
 
         # Drop the database and create tables
-        unittest_setup_db.initialize_db()
+        unittest_setup_db.TestData()
 
         # Add record to the database
         record = Agent(
-            id_agent=general.encode(id_agent),
-            name=general.encode(agent_name))
+            id_agent=general.encode(id_agent))
         database = db.Database()
         database.add(record, 1040)
 

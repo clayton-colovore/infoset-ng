@@ -33,7 +33,7 @@ class TestValidateCache(unittest.TestCase):
             general.hashstring(general.randomstring()))
 
         # Drop the database and create tables
-        unittest_setup_db.initialize_db()
+        unittest_setup_db.TestData()
 
         # Test with valid data
         result = validate.ValidateCache(data=self.data)
@@ -62,11 +62,18 @@ class TestValidateCache(unittest.TestCase):
         #################################################################
         #################################################################
 
-        unittest_setup_db.setup_db_deviceagent(self.data)
+        data_dict = copy.deepcopy(self.data)
+
+        # Populate dictionary with data values of prior entries
+        database = unittest_setup_db.TestData()
+        data_dict['timestamp'] = database.timestamp()
+        data_dict['devicename'] = database.devicename()
+        data_dict['agent'] = database.agent_name()
+        data_dict['id_agent'] = database.id_agent()
 
         # Attempting to insert duplicate data should fail
         with open(filepath, 'w') as f_handle:
-            json.dump(self.data, f_handle)
+            json.dump(data_dict, f_handle)
         result = validate.ValidateCache(filepath=filepath)
         self.assertEqual(result.valid(), False)
 
@@ -77,7 +84,7 @@ class TestValidateCache(unittest.TestCase):
         #################################################################
 
         # Drop the database and create tables
-        unittest_setup_db.initialize_db()
+        unittest_setup_db.TestData()
 
         # Write bad data to file and test
         data_dict = copy.deepcopy(self.data)
@@ -94,7 +101,7 @@ class TestValidateCache(unittest.TestCase):
     def test_getinfo(self):
         """Testing function getinfo."""
         # Drop the database and create tables
-        unittest_setup_db.initialize_db()
+        unittest_setup_db.TestData()
 
         # Test with valid data
         result = validate.ValidateCache(data=self.data)
@@ -107,7 +114,7 @@ class TestValidateCache(unittest.TestCase):
     def test_valid(self):
         """Testing function valid."""
         # Drop the database and create tables
-        unittest_setup_db.initialize_db()
+        unittest_setup_db.TestData()
 
         # Test with valid data
         result = validate.ValidateCache(data=self.data)
