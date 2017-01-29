@@ -14,6 +14,17 @@ import multiprocessing
 from gunicorn.app.base import BaseApplication
 from gunicorn.six import iteritems
 
+# Try to create a working PYTHONPATH
+script_directory = os.path.dirname(os.path.realpath(__file__))
+root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
+if script_directory.endswith('/infoset-ng/bin') is True:
+    sys.path.append(root_directory)
+else:
+    print(
+        'This script is not installed in the "infoset-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
+
 # Infoset libraries
 try:
     from infoset.utils import log
