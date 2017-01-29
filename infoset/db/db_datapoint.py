@@ -37,7 +37,10 @@ class GetIDDatapoint(object):
 
         """
         # Initialize important variables
-        value = id_datapoint.encode()
+        if isinstance(id_datapoint, str) is True:
+            value = id_datapoint.encode()
+        else:
+            value = None
         self.data_dict = defaultdict(dict)
         keys = [
             'idx_datapoint', 'id_datapoint', 'idx_deviceagent',

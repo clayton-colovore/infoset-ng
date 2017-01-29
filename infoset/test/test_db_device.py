@@ -16,18 +16,29 @@ class TestGetIDXDevice(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Intstantiate a good agent
-    idx_device_good = 1
-    expected = unittest_setup_db.setup_db_device()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_device'] = database.idx_device()
+    expected['devicename'] = database.devicename()
+    expected['description'] = database.device_description()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     # Create device object
-    good_device = db_device.GetIDXDevice(idx_device_good)
+    good_device = db_device.GetIDXDevice(expected['idx_device'])
 
     def test_init(self):
         """Testing method __init__."""
         # Test with non existent IDXDevice
         record = db_device.GetIDXDevice('bogus')
         self.assertEqual(record.exists(), False)
+        self.assertEqual(record.devicename(), None)
+        self.assertEqual(record.enabled(), None)
+        self.assertEqual(record.description(), None)
+        self.assertEqual(record.idx_device(), None)
 
     def test_devicename(self):
         """Testing method devicename."""
@@ -62,17 +73,6 @@ class TestGetIDXDevice(unittest.TestCase):
         result = self.good_device.enabled()
         self.assertNotEqual(result, expected)
 
-    def test_ip_address(self):
-        """Testing function ip_address."""
-        # Testing with known good value
-        result = self.good_device.ip_address()
-        self.assertEqual(result, self.expected['ip_address'])
-
-        # Testing with known bad value
-        expected = ('bogus')
-        result = self.good_device.ip_address()
-        self.assertNotEqual(result, expected)
-
     def test_exists(self):
         """Testing function exists."""
         # Testing with known good value
@@ -87,18 +87,29 @@ class TestGetDevice(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Intstantiate a good agent
-    idx_device_good = 1
-    expected = unittest_setup_db.setup_db_device()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_device'] = database.idx_device()
+    expected['devicename'] = database.devicename()
+    expected['description'] = database.device_description()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     # Create device object
-    good_device = db_device.GetIDXDevice(idx_device_good)
+    good_device = db_device.GetDevice(expected['devicename'])
 
     def test___init__(self):
         """Testing function __init__."""
         # Test with non existent DeviceIDX
-        record = db_device.GetIDXDevice('bogus')
+        record = db_device.GetDevice('bogus')
         self.assertEqual(record.exists(), False)
+        self.assertEqual(record.devicename(), None)
+        self.assertEqual(record.enabled(), None)
+        self.assertEqual(record.description(), None)
+        self.assertEqual(record.idx_device(), None)
 
     def test_idx_device(self):
         """Testing method idx_device."""
@@ -139,17 +150,6 @@ class TestGetDevice(unittest.TestCase):
         result = self.good_device.enabled()
         self.assertNotEqual(result, expected)
 
-    def test_ip_address(self):
-        """Testing function ip_address."""
-        # Testing with known good value
-        result = self.good_device.ip_address()
-        self.assertEqual(result, self.expected['ip_address'])
-
-        # Testing with known bad value
-        expected = ('bogus')
-        result = self.good_device.ip_address()
-        self.assertNotEqual(result, expected)
-
 
 class TestFunctions(unittest.TestCase):
     """Checks all functions."""
@@ -158,9 +158,16 @@ class TestFunctions(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Intstantiate a good agent
-    idx_device_good = 1
-    expected = unittest_setup_db.setup_db_device()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_device'] = database.idx_device()
+    expected['devicename'] = database.devicename()
+    expected['description'] = database.device_description()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     def test_all_devices(self):
         """Testing function all_devices."""
@@ -183,12 +190,13 @@ class TestFunctions(unittest.TestCase):
     def test_idx_device_exists(self):
         """Testing function idx_exists."""
         # Test known working value
-        result = db_device.idx_device_exists(1)
+        result = db_device.idx_device_exists(self.expected['idx_device'])
         self.assertEqual(result, True)
 
         # Test known false value
         result = db_device.idx_device_exists(-1)
         self.assertEqual(result, False)
+
 
 if __name__ == '__main__':
     # Test the environment variables

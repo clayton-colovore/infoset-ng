@@ -15,8 +15,16 @@ class TestGetIDXDepartment(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Setup database
-    expected = unittest_setup_db.setup_db_department()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_department'] = database.idx_department()
+    expected['name'] = database.department_name()
+    expected['code'] = database.department_code()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     # Retrieve data
     good_agent = db_department.GetIDXDepartment(expected['idx_department'])
@@ -81,8 +89,16 @@ class TestGetIDXDepartment(unittest.TestCase):
 class TestGetCodeDepartment(unittest.TestCase):
     """Checks all functions and methods."""
 
-    # Setup database
-    expected = unittest_setup_db.setup_db_department()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_department'] = database.idx_department()
+    expected['name'] = database.department_name()
+    expected['code'] = database.department_code()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     # Retrieve data
     good_agent = db_department.GetCodeDepartment(expected['code'])
@@ -147,8 +163,16 @@ class TestGetCodeDepartment(unittest.TestCase):
 class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 
-    # Setup database
-    expected = unittest_setup_db.setup_db_department()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_department'] = database.idx_department()
+    expected['name'] = database.department_name()
+    expected['code'] = database.department_code()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     def test_code_exists(self):
         """Testing function code_exists."""
