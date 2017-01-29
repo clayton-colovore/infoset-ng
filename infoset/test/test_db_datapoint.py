@@ -20,20 +20,19 @@ class TestGetID(unittest.TestCase):
 
     # Define expected values
     expected = {}
-    expected = {}
     expected['id_datapoint'] = database.id_datapoint()
     expected['last_timestamp'] = database.timestamp()
     expected['idx_deviceagent'] = database.idx_deviceagent()
     expected['idx_datapoint'] = database.idx_datapoint()
     expected['idx_department'] = database.idx_department()
     expected['idx_billcode'] = database.idx_billcode()
+    expected['agent_label'] = database.agent_label()
+    expected['agent_source'] = database.agent_source()
     expected['enabled'] = True
     expected['exists'] = True
     expected['billable'] = False
     expected['base_type'] = 1
-    expected['agent_label'] = None
     expected['timefixed_value'] = None
-    expected['agent_source'] = None
 
     # Retrieve data
     testing = db_datapoint.GetIDDatapoint(expected['id_datapoint'])
@@ -160,15 +159,15 @@ class TestGetIDX(unittest.TestCase):
     expected['idx_datapoint'] = database.idx_datapoint()
     expected['idx_department'] = database.idx_department()
     expected['idx_billcode'] = database.idx_billcode()
+    expected['agent_label'] = database.agent_label()
+    expected['agent_source'] = database.agent_source()
     expected['enabled'] = True
     expected['exists'] = True
     expected['billable'] = False
     expected['base_type'] = 1
-    expected['agent_label'] = None
     expected['timefixed_value'] = None
-    expected['agent_source'] = None
 
-    # Retrieve data
+    # Retriev edata
     testing = db_datapoint.GetIDXDatapoint(expected['idx_datapoint'])
 
     def test___init__(self):
@@ -293,13 +292,13 @@ class TestFunctions(unittest.TestCase):
     expected['idx_datapoint'] = database.idx_datapoint()
     expected['idx_department'] = database.idx_department()
     expected['idx_billcode'] = database.idx_billcode()
+    expected['agent_label'] = database.agent_label()
+    expected['agent_source'] = database.agent_source()
     expected['enabled'] = True
     expected['exists'] = True
     expected['billable'] = False
     expected['base_type'] = 1
-    expected['agent_label'] = None
     expected['timefixed_value'] = None
-    expected['agent_source'] = None
 
     def test_id_datapoint_exists(self):
         """Testing function id_datapoint_exists."""

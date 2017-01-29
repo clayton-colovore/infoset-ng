@@ -112,6 +112,8 @@ class TestData(object):
         self.data['device_description'] = general.hashstring(
             general.randomstring())
         self.data['agent_name'] = general.hashstring(general.randomstring())
+        self.data['agent_source'] = general.hashstring(general.randomstring())
+        self.data['agent_label'] = general.hashstring(general.randomstring())
         self.data['department_code'] = general.hashstring(
             general.randomstring())
         self.data['department_name'] = general.hashstring(
@@ -158,16 +160,30 @@ class TestData(object):
 
         # Insert Datapoint data into database
         new_data = Datapoint(
+            agent_source=self.data['agent_source'].encode(),
+            agent_label=self.data['agent_label'].encode(),
             last_timestamp=self.data['timestamp'],
             idx_deviceagent=self.data['idx_deviceagent'],
             id_datapoint=self.data['id_datapoint'].encode())
         database = db.Database()
         database.add_all([new_data], 1072)
 
+    def agent_label(self):
+        """Return agent_label."""
+        # Initialize key variables
+        value = self.data['agent_label']
+        return value
+
     def agent_name(self):
         """Return agent_name."""
         # Initialize key variables
         value = self.data['agent_name']
+        return value
+
+    def agent_source(self):
+        """Return agent_source."""
+        # Initialize key variables
+        value = self.data['agent_source']
         return value
 
     def billcode_code(self):
