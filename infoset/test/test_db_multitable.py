@@ -2,7 +2,6 @@
 """Test the db_multitable library in the infoset.db module."""
 
 import unittest
-from pprint import pprint
 
 from infoset.db import db_multitable
 from infoset.test import unittest_setup_db
