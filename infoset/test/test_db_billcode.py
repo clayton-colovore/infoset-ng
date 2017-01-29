@@ -15,8 +15,16 @@ class TestGetIDXBillcode(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Setup database
-    expected = unittest_setup_db.setup_db_billcode()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_billcode'] = database.idx_billcode()
+    expected['name'] = database.billcode_name()
+    expected['code'] = database.billcode_code()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     # Retrieve data
     good_agent = db_billcode.GetIDXBillcode(expected['idx_billcode'])
@@ -26,6 +34,10 @@ class TestGetIDXBillcode(unittest.TestCase):
         # Test with non existent AgentIDX
         record = db_billcode.GetIDXBillcode(-1)
         self.assertEqual(record.exists(), False)
+        self.assertEqual(record.enabled(), None)
+        self.assertEqual(record.idx_billcode(), None)
+        self.assertEqual(record.code(), None)
+        self.assertEqual(record.name(), None)
 
     def test_idx_billcode(self):
         """Testing method idx_billcode."""
@@ -81,8 +93,16 @@ class TestGetIDXBillcode(unittest.TestCase):
 class TestGetCodeBillcode(unittest.TestCase):
     """Checks all functions and methods."""
 
-    # Setup database
-    expected = unittest_setup_db.setup_db_billcode()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_billcode'] = database.idx_billcode()
+    expected['name'] = database.billcode_name()
+    expected['code'] = database.billcode_code()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     # Retrieve data
     good_agent = db_billcode.GetCodeBillcode(expected['code'])
@@ -91,6 +111,10 @@ class TestGetCodeBillcode(unittest.TestCase):
         """Testing method __init__."""
         # Test with non existent AgentID
         record = db_billcode.GetCodeBillcode('bogus')
+        self.assertEqual(record.enabled(), None)
+        self.assertEqual(record.idx_billcode(), None)
+        self.assertEqual(record.code(), None)
+        self.assertEqual(record.name(), None)
         self.assertEqual(record.exists(), False)
 
     def test_idx_billcode(self):
@@ -147,8 +171,16 @@ class TestGetCodeBillcode(unittest.TestCase):
 class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 
-    # Setup database
-    expected = unittest_setup_db.setup_db_billcode()
+    # Setup database based on the config
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_billcode'] = database.idx_billcode()
+    expected['name'] = database.billcode_name()
+    expected['code'] = database.billcode_code()
+    expected['enabled'] = True
+    expected['exists'] = True
 
     def test_code_exists(self):
         """Testing function code_exists."""

@@ -33,14 +33,18 @@ class GetDevice(object):
 
         """
         # Initialize important variables
-        value = str(devicename).encode()
         self.data_dict = defaultdict(dict)
         keys = [
-            'idx_device', 'devicename', 'description', 'enabled',
-            'ip_address']
+            'idx_device', 'devicename', 'description', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
+
+        # Encode the id_agent
+        if isinstance(devicename, str) is True:
+            value = devicename.encode()
+        else:
+            value = None
 
         # Establish a database session
         database = db.Database()
@@ -56,8 +60,6 @@ class GetDevice(object):
                 self.data_dict[
                     'description'] = general.decode(instance.description)
                 self.data_dict['enabled'] = bool(instance.enabled)
-                self.data_dict[
-                    'ip_address'] = general.decode(instance.ip_address)
                 self.data_dict['exists'] = True
                 break
 
@@ -134,20 +136,6 @@ class GetDevice(object):
         value = self.data_dict['enabled']
         return value
 
-    def ip_address(self):
-        """Get ip_address value.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['ip_address']
-        return value
-
 
 class GetIDXDevice(object):
     """Class to return device data by idx_device.
@@ -175,8 +163,7 @@ class GetIDXDevice(object):
         # Initialize important variables
         self.data_dict = defaultdict(dict)
         keys = [
-            'idx_device', 'devicename', 'description', 'enabled',
-            'ip_address']
+            'idx_device', 'devicename', 'description', 'enabled']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -198,8 +185,6 @@ class GetIDXDevice(object):
                     self.data_dict['description'] = general.decode(
                         instance.description)
                     self.data_dict['enabled'] = bool(instance.enabled)
-                    self.data_dict['ip_address'] = general.decode(
-                        instance.ip_address)
                     self.data_dict['exists'] = True
                     break
 
@@ -290,20 +275,6 @@ class GetIDXDevice(object):
         value = self.data_dict['enabled']
         return value
 
-    def ip_address(self):
-        """Get ip_address value.
-
-        Args:
-            None
-
-        Returns:
-            value: Value to return
-
-        """
-        # Initialize key variables
-        value = self.data_dict['ip_address']
-        return value
-
 
 def all_devices(enabled=True):
     """Get list of all devices.
@@ -338,7 +309,6 @@ def all_devices(enabled=True):
             data_dict['devicename'] = device.devicename()
             data_dict['description'] = device.description()
             data_dict['enabled'] = device.enabled()
-            data_dict['ip_address'] = device.ip_address()
             data_dict['exists'] = True
             devicelist.append(data_dict)
 

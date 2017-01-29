@@ -29,13 +29,14 @@ except:
 from infoset.utils import configuration
 from infoset.utils import general
 from infoset.db.db_orm import BASE, Agent, Department, Device, Billcode
-from infoset.db.db_orm import Configuration, DeviceAgent, Datapoint
+from infoset.db.db_orm import Configuration, DeviceAgent, Datapoint, AgentName
 from infoset.db import URL
 from infoset.db import db_configuration
 from infoset.db import db_billcode
 from infoset.db import db_department
 from infoset.db import db_device
 from infoset.db import db_agent
+from infoset.db import db_agentname
 from infoset.db import db_deviceagent
 from infoset.db import db_datapoint
 from infoset.db import db
@@ -125,15 +126,22 @@ class _Database(object):
 
         """
         # Initialize key variables
+        idx_agentname = 1
         idx_agent = 1
         idx_device = 1
 
+        # Add agent name
+        if db_agentname.idx_agentname_exists(idx_agentname) is False:
+            # Generate a name add a record in the database
+            record = AgentName(
+                name=general.encode(self.reserved))
+            database = db.Database()
+            database.add(record, 1109)
+
         # Add agent
         if db_agent.idx_agent_exists(idx_agent) is False:
-            # Generate a UID and add a record in the database
-            record = Agent(
-                id_agent=general.encode(self.reserved),
-                name=general.encode(self.reserved))
+            # Generate an Agent ID and add a record in the database
+            record = Agent(id_agent=general.encode(self.reserved))
             database = db.Database()
             database.add(record, 1109)
 

@@ -17,14 +17,15 @@ class APITestCase(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    # Define well known agent index number
-    idx_agent = 1
-
     # Setup database based on the config
-    (_, expected) = unittest_setup_db.setup_db_agent()
+    database = unittest_setup_db.TestData()
+
+    # Define expected values
+    expected = {}
+    expected['idx_agent'] = database.idx_agent()
 
     # Retrieve data
-    good_agent = db_agent.GetIDXAgent(idx_agent)
+    good_agent = db_agent.GetIDXAgent(expected['idx_agent'])
 
     def setUp(self):
         """Setup the environment prior to testing."""
@@ -35,7 +36,7 @@ class APITestCase(unittest.TestCase):
         """Testing method / function agents."""
         # Initializing key variables
         response = self.API.get(
-            '/infoset/api/v1/agents/{}'.format(self.idx_agent))
+            '/infoset/api/v1/agents/{}'.format(self.expected['idx_agent']))
         data = json.loads(response.get_data(as_text=True))
 
         # Verify reponse code
