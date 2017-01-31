@@ -15,8 +15,16 @@ import copy
 import re
 
 # PIP3 imports
-import yaml
-from sqlalchemy import create_engine
+try:
+    import yaml
+    from sqlalchemy import create_engine
+except ImportError:
+    import pip
+    packages = ['yaml', 'sqlalchemy']
+    for package in packages:
+        pip.main(['install', '--user', package])
+    import yaml
+    from sqlalchemy import create_engine
 
 # Try to create a working PYTHONPATH
 root_directory = os.path.dirname(os.path.realpath(__file__))
