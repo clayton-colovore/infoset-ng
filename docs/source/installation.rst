@@ -29,7 +29,7 @@ Select either of these commands to install MySQL server or MariaDB server
 
     $ sudo apt-get -y install mysql-server
     $ sudo apt-get -y install mariadb-server
-
+    
 
 Centos / Fedora
 ~~~~~~~~~~~~~~~
@@ -59,6 +59,7 @@ The first thing to do is verify that your system has the correct prerequisites. 
 
 ::
 
+    $ pip3 install --user setuptools
     $ bin/tools/prerequisites.py
 
 Do the appropriate remediation to fix any reported issues. Run any commands this script suggests.
@@ -91,7 +92,6 @@ final location.
 
     $ git clone https://github.com/PalisadoesFoundation/infoset-ng
     $ cd infoset-ng
-    $ export PYTHONPATH=`pwd`
 
 
 Edit Configuration File
