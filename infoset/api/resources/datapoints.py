@@ -180,3 +180,29 @@ def db_datapoint_summary():
 
     # Return
     return jsonify(data)
+
+
+@DATAPOINTS.route('/datapoints/all/summarylist')
+def db_datapoint_summary_list():
+    """Get Datapoint summary data from the DB as a list of dicts.
+
+    Args:
+        None
+
+    Returns:
+        Home Page
+
+    """
+    # Get data from cache
+    key = ('DB/multitable/datapoints/all/summarylist')
+    cache_value = CACHE.get(key)
+
+    # Process cache miss
+    if cache_value is None:
+        data = db_multitable.datapoint_summary_list()
+        CACHE.set(key, data)
+    else:
+        data = cache_value
+
+    # Return
+    return jsonify(data)
