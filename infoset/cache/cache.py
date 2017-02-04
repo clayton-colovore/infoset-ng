@@ -8,6 +8,7 @@ import shutil
 from collections import defaultdict
 from multiprocessing import Pool
 import re
+import pymysql
 
 # PIP libraries
 from sqlalchemy import and_
@@ -283,8 +284,16 @@ class _PrepareDatabase(object):
             record = AgentName(
                 name=general.encode(agent_name))
             database = db.Database()
-            database.add(record, 1081)
-
+            try:
+                database.add(record, 1081)
+            except pymysql.IntegrityError:
+                # There may be a duplicate agent name if this is a brand
+                # new database and there is a flurry of updates from multiple
+                # agents. This is OK, pass.
+                #
+                # We are expecting a 'pymysql.err.IntegrityError' but for some
+                # reason it could not be caught.
+                pass
             new_name_data = db_agentname.GetAgentName(agent_name)
             idx_agentname = new_name_data.idx_agentname()
         else:
