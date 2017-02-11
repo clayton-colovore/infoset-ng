@@ -33,7 +33,7 @@ class GetConfigurationKey(object):
 
         """
         # Initialize important variables
-        value = config_key.encode()
+        value = '{}'.format(config_key).encode()
         self.data_dict = defaultdict(dict)
         keys = ['idx_configuration', 'config_key', 'config_value', 'enabled']
         for key in keys:
