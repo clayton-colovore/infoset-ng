@@ -24,7 +24,7 @@ from infoset.utils import configuration
 from infoset.utils import log
 from infoset.utils import general
 from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent, Billcode
-from infoset.db.db_orm import Department, Datapoint, AgentName
+from infoset.db.db_orm import Department, Datapoint, AgentName, Configuration
 from infoset.db import URL, TEST_ENGINE
 from infoset.db import db
 from infoset.db import db_agent
@@ -364,3 +364,84 @@ def initialize_db():
     setup_database.drop()
     setup_database.create()
     setup_database.create_tables()
+
+
+def setup_db_configuration():
+    """Create the database for Configuration table testing.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    idx_configuration = 1
+
+    # Get Configuration
+    config_key = general.hashstring('_INFOSET_TEST_')
+    config_value = general.hashstring('_INFOSET_TEST_VALUE_')
+
+    # Create a dict of all the expected values
+    expected = {
+        'config_key': config_key,
+        'config_value': config_value,
+        'idx_configuration': idx_configuration,
+        'enabled': 1
+    }
+
+    # Drop the database and create tables
+    initialize_db()
+
+    # Insert data into database
+    data = Configuration(
+        config_key=general.encode(expected['config_key']),
+        config_value=general.encode(expected['config_value']),
+        enabled=expected['enabled'])
+    database = db.Database()
+    database.add_all([data], 1045)
+
+    # Return
+    return expected
+
+
+def setup_db_IDXConfiguration():
+    """Create the database for Configuration table testing.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    idx_configuration = 1
+
+    # Get Configuration
+    config_key = general.hashstring('_INFOSET_TEST_')
+    config_value = general.hashstring('_INFOSET_TEST_VALUE_')
+
+    # Create a dict of all the expected values
+    expected = {
+        'config_key': config_key,
+        'config_value': config_value,
+        'idx_configuration': idx_configuration,
+        'enabled': 1,
+        'exists': True
+    }
+
+    # Drop the database and create tables
+    initialize_db()
+
+    # Insert data into database
+    data = Configuration(
+        config_key=general.encode(expected['config_key']),
+        config_value=general.encode(expected['config_value']),
+        enabled=expected['enabled'])
+    database = db.Database()
+    database.add_all([data], 1045)
+
+    # Return
+    return expected
