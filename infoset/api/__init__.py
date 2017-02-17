@@ -2,19 +2,16 @@
 
 # Import PIP3 libraries
 from flask import Flask
-from flask_cache import Cache
-CACHE = Cache(config={
-    'CACHE_TYPE': 'memcached',
-    'CACHE_DEFAULT_TIMEOUT': 20})
+from flask_caching import Cache
 
 # Import configuration. This has to be done before all other infoset imports.
 from infoset.utils import configuration
 CONFIG = configuration.Config()
 
-# Setup memcache. Required for all API imports
-# from infoset.api.common import cache
-# CACHE = cache.Cache(CONFIG)
-# CACHE = cache.CACHE
+# Configure the cache
+CACHE = Cache(config={
+    'CACHE_TYPE': 'memcached',
+    'CACHE_DEFAULT_TIMEOUT': CONFIG.interval()})
 
 # Do remaining infoset-ng importations
 from infoset.api.post import POST
@@ -30,8 +27,9 @@ from infoset.api.resources.deviceagents import DEVICEAGENTS
 # Define the global URL prefix
 API_PREFIX = '/infoset/api/v1'
 
-# Setup API
+# Setup API and intialize the cache
 API = Flask(__name__)
+CACHE.init_app(API)
 
 # Register Blueprints
 API.register_blueprint(POST, url_prefix=API_PREFIX)

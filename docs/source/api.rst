@@ -178,6 +178,7 @@ Example:
     }
     $
 
+
 Route /infoset/api/v1/agents?id_agent=<id_agent>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -258,6 +259,7 @@ Example:
     ]
     $
 
+
 Route /infoset/api/v1/deviceagents/``idx_deviceagent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -297,6 +299,7 @@ Example:
       }
     ]
     $
+
 
 Route /infoset/api/v1/devices/``<idx_device>``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -382,6 +385,7 @@ Example:
     }
     $
 
+
 Route /infoset/api/v1/datapoints?id_datapoint=<id_datapoint>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -434,6 +438,7 @@ Example:
       "timefixed_value": null
     }
     $
+
 
 Route /infoset/api/v1/datapoints?idx_deviceagent=<idx_deviceagent>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -488,6 +493,7 @@ Example:
     }
     $
 
+
 Route /infoset/api/v1/datapoints/all/summary
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -536,7 +542,6 @@ Example:
       }
     ]
     $
-
 
 
 Route /infoset/api/v1/datapoints&id_datapoint=``<id_datapoint>``
@@ -590,6 +595,7 @@ Example:
       "timefixed_value": null
     }
     $
+
 
 Route /infoset/api/v1/devices/``<idx_device>``/agents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -663,6 +669,7 @@ Field                       Description
       }
     ]
 
+
 Route /infoset/api/v1/lastcontacts?secondsago=<seconds>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -715,6 +722,7 @@ Field                       Description
       }
     ]
 
+
 Route /infoset/api/v1/lastcontacts?ts_start=``timestamp``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -764,6 +772,176 @@ Field                       Description
         "idx_datapoint": 418,
         "timestamp": 1483629900,
         "value": 60370900.0
+      }
+    ]
+
+
+Route /infoset/api/v1/lastcontacts/id_agents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive **all** the most recently posted data values.
+
+Data is queried starting from 10X the interval value in your configuration file seconds ago until the present.
+
+
+=========================   ======
+Field                       Description
+=========================   ======
+``devicename``              The name of the device generating the data
+``name``                    The name of the agent generating the data
+``id_agent``                The ID of the agent generating the data
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl http://SERVER_IP:6000/infoset/api/v1/lastcontacts/id_agents
+
+    [
+      {
+        "devicename": "name_1",
+        "id_agent": "bec9ba91e14804001e037fa4f52c94fb1ef027d04e1b86f6a74ab36e3b073609",
+        "name": "Agent_Name",
+        "timeseries": {
+          "agent_label_1": {
+            "timestamp": 1487377500,
+            "value": 1.8191
+          },
+          "agent_label_2": {
+            "timestamp": 1487377500,
+            "value": 1.8694
+          }
+        }
+      },
+      {
+        "devicename": "name_2", 
+        "id_agent": "e33ce6311cf95c6264c6777323e9c717220b19ccad7b6da1877384e7fb3364e7", 
+        "name": "Agent_Name", 
+        "timeseries": {
+          "agent_label_1": {
+            "timestamp": 1487377500, 
+            "value": 1.61078
+          }, 
+          "agent_label_2": {
+            "timestamp": 1487377500, 
+            "value": 1.54421
+          }
+        }
+      }
+    ]
+
+
+Route /infoset/api/v1/lastcontacts/id_agents?secondsago=<seconds>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive **all** the most recently posted data values.
+
+The query starts looking for contacts as of ``secondsago`` seconds ago.
+
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts/id_agents``, which is the preferred method of getting this data.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``devicename``              The name of the device generating the data
+``name``                    The name of the agent generating the data
+``id_agent``                The ID of the agent generating the data
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/id_agents?secondsago=3600"
+
+    [
+      {
+        "devicename": "name_1",
+        "id_agent": "bec9ba91e14804001e037fa4f52c94fb1ef027d04e1b86f6a74ab36e3b073609",
+        "name": "Agent_Name",
+        "timeseries": {
+          "agent_label_1": {
+            "timestamp": 1487377500,
+            "value": 1.8191
+          },
+          "agent_label_2": {
+            "timestamp": 1487377500,
+            "value": 1.8694
+          }
+        }
+      },
+      {
+        "devicename": "name_2", 
+        "id_agent": "e33ce6311cf95c6264c6777323e9c717220b19ccad7b6da1877384e7fb3364e7", 
+        "name": "Agent_Name", 
+        "timeseries": {
+          "agent_label_1": {
+            "timestamp": 1487377500, 
+            "value": 1.61078
+          }, 
+          "agent_label_2": {
+            "timestamp": 1487377500, 
+            "value": 1.54421
+          }
+        }
+      }
+    ]
+    
+
+Route /infoset/api/v1/lastcontacts/id_agents?ts_start=``timestamp``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This route will retreive **all** the most recently posted data values.
+
+A starting **UTC** timestamp needs to be provided. Searches for contacts are made from starting at this time until the present.
+
+This route does not use the cache as efficiently as ``/infoset/api/v1/lastcontacts/id_agents``, which is the preferred method of getting this data.
+
+=========================   ======
+Field                       Description
+=========================   ======
+``devicename``              The name of the device generating the data
+``name``                    The name of the agent generating the data
+``id_agent``                The ID of the agent generating the data
+``timestamp``               **UTC** timestamp of the most recent contact
+``value``                   Value of the datapoint reading at the timestamp's point in time
+=========================   ======
+
+::
+
+    $ curl "http://SERVER_IP:6000/infoset/api/v1/lastcontacts/id_agents?ts_start=0"
+
+    [
+      {
+        "devicename": "name_1",
+        "id_agent": "bec9ba91e14804001e037fa4f52c94fb1ef027d04e1b86f6a74ab36e3b073609",
+        "name": "Agent_Name",
+        "timeseries": {
+          "agent_label_1": {
+            "timestamp": 1487377500,
+            "value": 1.8191
+          },
+          "agent_label_2": {
+            "timestamp": 1487377500,
+            "value": 1.8694
+          }
+        }
+      },
+      {
+        "devicename": "name_2", 
+        "id_agent": "e33ce6311cf95c6264c6777323e9c717220b19ccad7b6da1877384e7fb3364e7", 
+        "name": "Agent_Name", 
+        "timeseries": {
+          "agent_label_1": {
+            "timestamp": 1487377500, 
+            "value": 1.61078
+          }, 
+          "agent_label_2": {
+            "timestamp": 1487377500, 
+            "value": 1.54421
+          }
+        }
       }
     ]
 
@@ -991,6 +1169,7 @@ Field                       Description
       }
     ]
     $
+
 
 Route /infoset/api/v1/lastcontacts/devicenames/``<devicename>``/id_agents/``<id_agent>``
 ?secondsago=``seconds``

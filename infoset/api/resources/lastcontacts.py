@@ -66,6 +66,7 @@ def id_agents():
     # Initialize key variables
     data = []
     outcomes = defaultdict(lambda: defaultdict(dict))
+    agent_data = defaultdict(lambda: defaultdict(dict))
 
     # Get starting timestamp
     secondsago = general.integerize(request.args.get('secondsago'))
@@ -87,6 +88,7 @@ def id_agents():
 
     # Store the contacts according to id_agent and agent_label
     for contact in contacts:
+        # Track last contacts for each agent_label of each id_agent
         data_dict = {
             'timestamp': contact['timestamp'],
             'value': contact['value']}
@@ -95,12 +97,23 @@ def id_agents():
         agent_label = mapping[idx_datapoint]['agent_label']
         outcomes[id_agent][agent_label] = data_dict
 
+        # Track summary data for each id_agent
+        agent_data[
+            id_agent]['name'] = mapping[idx_datapoint]['name']
+        agent_data[
+            id_agent]['devicename'] = mapping[idx_datapoint]['devicename']
+
     # Create a list of dicts of contacts keyed by id_agent
     for id_agent, label_dict in outcomes.items():
         # Initalize dict for id_agent data
         new_dict = defaultdict(lambda: defaultdict(dict))
-        for label, value_dict in label_dict.items():
-            new_dict[id_agent][label] = value_dict
+        for agent_label, value_dict in label_dict.items():
+            new_dict['timeseries'][agent_label] = value_dict
+
+        # Assign more new_dict values
+        new_dict['name'] = agent_data[id_agent]['name']
+        new_dict['devicename'] = agent_data[id_agent]['devicename']
+        new_dict['id_agent'] = id_agent
 
         # Append dict to data
         data.append(new_dict)
