@@ -6,7 +6,8 @@ from collections import defaultdict
 # Infoset libraries
 from infoset.utils import general
 from infoset.db import db
-from infoset.db.db_orm import Agent
+from infoset.db.db_orm import Agent, AgentName
+from sqlalchemy import and_
 
 
 class GetIDXAgent(object):
@@ -34,7 +35,7 @@ class GetIDXAgent(object):
         """
         # Initialize important variables
         self.data_dict = defaultdict(dict)
-        keys = ['idx_agent', 'idx_agentname', 'id_agent', 'enabled']
+        keys = ['idx_agent', 'idx_agentname', 'id_agent', 'enabled', 'name']
         for key in keys:
             self.data_dict[key] = None
         self.data_dict['exists'] = False
@@ -64,6 +65,17 @@ class GetIDXAgent(object):
 
             # Return the session to the database pool after processing
             database.close()
+
+            # Add the agent name to dict
+            if bool(self.data_dict['exists']) is True:
+                print('boo')
+                database = db.Database()
+                session = database.session()
+                result = session.query(AgentName.name).filter(
+                    and_(Agent.idx_agent == self.data_dict['idx_agent'],
+                         Agent.idx_agentname == AgentName.idx_agentname)).one()
+                self.data_dict['name'] = general.decode(result.name)
+                database.close()
 
     def exists(self):
         """Tell if row is exists.
@@ -205,6 +217,16 @@ class GetIDAgent(object):
 
         # Return the session to the database pool after processing
         database.close()
+
+        # Add the agent name to dict
+        if bool(self.data_dict['exists']) is True:
+            database = db.Database()
+            session = database.session()
+            result = session.query(AgentName.name).filter(
+                and_(Agent.idx_agent == self.data_dict['idx_agent'],
+                     Agent.idx_agentname == AgentName.idx_agentname)).one()
+            self.data_dict['name'] = general.decode(result.name)
+            database.close()
 
     def exists(self):
         """Tell if row is exists.
@@ -358,7 +380,9 @@ def get_all_agents():
     # Establish a database session
     database = db.Database()
     session = database.session()
-    result = session.query(Agent)
+    result = session.query(
+        Agent.id_agent, Agent.idx_agent, Agent.idx_agentname, Agent.enabled,
+        AgentName.name).filter(Agent.idx_agentname == AgentName.idx_agentname)
 
     # Massage data
     for instance in result:
@@ -368,6 +392,7 @@ def get_all_agents():
         data_dict['idx_agent'] = instance.idx_agent
         data_dict['idx_agentname'] = instance.idx_agentname
         data_dict['enabled'] = bool(instance.enabled)
+        data_dict['name'] = general.decode(instance.name)
         data_dict['exists'] = True
 
         # Append to list
