@@ -15,6 +15,7 @@ AGENTS = Blueprint('AGENTS', __name__)
 
 
 @AGENTS.route('/agents/<idx_agent>')
+@CACHE.cached()
 def agents(idx_agent):
     """Get Agent data from the DB by idx value.
 
@@ -25,23 +26,16 @@ def agents(idx_agent):
         data: JSON data for the selected agent
 
     """
-    # Get data from cache
-    key = ('DB/Agent/idx_agent/{}'.format(idx_agent))
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        query = db_agent.GetIDXAgent(general.integerize(idx_agent))
-        data = query.everything()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    query = db_agent.GetIDXAgent(general.integerize(idx_agent))
+    data = query.everything()
 
     # Return
     return jsonify(data)
 
 
 @AGENTS.route('/agents')
+@CACHE.cached()
 def agents_query():
     """Get Agent data from the DB by id_agent value.
 
@@ -57,27 +51,10 @@ def agents_query():
 
     if bool(id_agent) is True:
         # Process id_datapoint request
-        key = ('DB/Agent/id_agent/{}'.format(id_agent))
-        cache_value = CACHE.get(key)
-
-        # Process cache miss
-        if cache_value is None:
-            query = db_agent.GetIDAgent(id_agent)
-            data = query.everything()
-            CACHE.set(key, data)
-        else:
-            data = cache_value
+        query = db_agent.GetIDAgent(id_agent)
+        data = query.everything()
     else:
-        # Process general request
-        key = ('DB/Agent/id_agent')
-        cache_value = CACHE.get(key)
-
-        # Process cache miss
-        if cache_value is None:
-            data = db_agent.get_all_agents()
-            CACHE.set(key, data)
-        else:
-            data = cache_value
+        data = db_agent.get_all_agents()
 
     # Return
     return jsonify(data)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Code that interacts with memory cache."""
 
-# Standard libraries
+# PIP3 libraries
 import memcache
 
 

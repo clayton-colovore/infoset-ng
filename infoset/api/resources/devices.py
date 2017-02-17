@@ -15,6 +15,7 @@ DEVICES = Blueprint('DEVICES', __name__)
 
 
 @DEVICES.route('/devices/<int:value>')
+@CACHE.cached()
 def db_getidxdevice(value):
     """Get device data from the DB by idx value.
 
@@ -28,23 +29,16 @@ def db_getidxdevice(value):
     # Initialize key variables
     idx_device = int(value)
 
-    # Get data from cache
-    key = ('DB/Device/idx_device/{}'.format(idx_device))
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        query = db_device.GetIDXDevice(idx_device)
-        data = query.everything()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    query = db_device.GetIDXDevice(idx_device)
+    data = query.everything()
 
     # Return
     return jsonify(data)
 
 
 @DEVICES.route('/devices/<int:value>/agents')
+@CACHE.cached()
 def db_deviceagent_agentindices(value):
     """Get all agent indices from the DB.
 
@@ -58,16 +52,8 @@ def db_deviceagent_agentindices(value):
     # Initialize key variables
     idx_device = int(value)
 
-    # Get data from cache
-    key = ('DB/Device/idx_device/{}/agents'.format(idx_device))
-    cache_value = CACHE.get(key)
-
     # Process cache miss
-    if cache_value is None:
-        data = db_deviceagent.agent_indices(idx_device)
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    data = db_deviceagent.agent_indices(idx_device)
 
     # Return
     return jsonify(data)
