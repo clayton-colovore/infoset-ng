@@ -18,6 +18,7 @@ DATAPOINTS = Blueprint('DATAPOINTS', __name__)
 
 
 @DATAPOINTS.route('/datapoints/<idx_datapoint>')
+@CACHE.cached()
 def datapoints(idx_datapoint):
     """Get datapoint data filtered by datapoint index value.
 
@@ -28,24 +29,16 @@ def datapoints(idx_datapoint):
         data: JSON data for the selected agent
 
     """
-    # Get data from cache
-    key = ('DB/Datapoint/idx_datapoint/{}'.format(idx_datapoint))
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        query = db_datapoint.GetIDXDatapoint(
-            general.integerize(idx_datapoint))
-        data = query.everything()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    query = db_datapoint.GetIDXDatapoint(general.integerize(idx_datapoint))
+    data = query.everything()
 
     # Return
     return jsonify(data)
 
 
 @DATAPOINTS.route('/datapoints')
+@CACHE.cached()
 def datapoints_query():
     """Get datapoint data filtered by query string values.
 
@@ -62,34 +55,14 @@ def datapoints_query():
     base_type = request.args.get('base_type')
 
     if bool(id_datapoint) is True:
-        # Process id_datapoint request
-        key = ('DB/Datapoint/iddatapoint/{}'.format(id_datapoint))
-        cache_value = CACHE.get(key)
-
-        # Process cache miss
-        if cache_value is None:
-            query = db_datapoint.GetIDDatapoint(id_datapoint)
-            intermediate = query.everything()
-            data = []
-            data.append(intermediate)
-            CACHE.set(key, data)
-        else:
-            data = cache_value
+        query = db_datapoint.GetIDDatapoint(id_datapoint)
+        intermediate = query.everything()
+        data = []
+        data.append(intermediate)
 
     elif bool(idx_deviceagent) is True:
-        # Process idx_deviceagent request
-        key = (
-            'DB/Datapoint/idx_deviceagent/{}/base_type/{}'
-            ''.format(idx_deviceagent, base_type))
-        cache_value = CACHE.get(key)
-
-        # Process cache miss
-        if cache_value is None:
-            data = db_datapoint.listing(
-                general.integerize(idx_deviceagent), base_type=base_type)
-            CACHE.set(key, data)
-        else:
-            data = cache_value
+        data = db_datapoint.listing(
+            general.integerize(idx_deviceagent), base_type=base_type)
 
     else:
         abort(404)
@@ -99,6 +72,7 @@ def datapoints_query():
 
 
 @DATAPOINTS.route('/datapoints/<int:value>/data')
+@CACHE.cached()
 def getdata(value):
     """Get Agent data from the DB by idx value.
 
@@ -138,25 +112,16 @@ def getdata(value):
     if ts_stop - ts_start >= 31536000:
         abort(404)
 
-    # Get data from cache
-    key = (
-        'DB/Data/idx_datapoint/{}/{}/{}'
-        ''.format(idx_datapoint, ts_start, ts_stop))
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        query = db_data.GetIDXData(CONFIG, idx_datapoint, ts_start, ts_stop)
-        data = query.everything()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    query = db_data.GetIDXData(CONFIG, idx_datapoint, ts_start, ts_stop)
+    data = query.everything()
 
     # Return
     return jsonify(data)
 
 
 @DATAPOINTS.route('/datapoints/all/summary')
+@CACHE.cached()
 def db_datapoint_summary():
     """Get Agent data from the DB by id_agent value.
 
@@ -167,22 +132,15 @@ def db_datapoint_summary():
         Home Page
 
     """
-    # Get data from cache
-    key = ('DB/multitable/datapoints/all/summary')
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        data = db_multitable.datapoint_summary()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    data = db_multitable.datapoint_summary()
 
     # Return
     return jsonify(data)
 
 
 @DATAPOINTS.route('/datapoints/all/summarylist')
+@CACHE.cached()
 def db_datapoint_summary_list():
     """Get Datapoint summary data from the DB as a list of dicts.
 
@@ -193,16 +151,8 @@ def db_datapoint_summary_list():
         Home Page
 
     """
-    # Get data from cache
-    key = ('DB/multitable/datapoints/all/summarylist')
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        data = db_multitable.datapoint_summary_list()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    data = db_multitable.datapoint_summary_list()
 
     # Return
     return jsonify(data)

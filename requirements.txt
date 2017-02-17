@@ -1,5 +1,6 @@
 Flask
 Flask-RESTful
+Flask-Caching
 gunicorn
 mock
 numpy

@@ -13,6 +13,7 @@ DEVICEAGENTS = Blueprint('DEVICEAGENTS', __name__)
 
 
 @DEVICEAGENTS.route('/deviceagents/<int:value>')
+@CACHE.cached()
 def db_getidxdeviceagent(value):
     """Get DeviceAgent data from the DB by idx value.
 
@@ -26,23 +27,16 @@ def db_getidxdeviceagent(value):
     # Initialize key variables
     idx_deviceagent = int(value)
 
-    # Get data from cache
-    key = ('DB/DeviceAgent/idx_deviceagent/{}'.format(idx_deviceagent))
-    cache_value = CACHE.get(key)
-
     # Process cache miss
-    if cache_value is None:
-        query = db_deviceagent.GetIDXDeviceAgent(idx_deviceagent)
-        data = query.everything()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    query = db_deviceagent.GetIDXDeviceAgent(idx_deviceagent)
+    data = query.everything()
 
     # Return
     return jsonify(data)
 
 
 @DEVICEAGENTS.route('/deviceagents')
+@CACHE.cached()
 def db_devagt_get_all_device_agents():
     """Get all DeviceAgent data from the DB.
 
@@ -53,16 +47,8 @@ def db_devagt_get_all_device_agents():
         Agent data
 
     """
-    # Get data from cache
-    key = ('DB/DeviceAgent')
-    cache_value = CACHE.get(key)
-
-    # Process cache miss
-    if cache_value is None:
-        data = db_deviceagent.get_all_device_agents()
-        CACHE.set(key, data)
-    else:
-        data = cache_value
+    # Get data
+    data = db_deviceagent.get_all_device_agents()
 
     # Return
     return jsonify(data)
