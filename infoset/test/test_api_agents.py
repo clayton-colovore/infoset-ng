@@ -47,6 +47,10 @@ class APITestCase(unittest.TestCase):
         self.assertEqual(data['id_agent'], self.good_agent.id_agent())
         self.assertEqual(data['exists'], self.good_agent.exists())
         self.assertEqual(data['enabled'], self.good_agent.enabled())
+        self.assertEqual(data['idx_agent'], self.good_agent.idx_agent())
+        self.assertEqual(
+            data['idx_agentname'], self.good_agent.idx_agentname())
+        self.assertEqual(data['name'], self.good_agent.name())
 
     def test_agents_query(self):
         """Testing method / function agents_query."""

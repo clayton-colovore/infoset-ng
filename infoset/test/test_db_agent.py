@@ -23,6 +23,7 @@ class TestGetIDX(unittest.TestCase):
     expected['idx_agent'] = database.idx_agent()
     expected['idx_agentname'] = database.idx_agentname()
     expected['id_agent'] = database.id_agent()
+    expected['name'] = database.agent_name()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -36,6 +37,7 @@ class TestGetIDX(unittest.TestCase):
         self.assertEqual(record.exists(), False)
         self.assertEqual(record.enabled(), None)
         self.assertEqual(record.idx_agent(), None)
+        self.assertEqual(record.agent(), None)
         self.assertEqual(record.idx_agentname(), None)
 
     def test_id_agent(self):
@@ -61,6 +63,12 @@ class TestGetIDX(unittest.TestCase):
         result = self.good_agent.idx_agentname()
         self.assertEqual(result, True)
 
+    def test_agent(self):
+        """Testing method name."""
+        # Testing with known good value
+        result = self.good_agent.agent()
+        self.assertEqual(result, True)
+
     def test_enabled(self):
         """Testing method enabled."""
         # Testing with known good value
@@ -79,6 +87,14 @@ class TestGetIDX(unittest.TestCase):
         for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
+        # Test the number and names of keys
+        keys = [
+            'idx_agent', 'idx_agentname', 'id_agent',
+            'enabled', 'agent', 'exists']
+        self.assertEqual(len(result), 5)
+        for key in keys:
+            self.assertEqual(key in result, True)
+
 
 class TestGetIdentifier(unittest.TestCase):
     """Checks all functions and methods."""
@@ -91,6 +107,7 @@ class TestGetIdentifier(unittest.TestCase):
     expected['idx_agent'] = database.idx_agent()
     expected['id_agent'] = database.id_agent()
     expected['idx_agentname'] = database.idx_agentname()
+    expected['agent'] = database.agent_name()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -104,6 +121,7 @@ class TestGetIdentifier(unittest.TestCase):
         self.assertEqual(record.exists(), False)
         self.assertEqual(record.enabled(), None)
         self.assertEqual(record.idx_agent(), None)
+        self.assertEqual(record.agent(), None)
         self.assertEqual(record.idx_agentname(), None)
 
     def test_exists(self):
@@ -129,6 +147,12 @@ class TestGetIdentifier(unittest.TestCase):
         result = self.good_agent.idx_agent()
         self.assertNotEqual(result, expected)
 
+    def test_agent(self):
+        """Testing method name."""
+        # Testing with known good value
+        result = self.good_agent.agent()
+        self.assertEqual(result, True)
+
     def test_enabled(self):
         """Testing method enabled."""
         # Testing with known good value
@@ -146,6 +170,14 @@ class TestGetIdentifier(unittest.TestCase):
         result = self.good_agent.everything()
         for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
+
+        # Test the number and names of keys
+        keys = [
+            'idx_agent', 'idx_agentname', 'id_agent',
+            'enabled', 'agent', 'exists']
+        self.assertEqual(len(result), 5)
+        for key in keys:
+            self.assertEqual(key in result, True)
 
 
 class Other(unittest.TestCase):
