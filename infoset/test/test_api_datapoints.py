@@ -4,6 +4,7 @@
 import unittest
 import json
 import time
+from datetime import datetime
 
 from infoset.api import API, CACHE
 from infoset.db import db_datapoint
@@ -244,8 +245,8 @@ class APITestCase(unittest.TestCase):
 
         # Initialize key variables
         precision = 5
-        ts_stop = int(time.time())
-        ts_start = int(time.time()) - 3600
+        ts_stop = int(datetime.utcnow().timestamp())
+        ts_start = ts_stop - 3600
 
         # Get results for up to 1/4 hour ago - No data should be present
         uri = (

@@ -13,6 +13,7 @@ is a test database.
 
 # Standard imports
 import random
+from datetime import datetime
 
 # PIP3 imports
 from sqlalchemy_utils.functions import database_exists
@@ -414,7 +415,12 @@ def _timestamps():
     timestamps = []
     config = configuration.Config()
     interval = config.interval()
-    starting_timestamp = general.normalized_timestamp() - 1800
+
+    # Get the UTC timestamp
+    utc_timestamp = int(datetime.utcnow().timestamp())
+    starting_timestamp = general.normalized_timestamp(utc_timestamp) - 1800
+
+    # Create a list of timestamps based on UTC timesamp
     timestamps = list(
         range(starting_timestamp, starting_timestamp - 1800, -interval))
     return timestamps
