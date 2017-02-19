@@ -3,6 +3,34 @@
 
 # PIP3 libraries
 import memcache
+from flask import request
+
+
+def flask_cache_key(*args, **kwargs):
+    """Create a key for use by Flask-Caching.
+
+    Args:
+        None
+
+    Returns:
+        result: Key to be used
+
+    """
+    # Use the request URI as part of the key
+    path = request.path
+
+    # This helps to differentiate between various instances of infoset
+    # each running on different ports
+    server_port = request.environ['SERVER_PORT']
+
+    # Use a hash of the request arguments as part of the key
+    args = str(hash(frozenset(request.args.items())))
+
+    # Return
+    result = (
+        'infoset_flask_{}_{}_{}'.format(
+            path, server_port, args)[:255].encode('utf-8'))
+    return result
 
 
 class Cache(object):

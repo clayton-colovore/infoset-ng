@@ -91,6 +91,20 @@ class GetCodeDepartment(object):
         # Return
         return value
 
+    def everything(self):
+        """Get all agent data.
+
+        Args:
+            None
+
+        Returns:
+            value: Data as a dict
+
+        """
+        # Initialize key variables
+        value = self.data_dict
+        return value
+
     def idx_department(self):
         """Get idx_department value.
 
@@ -213,6 +227,20 @@ class GetIDXDepartment(object):
         value = self.data_dict['enabled']
 
         # Return
+        return value
+
+    def everything(self):
+        """Get all agent data.
+
+        Args:
+            None
+
+        Returns:
+            value: Data as a dict
+
+        """
+        # Initialize key variables
+        value = self.data_dict
         return value
 
     def idx_department(self):

@@ -72,7 +72,7 @@ class GetIDXData(object):
 
         # Massage data
         for instance in result:
-            self.data[instance.timestamp] = instance.value
+            self.data[instance.timestamp] = float(instance.value)
 
         # Return the session to the database pool after processing
         database.close()

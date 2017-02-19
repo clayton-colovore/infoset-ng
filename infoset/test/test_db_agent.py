@@ -91,7 +91,7 @@ class TestGetIDX(unittest.TestCase):
         keys = [
             'idx_agent', 'idx_agentname', 'id_agent',
             'enabled', 'agent', 'exists']
-        self.assertEqual(len(result), 5)
+        self.assertEqual(len(result), len(keys))
         for key in keys:
             self.assertEqual(key in result, True)
 
@@ -175,7 +175,7 @@ class TestGetIdentifier(unittest.TestCase):
         keys = [
             'idx_agent', 'idx_agentname', 'id_agent',
             'enabled', 'agent', 'exists']
-        self.assertEqual(len(result), 5)
+        self.assertEqual(len(result), len(keys))
         for key in keys:
             self.assertEqual(key in result, True)
 

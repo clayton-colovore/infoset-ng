@@ -68,6 +68,16 @@ class TestGetID(unittest.TestCase):
         for key, _ in result.items():
             self.assertEqual(result[key], self.expected[key])
 
+        # Test the number and names of keys
+        keys = [
+            'idx_datapoint', 'id_datapoint', 'idx_deviceagent',
+            'idx_department', 'idx_billcode', 'agent_label',
+            'agent_source', 'enabled', 'billable', 'base_type',
+            'timefixed_value', 'last_timestamp', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
+
     def test_last_timestamp(self):
         """Testing function last_timestamp."""
         # Testing with known good value
@@ -200,6 +210,16 @@ class TestGetIDX(unittest.TestCase):
         result = self.testing.everything()
         for key, _ in result.items():
             self.assertEqual(result[key], self.expected[key])
+
+        # Test the number and names of keys
+        keys = [
+            'idx_datapoint', 'id_datapoint', 'idx_deviceagent',
+            'idx_department', 'idx_billcode', 'agent_label',
+            'agent_source', 'enabled', 'billable', 'base_type',
+            'timefixed_value', 'last_timestamp', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
 
     def test_last_timestamp(self):
         """Testing function last_timestamp."""

@@ -79,6 +79,19 @@ class TestGetIDXDevice(unittest.TestCase):
         result = self.good_device.exists()
         self.assertEqual(result, True)
 
+    def test_everything(self):
+        """Testing method everything."""
+        # Testing with known good value
+        result = self.good_device.everything()
+        for key, _ in self.expected.items():
+            self.assertEqual(result[key], self.expected[key])
+
+        # Test the number and names of keys
+        keys = ['idx_device', 'devicename', 'description', 'enabled', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
+
 
 class TestGetDevice(unittest.TestCase):
     """Checks all functions and methods."""
@@ -149,6 +162,19 @@ class TestGetDevice(unittest.TestCase):
         expected = ('bogus')
         result = self.good_device.enabled()
         self.assertNotEqual(result, expected)
+
+    def test_everything(self):
+        """Testing method everything."""
+        # Testing with known good value
+        result = self.good_device.everything()
+        for key, _ in self.expected.items():
+            self.assertEqual(result[key], self.expected[key])
+
+        # Test the number and names of keys
+        keys = ['idx_device', 'devicename', 'description', 'enabled', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
 
 
 class TestFunctions(unittest.TestCase):

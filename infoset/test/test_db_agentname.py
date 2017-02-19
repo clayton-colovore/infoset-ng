@@ -83,6 +83,12 @@ class TestGetIDX(unittest.TestCase):
         for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
+        # Test the number and names of keys
+        keys = ['idx_agentname', 'name', 'enabled', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
+
 
 class TestGetIdentifier(unittest.TestCase):
     """Checks all functions and methods."""
@@ -154,6 +160,12 @@ class TestGetIdentifier(unittest.TestCase):
         result = self.good_agent.everything()
         for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
+
+        # Test the number and names of keys
+        keys = ['idx_agentname', 'name', 'enabled', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
 
 
 class Other(unittest.TestCase):
