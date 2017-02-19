@@ -105,13 +105,14 @@ class TestData(object):
         self.data['idx_deviceagent'] = 1
         self.data['idx_department'] = 1
         self.data['timestamp'] = general.normalized_timestamp()
+        self.data['last_timestamp'] = general.normalized_timestamp()
         self.data['devicename'] = general.hashstring(general.randomstring())
         self.data['id_agent'] = general.hashstring(general.randomstring())
         self.data['id_datapoint'] = general.hashstring(general.randomstring())
         self.data['devicename'] = general.hashstring(general.randomstring())
         self.data['device_description'] = general.hashstring(
             general.randomstring())
-        self.data['agent_name'] = general.hashstring(general.randomstring())
+        self.data['agent'] = general.hashstring(general.randomstring())
         self.data['agent_source'] = general.hashstring(general.randomstring())
         self.data['agent_label'] = general.hashstring(general.randomstring())
         self.data['department_code'] = general.hashstring(
@@ -140,7 +141,7 @@ class TestData(object):
         agent_data['devicename'] = self.data['devicename']
         agent_data['device_description'] = self.data['device_description']
         agent_data['id_agent'] = self.data['id_agent']
-        agent_data['agent'] = self.data['agent_name']
+        agent_data['agent'] = self.data['agent']
         agent_data['timestamp'] = self.data['timestamp']
         (
             self.data['idx_device'],
@@ -171,7 +172,7 @@ class TestData(object):
         new_data = Datapoint(
             agent_source=self.data['agent_source'].encode(),
             agent_label=self.data['agent_label'].encode(),
-            last_timestamp=self.data['timestamp'],
+            last_timestamp=self.data['last_timestamp'],
             idx_deviceagent=self.data['idx_deviceagent'],
             id_datapoint=self.data['id_datapoint'].encode())
         database = db.Database()
@@ -195,10 +196,10 @@ class TestData(object):
         value = self.data['agent_label']
         return value
 
-    def agent_name(self):
-        """Return agent_name."""
+    def agent(self):
+        """Return agent."""
         # Initialize key variables
-        value = self.data['agent_name']
+        value = self.data['agent']
         return value
 
     def agent_source(self):
@@ -297,6 +298,12 @@ class TestData(object):
         value = self.data['idx_deviceagent']
         return value
 
+    def last_timestamp(self):
+        """Return last_timestamp."""
+        # Initialize key variables
+        value = self.data['last_timestamp']
+        return value
+
     def timestamp(self):
         """Return timestamp."""
         # Initialize key variables
@@ -324,12 +331,12 @@ def _setup_db_deviceagent(data):
     devicename = data['devicename']
     description = data['device_description']
     id_agent = data['id_agent']
-    agent_name = data['agent']
+    agent = data['agent']
     last_timestamp = data['timestamp']
 
     # Add AgentName record to the database
     record = AgentName(
-        name=general.encode(agent_name))
+        name=general.encode(agent))
     database = db.Database()
     database.add(record, 1031)
 

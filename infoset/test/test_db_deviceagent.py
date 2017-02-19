@@ -24,7 +24,7 @@ class TestGetDeviceAgent(unittest.TestCase):
     expected['idx_deviceagent'] = database.idx_deviceagent()
     expected['idx_device'] = database.idx_device()
     expected['idx_agent'] = database.idx_agent()
-    expected['timestamp'] = database.timestamp()
+    expected['last_timestamp'] = database.last_timestamp()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -64,7 +64,7 @@ class TestGetDeviceAgent(unittest.TestCase):
         """Testing method last_timestamp."""
         # Testing with known good value
         result = self.good_device.last_timestamp()
-        self.assertEqual(result, self.expected['timestamp'])
+        self.assertEqual(result, self.expected['last_timestamp'])
 
     def test_idx_deviceagent(self):
         """Testing method idx_deviceagent."""
@@ -115,7 +115,7 @@ class TestGetIDXDeviceAgent(unittest.TestCase):
     expected['idx_deviceagent'] = database.idx_deviceagent()
     expected['idx_device'] = database.idx_device()
     expected['idx_agent'] = database.idx_agent()
-    expected['timestamp'] = database.timestamp()
+    expected['last_timestamp'] = database.last_timestamp()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -163,7 +163,7 @@ class TestGetIDXDeviceAgent(unittest.TestCase):
         """Testing method last_timestamp."""
         # Testing with known good value
         result = self.good_device.last_timestamp()
-        self.assertEqual(result, self.expected['timestamp'])
+        self.assertEqual(result, self.expected['last_timestamp'])
 
     def test_idx_deviceagent(self):
         """Testing method idx_deviceagent."""
@@ -214,7 +214,7 @@ class TestFunctions(unittest.TestCase):
     expected['idx_deviceagent'] = database.idx_deviceagent()
     expected['idx_device'] = database.idx_device()
     expected['idx_agent'] = database.idx_agent()
-    expected['timestamp'] = database.timestamp()
+    expected['last_timestamp'] = database.timestamp()
     expected['enabled'] = True
     expected['exists'] = True
 

@@ -21,7 +21,7 @@ class TestGetIDX(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_agentname'] = database.idx_agentname()
-    expected['name'] = database.agent_name()
+    expected['name'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -99,7 +99,7 @@ class TestGetIdentifier(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_agentname'] = database.idx_agentname()
-    expected['name'] = database.agent_name()
+    expected['name'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -177,7 +177,7 @@ class Other(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_agentname'] = database.idx_agentname()
-    expected['name'] = database.agent_name()
+    expected['name'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 

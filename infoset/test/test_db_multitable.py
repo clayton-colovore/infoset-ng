@@ -25,7 +25,7 @@ class TestFunctions(unittest.TestCase):
     expected['devicename'] = database.devicename()
     expected['agent_label'] = database.agent_label()
     expected['agent_source'] = database.agent_source()
-    expected['name'] = database.agent_name()
+    expected['agent'] = database.agent()
     expected['idx_deviceagent'] = database.idx_deviceagent()
 
     def test_datapoint_summary_list(self):

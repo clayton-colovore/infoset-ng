@@ -29,7 +29,7 @@ class APITestCase(unittest.TestCase):
     expected['idx_deviceagent'] = database.idx_deviceagent()
     expected['id_agent'] = database.id_agent()
     expected['devicename'] = database.devicename()
-    expected['name'] = database.agent_name()
+    expected['agent'] = database.agent()
     expected['values'] = database.values()
 
     # Retrieve data
@@ -299,12 +299,12 @@ class APITestCase(unittest.TestCase):
             # Get remaining values
             self.assertEqual(result['devicename'], self.expected['devicename'])
             self.assertEqual(result['id_agent'], self.expected['id_agent'])
-            self.assertEqual(result['name'], self.expected['name'])
+            self.assertEqual(result['agent'], self.expected['agent'])
 
             # Test the number and names of keys
             keys = [
                 'idx_deviceagent', 'agent_label',
-                'agent_source', 'devicename', 'id_agent', 'name']
+                'agent_source', 'devicename', 'id_agent', 'agent']
             self.assertEqual(len(result), len(keys))
             for key in keys:
                 self.assertEqual(key in result, True)
@@ -339,12 +339,12 @@ class APITestCase(unittest.TestCase):
         # Get remaining values
         self.assertEqual(result['devicename'], self.expected['devicename'])
         self.assertEqual(result['id_agent'], self.expected['id_agent'])
-        self.assertEqual(result['name'], self.expected['name'])
+        self.assertEqual(result['agent'], self.expected['agent'])
 
         # Test the number and names of keys
         keys = [
             'idx_datapoint', 'idx_deviceagent', 'agent_label', 'agent_source',
-            'devicename', 'id_agent', 'name']
+            'devicename', 'id_agent', 'agent']
         self.assertEqual(len(result), len(keys))
         for key in keys:
             self.assertEqual(key in result, True)

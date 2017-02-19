@@ -23,7 +23,7 @@ class TestGetIDX(unittest.TestCase):
     expected['idx_agent'] = database.idx_agent()
     expected['idx_agentname'] = database.idx_agentname()
     expected['id_agent'] = database.id_agent()
-    expected['name'] = database.agent_name()
+    expected['agent'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -51,6 +51,17 @@ class TestGetIDX(unittest.TestCase):
         result = self.good_agent.id_agent()
         self.assertNotEqual(result, expected)
 
+    def test_idx_agent(self):
+        """Testing method idx."""
+        # Testing with known good value
+        result = self.good_agent.idx_agent()
+        self.assertEqual(result, self.expected['idx_agent'])
+
+        # Testing with known bad value
+        expected = ('bogus')
+        result = self.good_agent.idx_agent()
+        self.assertNotEqual(result, expected)
+
     def test_exists(self):
         """Testing method exists."""
         # Testing with known good value
@@ -61,13 +72,13 @@ class TestGetIDX(unittest.TestCase):
         """Testing method idx_agentname."""
         # Testing with known good value
         result = self.good_agent.idx_agentname()
-        self.assertEqual(result, True)
+        self.assertEqual(result, self.expected['idx_agentname'])
 
     def test_agent(self):
         """Testing method name."""
         # Testing with known good value
         result = self.good_agent.agent()
-        self.assertEqual(result, True)
+        self.assertEqual(result, self.expected['agent'])
 
     def test_enabled(self):
         """Testing method enabled."""
@@ -107,7 +118,7 @@ class TestGetIdentifier(unittest.TestCase):
     expected['idx_agent'] = database.idx_agent()
     expected['id_agent'] = database.id_agent()
     expected['idx_agentname'] = database.idx_agentname()
-    expected['agent'] = database.agent_name()
+    expected['agent'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -134,7 +145,7 @@ class TestGetIdentifier(unittest.TestCase):
         """Testing method idx_agentname."""
         # Testing with known good value
         result = self.good_agent.idx_agentname()
-        self.assertEqual(result, True)
+        self.assertEqual(result, self.expected['idx_agentname'])
 
     def test_idx_agent(self):
         """Testing method idx."""
@@ -151,7 +162,7 @@ class TestGetIdentifier(unittest.TestCase):
         """Testing method name."""
         # Testing with known good value
         result = self.good_agent.agent()
-        self.assertEqual(result, True)
+        self.assertEqual(result, self.expected['agent'])
 
     def test_enabled(self):
         """Testing method enabled."""
