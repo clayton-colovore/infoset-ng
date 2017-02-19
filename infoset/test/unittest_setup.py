@@ -91,7 +91,7 @@ class TestConfig(object):
                 'log_level': 'debug',
                 'ingest_cache_directory': self._ingest_cache_directory,
                 'ingest_pool_size': 20,
-                'bind_port': 3000,
+                'bind_port': 65432,
                 'interval': 300,
                 'sqlalchemy_pool_size': 10,
                 'sqlalchemy_max_overflow': 10,

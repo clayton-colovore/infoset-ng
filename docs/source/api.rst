@@ -182,7 +182,7 @@ Example:
 Route /infoset/api/v1/agents?id_agent=<id_agent>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This route retrieves information for a specific ``id_agent`` value.
+This route retrieves information for a specific ``id_agent`` value as a list.
 
 =========================   ======
 Field                       Description
@@ -208,14 +208,14 @@ Example:
 
     $ curl "http://SERVER_IP:6000/infoset/api/v1/agents?id_agent=70f2d9061f3ccc96915e19c13817c8207e2005d05f23959ac4c225b6a5bfe557"
 
-    {
+    [{
       "enabled": true,
       "exists": true,
       "id_agent": "70f2d9061f3ccc96915e19c13817c8207e2005d05f23959ac4c225b6a5bfe557",
       "idx_agent": 3,
       "last_timestamp": 1480611600,
       "name": "linux_in"
-    }
+    }]
     $
 
 

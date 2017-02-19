@@ -9,7 +9,7 @@ Manages connection pooling among other things.
 from sqlalchemy import UniqueConstraint, PrimaryKeyConstraint, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, INTEGER
-from sqlalchemy.dialects.mysql import FLOAT, VARBINARY
+from sqlalchemy.dialects.mysql import NUMERIC, VARBINARY
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 
@@ -102,7 +102,7 @@ class Data(BASE):
 
     timestamp = Column(BIGINT(unsigned=True), nullable=False, default='1')
 
-    value = Column(FLOAT, default=None)
+    value = Column(NUMERIC(40, 10), default=None)
 
 
 class Agent(BASE):

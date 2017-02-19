@@ -21,7 +21,7 @@ class TestGetIDX(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_agentname'] = database.idx_agentname()
-    expected['name'] = database.agent_name()
+    expected['name'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -83,6 +83,12 @@ class TestGetIDX(unittest.TestCase):
         for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
+        # Test the number and names of keys
+        keys = ['idx_agentname', 'name', 'enabled', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
+
 
 class TestGetIdentifier(unittest.TestCase):
     """Checks all functions and methods."""
@@ -93,7 +99,7 @@ class TestGetIdentifier(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_agentname'] = database.idx_agentname()
-    expected['name'] = database.agent_name()
+    expected['name'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 
@@ -155,6 +161,12 @@ class TestGetIdentifier(unittest.TestCase):
         for key, _ in self.expected.items():
             self.assertEqual(result[key], self.expected[key])
 
+        # Test the number and names of keys
+        keys = ['idx_agentname', 'name', 'enabled', 'exists']
+        self.assertEqual(len(result), len(keys))
+        for key in keys:
+            self.assertEqual(key in result, True)
+
 
 class Other(unittest.TestCase):
     """Checks all functions and methods."""
@@ -165,7 +177,7 @@ class Other(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_agentname'] = database.idx_agentname()
-    expected['name'] = database.agent_name()
+    expected['name'] = database.agent()
     expected['enabled'] = True
     expected['exists'] = True
 

@@ -131,6 +131,20 @@ class GetCodeBillcode(object):
         value = self.data_dict['name']
         return value
 
+    def everything(self):
+        """Get all agent data.
+
+        Args:
+            None
+
+        Returns:
+            value: Data as a dict
+
+        """
+        # Initialize key variables
+        value = self.data_dict
+        return value
+
 
 class GetIDXBillcode(object):
     """Class to return device data by idx_billcode.
@@ -257,6 +271,20 @@ class GetIDXBillcode(object):
         """
         # Initialize key variables
         value = self.data_dict['name']
+        return value
+
+    def everything(self):
+        """Get all agent data.
+
+        Args:
+            None
+
+        Returns:
+            value: Data as a dict
+
+        """
+        # Initialize key variables
+        value = self.data_dict
         return value
 
 

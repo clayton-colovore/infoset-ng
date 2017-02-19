@@ -12,6 +12,7 @@ is a test database.
 """
 
 # Standard imports
+import random
 
 # PIP3 imports
 from sqlalchemy_utils.functions import database_exists
@@ -23,7 +24,7 @@ from infoset.test import unittest_setup
 from infoset.utils import configuration
 from infoset.utils import log
 from infoset.utils import general
-from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent, Billcode
+from infoset.db.db_orm import BASE, Agent, Device, DeviceAgent, Billcode, Data
 from infoset.db.db_orm import Department, Datapoint, AgentName, Configuration
 from infoset.db import URL, TEST_ENGINE
 from infoset.db import db
@@ -104,14 +105,14 @@ class TestData(object):
         self.data['idx_deviceagent'] = 1
         self.data['idx_department'] = 1
         self.data['timestamp'] = general.normalized_timestamp()
-        self.data['id_datapoint'] = general.hashstring(general.randomstring())
+        self.data['last_timestamp'] = general.normalized_timestamp()
         self.data['devicename'] = general.hashstring(general.randomstring())
         self.data['id_agent'] = general.hashstring(general.randomstring())
         self.data['id_datapoint'] = general.hashstring(general.randomstring())
         self.data['devicename'] = general.hashstring(general.randomstring())
         self.data['device_description'] = general.hashstring(
             general.randomstring())
-        self.data['agent_name'] = general.hashstring(general.randomstring())
+        self.data['agent'] = general.hashstring(general.randomstring())
         self.data['agent_source'] = general.hashstring(general.randomstring())
         self.data['agent_label'] = general.hashstring(general.randomstring())
         self.data['department_code'] = general.hashstring(
@@ -123,6 +124,15 @@ class TestData(object):
         self.data['billcode_name'] = general.hashstring(
             general.randomstring())
 
+        # Define data to Insert
+        self.data['values'] = []
+        for timestamp in _timestamps():
+            value_dict = {
+                'idx_datapoint': self.data['idx_datapoint'],
+                'value': timestamp * (1 + random.uniform(0, 1)),
+                'timestamp': timestamp}
+            self.data['values'].append(value_dict)
+
         # Drop the database and create tables
         initialize_db()
 
@@ -131,7 +141,7 @@ class TestData(object):
         agent_data['devicename'] = self.data['devicename']
         agent_data['device_description'] = self.data['device_description']
         agent_data['id_agent'] = self.data['id_agent']
-        agent_data['agent'] = self.data['agent_name']
+        agent_data['agent'] = self.data['agent']
         agent_data['timestamp'] = self.data['timestamp']
         (
             self.data['idx_device'],
@@ -162,11 +172,23 @@ class TestData(object):
         new_data = Datapoint(
             agent_source=self.data['agent_source'].encode(),
             agent_label=self.data['agent_label'].encode(),
-            last_timestamp=self.data['timestamp'],
+            last_timestamp=self.data['last_timestamp'],
             idx_deviceagent=self.data['idx_deviceagent'],
             id_datapoint=self.data['id_datapoint'].encode())
         database = db.Database()
         database.add_all([new_data], 1072)
+
+        # Insert timeseries data into database
+        new_data_list = []
+        for item in self.data['values']:
+            new_data_list.append(
+                Data(
+                    idx_datapoint=item['idx_datapoint'],
+                    timestamp=item['timestamp'],
+                    value=item['value']))
+
+        database = db.Database()
+        database.add_all(new_data_list, 1072)
 
     def agent_label(self):
         """Return agent_label."""
@@ -174,10 +196,10 @@ class TestData(object):
         value = self.data['agent_label']
         return value
 
-    def agent_name(self):
-        """Return agent_name."""
+    def agent(self):
+        """Return agent."""
         # Initialize key variables
-        value = self.data['agent_name']
+        value = self.data['agent']
         return value
 
     def agent_source(self):
@@ -276,10 +298,22 @@ class TestData(object):
         value = self.data['idx_deviceagent']
         return value
 
+    def last_timestamp(self):
+        """Return last_timestamp."""
+        # Initialize key variables
+        value = self.data['last_timestamp']
+        return value
+
     def timestamp(self):
         """Return timestamp."""
         # Initialize key variables
         value = self.data['timestamp']
+        return value
+
+    def values(self):
+        """Return values."""
+        # Initialize key variables
+        value = self.data['values']
         return value
 
 
@@ -297,12 +331,12 @@ def _setup_db_deviceagent(data):
     devicename = data['devicename']
     description = data['device_description']
     id_agent = data['id_agent']
-    agent_name = data['agent']
+    agent = data['agent']
     last_timestamp = data['timestamp']
 
     # Add AgentName record to the database
     record = AgentName(
-        name=general.encode(agent_name))
+        name=general.encode(agent))
     database = db.Database()
     database.add(record, 1031)
 
@@ -364,6 +398,26 @@ def initialize_db():
     setup_database.drop()
     setup_database.create()
     setup_database.create_tables()
+
+
+def _timestamps():
+    """Create a list of timestamps staring starting 30 minutes ago.
+
+    Args:
+        None
+
+    Returns:
+        timestamps: List of timestamps
+
+    """
+    # Initialize key variables
+    timestamps = []
+    config = configuration.Config()
+    interval = config.interval()
+    starting_timestamp = general.normalized_timestamp() - 1800
+    timestamps = list(
+        range(starting_timestamp, starting_timestamp - 1800, -interval))
+    return timestamps
 
 
 def setup_db_configuration():

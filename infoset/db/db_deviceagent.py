@@ -315,6 +315,20 @@ class GetDeviceAgent(object):
         value = self.data_dict['idx_device']
         return value
 
+    def everything(self):
+        """Get all agent data.
+
+        Args:
+            None
+
+        Returns:
+            value: Data as a dict
+
+        """
+        # Initialize key variables
+        value = self.data_dict
+        return value
+
 
 def device_agent_exists(idx_device, idx_agent):
     """Determine whether a device / agent entry exists in the DeviceAgent table.

@@ -8,6 +8,7 @@ from flask import Blueprint, jsonify, request
 # Infoset-ng imports
 from infoset.db import db_agent
 from infoset.utils import general
+from infoset.utils import memory
 from infoset.api import CACHE
 
 # Define the AGENTS global variable
@@ -15,7 +16,7 @@ AGENTS = Blueprint('AGENTS', __name__)
 
 
 @AGENTS.route('/agents/<idx_agent>')
-@CACHE.cached()
+@CACHE.cached(key_prefix=memory.flask_cache_key)
 def agents(idx_agent):
     """Get Agent data from the DB by idx value.
 
@@ -35,7 +36,7 @@ def agents(idx_agent):
 
 
 @AGENTS.route('/agents')
-@CACHE.cached()
+@CACHE.cached(key_prefix=memory.flask_cache_key)
 def agents_query():
     """Get Agent data from the DB by id_agent value.
 
@@ -52,7 +53,7 @@ def agents_query():
     if bool(id_agent) is True:
         # Process id_datapoint request
         query = db_agent.GetIDAgent(id_agent)
-        data = query.everything()
+        data = [query.everything()]
     else:
         data = db_agent.get_all_agents()
 

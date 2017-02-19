@@ -4,16 +4,21 @@
 from flask import Flask
 from flask_caching import Cache
 
-# Import configuration. This has to be done before all other infoset imports.
+#############################################################################
+# Import configuration.
+# This has to be done before all other infoset imports.
+#############################################################################
 from infoset.utils import configuration
 CONFIG = configuration.Config()
+#############################################################################
+#############################################################################
 
 # Configure the cache
 CACHE = Cache(config={
     'CACHE_TYPE': 'memcached',
     'CACHE_DEFAULT_TIMEOUT': CONFIG.interval()})
 
-# Do remaining infoset-ng importations
+# Import API Blueprints
 from infoset.api.post import POST
 from infoset.api.status import STATUS
 
@@ -22,7 +27,6 @@ from infoset.api.resources.datapoints import DATAPOINTS
 from infoset.api.resources.lastcontacts import LASTCONTACTS
 from infoset.api.resources.devices import DEVICES
 from infoset.api.resources.deviceagents import DEVICEAGENTS
-
 
 # Define the global URL prefix
 API_PREFIX = '/infoset/api/v1'
