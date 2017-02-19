@@ -23,6 +23,7 @@ class APITestCase(unittest.TestCase):
     # Define expected values
     expected = {}
     expected['idx_device'] = database.idx_device()
+    expected['idx_agent'] = database.idx_agent()
 
     # Retrieve data
     test_object = db_device.GetIDXDevice(expected['idx_device'])
@@ -66,8 +67,25 @@ class APITestCase(unittest.TestCase):
 
     def test_db_deviceagent_indices(self):
         """Testing method / function db_deviceagent_agentindices."""
-        # Initializing key variables
-        pass
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results
+        uri = (
+            '/infoset/api/v1/devices/{}/agents'
+            ''.format(self.expected['idx_device'])
+        )
+        response = self.API.get(uri)
+        result = json.loads(response.get_data(as_text=True))
+
+        # Verify reponse code
+        self.assertEqual(response.status_code, 200)
+
+        # Verify response content
+        self.assertEqual(isinstance(result, list), True)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result, [self.expected['idx_agent']])
+
 
 if __name__ == '__main__':
     # Test the environment variables
