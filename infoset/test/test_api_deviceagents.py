@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Test the db_agent library in the infoset.db module."""
+"""Test the db_deviceagent library in the infoset.db module."""
 
 import unittest
 import json
 
 from infoset.api import API, CACHE
-from infoset.db import db_agent
+from infoset.db import db_deviceagent
 from infoset.test import unittest_setup_db
 from infoset.test import unittest_setup
 
@@ -22,11 +22,10 @@ class APITestCase(unittest.TestCase):
 
     # Define expected values
     expected = {}
-    expected['idx_agent'] = database.idx_agent()
-    expected['id_agent'] = database.id_agent()
+    expected['idx_deviceagent'] = database.idx_deviceagent()
 
     # Retrieve data
-    test_object = db_agent.GetIDXAgent(expected['idx_agent'])
+    test_object = db_deviceagent.GetIDXDeviceAgent(expected['idx_deviceagent'])
 
     def setUp(self):
         """Setup the environment prior to testing."""
@@ -34,15 +33,15 @@ class APITestCase(unittest.TestCase):
         API.config['TESTING'] = True
         self.API = API.test_client()
 
-    def test_agents(self):
-        """Testing method / function agents."""
+    def test_deviceagents_query(self):
+        """Testing method / function db_getidxdeviceagent."""
         # Clear the memory cache
         CACHE.clear()
 
         # Get results
         uri = (
-            '/infoset/api/v1/agents/{}'.format(self.expected['idx_agent'])
-        )
+            '/infoset/api/v1/deviceagents/{}'
+            ''.format(self.expected['idx_deviceagent']))
         response = self.API.get(uri)
         result = json.loads(response.get_data(as_text=True))
 
@@ -51,29 +50,30 @@ class APITestCase(unittest.TestCase):
 
         # Verify response content
         self.assertEqual(isinstance(result, dict), True)
-        self.assertEqual(result['id_agent'], self.test_object.id_agent())
+        self.assertEqual(result['idx_device'], self.test_object.idx_device())
         self.assertEqual(result['exists'], self.test_object.exists())
         self.assertEqual(result['enabled'], self.test_object.enabled())
         self.assertEqual(result['idx_agent'], self.test_object.idx_agent())
         self.assertEqual(
-            result['idx_agentname'], self.test_object.idx_agentname())
-        self.assertEqual(result['agent'], self.test_object.agent())
+            result['last_timestamp'], self.test_object.last_timestamp())
+        self.assertEqual(
+            result['idx_deviceagent'], self.test_object.idx_deviceagent())
 
         # Test the number and names of keys
         keys = [
-            'idx_agent', 'idx_agentname', 'id_agent',
-            'enabled', 'agent', 'exists']
+            'last_timestamp', 'idx_deviceagent',
+            'idx_agent', 'idx_device', 'enabled', 'exists']
         self.assertEqual(len(result), len(keys))
         for key in keys:
             self.assertEqual(key in result, True)
 
-    def test_agents_query(self):
-        """Testing method / function agents_query."""
+    def test_deviceagents(self):
+        """Testing method / function db_devagt_get_all_device_agents."""
         # Clear the memory cache
         CACHE.clear()
 
         # Get results
-        response = self.API.get('/infoset/api/v1/agents')
+        response = self.API.get('/infoset/api/v1/deviceagents')
         data = json.loads(response.get_data(as_text=True))
         result = data[0]
 
@@ -82,49 +82,19 @@ class APITestCase(unittest.TestCase):
 
         # Verify response content
         self.assertEqual(isinstance(data, list), True)
-        self.assertEqual(result['id_agent'], self.test_object.id_agent())
+        self.assertEqual(result['idx_device'], self.test_object.idx_device())
         self.assertEqual(result['exists'], self.test_object.exists())
         self.assertEqual(result['enabled'], self.test_object.enabled())
         self.assertEqual(result['idx_agent'], self.test_object.idx_agent())
         self.assertEqual(
-            result['idx_agentname'], self.test_object.idx_agentname())
-        self.assertEqual(result['agent'], self.test_object.agent())
+            result['last_timestamp'], self.test_object.last_timestamp())
+        self.assertEqual(
+            result['idx_deviceagent'], self.test_object.idx_deviceagent())
 
         # Test the number and names of keys
         keys = [
-            'idx_agent', 'idx_agentname', 'id_agent',
-            'enabled', 'agent', 'exists']
-        self.assertEqual(len(result), len(keys))
-        for key in keys:
-            self.assertEqual(key in result, True)
-
-    def test_agents_query_2(self):
-        """Testing method / function agents_query."""
-        # Clear the memory cache
-        CACHE.clear()
-
-        # Get results
-        uri = (
-            '/infoset/api/v1/agents?id_agent={}'
-            ''.format(self.expected['id_agent']))
-        response = self.API.get(uri)
-        data = json.loads(response.get_data(as_text=True))
-        result = data[0]
-
-        # Verify reponse code
-        self.assertEqual(response.status_code, 200)
-
-        # Verify response content
-        self.assertEqual(isinstance(data, list), True)
-        self.assertEqual(result['id_agent'], self.test_object.id_agent())
-        self.assertEqual(result['exists'], self.test_object.exists())
-        self.assertEqual(result['enabled'], self.test_object.enabled())
-        self.assertEqual(result['agent'], self.test_object.agent())
-
-        # Test the number and names of keys
-        keys = [
-            'idx_agent', 'idx_agentname', 'id_agent',
-            'enabled', 'agent', 'exists']
+            'last_timestamp', 'idx_deviceagent',
+            'idx_agent', 'idx_device', 'enabled', 'exists']
         self.assertEqual(len(result), len(keys))
         for key in keys:
             self.assertEqual(key in result, True)

@@ -250,9 +250,14 @@ class TestFunctions(unittest.TestCase):
     def test_get_all_device_agents(self):
         """Testing function get_all_device_agents."""
         results = db_deviceagent.get_all_device_agents()
+
+        # There should only be one item in the result list
+        self.assertEqual(len(results), 1)
+
+        # Verify values in only result item
         for result in results:
             for key, _ in result.items():
-                self.assertEqual(result[key], 1)
+                self.assertEqual(result[key], self.expected[key])
 
 
 if __name__ == '__main__':
