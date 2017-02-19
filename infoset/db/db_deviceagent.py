@@ -476,7 +476,9 @@ def get_all_device_agents():
         data_dict['idx_deviceagent'] = instance.idx_deviceagent
         data_dict['idx_agent'] = instance.idx_agent
         data_dict['idx_device'] = instance.idx_device
+        data_dict['last_timestamp'] = instance.last_timestamp
         data_dict['enabled'] = bool(instance.enabled)
+        data_dict['exists'] = True
         data.append(data_dict)
 
     # Return the session to the pool after processing

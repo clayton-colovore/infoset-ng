@@ -14,7 +14,7 @@ DEVICEAGENTS = Blueprint('DEVICEAGENTS', __name__)
 
 @DEVICEAGENTS.route('/deviceagents/<int:value>')
 @CACHE.cached()
-def db_getidxdeviceagent(value):
+def deviceagents_query(value):
     """Get DeviceAgent data from the DB by idx value.
 
     Args:
@@ -37,7 +37,7 @@ def db_getidxdeviceagent(value):
 
 @DEVICEAGENTS.route('/deviceagents')
 @CACHE.cached()
-def db_devagt_get_all_device_agents():
+def deviceagents():
     """Get all DeviceAgent data from the DB.
 
     Args:
