@@ -68,7 +68,7 @@ class TestValidateCache(unittest.TestCase):
         database = unittest_setup_db.TestData()
         data_dict['timestamp'] = database.timestamp()
         data_dict['devicename'] = database.devicename()
-        data_dict['agent'] = database.agent_name()
+        data_dict['agent'] = database.agent()
         data_dict['id_agent'] = database.id_agent()
 
         # Attempting to insert duplicate data should fail
