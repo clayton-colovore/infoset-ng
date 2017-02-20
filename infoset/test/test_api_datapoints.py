@@ -3,7 +3,6 @@
 
 import unittest
 import json
-import time
 from datetime import datetime
 
 from infoset.api import API, CACHE
@@ -97,6 +96,10 @@ class APITestCase(unittest.TestCase):
         # Clear the memory cache
         CACHE.clear()
 
+        #######################################################################
+        # Try with id_datapoint in query string
+        #######################################################################
+
         # Get results
         uri = (
             '/infoset/api/v1/datapoints?id_datapoint={}'
@@ -142,8 +145,10 @@ class APITestCase(unittest.TestCase):
         for key in keys:
             self.assertEqual(key in result, True)
 
-    def test_datapoints_query_2(self):
-        """Testing method / function datapoints_query."""
+        #######################################################################
+        # Try with idx_deviceagent in query string
+        #######################################################################
+
         # Clear the memory cache
         CACHE.clear()
 
@@ -200,6 +205,10 @@ class APITestCase(unittest.TestCase):
         # Initialize key variables
         precision = 5
 
+        #######################################################################
+        # Try an hour ago
+        #######################################################################
+
         # Get results for up to an hour ago
         uri = (
             '/infoset/api/v1/datapoints/{}/data?secondsago=3600'
@@ -221,12 +230,14 @@ class APITestCase(unittest.TestCase):
             else:
                 self.assertEqual(value, 0)
 
-    def test_getdata_secondsago_2(self):
-        """Testing method / function getdata."""
+        #######################################################################
+        # Try an 1/4 ago. No data should be present
+        #######################################################################
+
         # Clear the memory cache
         CACHE.clear()
 
-        # Get results for up to 1/4 hour ago - No data should be present
+        # Get results 
         uri = (
             '/infoset/api/v1/datapoints/{}/data?secondsago=900'
             ''.format(self.expected['idx_datapoint']))
