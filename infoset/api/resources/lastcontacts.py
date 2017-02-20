@@ -35,14 +35,7 @@ def lastcontacts():
     # Get starting timestamp
     secondsago = general.integerize(request.args.get('secondsago'))
     timestamp = general.integerize(request.args.get('ts_start'))
-    if bool(timestamp) is True:
-        ts_start = _start_timestamp(timestamp, relative=False)
-    else:
-        if bool(secondsago) is True:
-            ts_start = _start_timestamp(secondsago)
-        else:
-            secondsago = 3600
-            ts_start = _start_timestamp(secondsago)
+    ts_start = _ts_start(secondsago, timestamp)
 
     # Get data
     data = db_data.last_contacts(ts_start)
@@ -71,14 +64,7 @@ def id_agents():
     # Get starting timestamp
     secondsago = general.integerize(request.args.get('secondsago'))
     timestamp = general.integerize(request.args.get('ts_start'))
-    if bool(timestamp) is True:
-        ts_start = _start_timestamp(timestamp, relative=False)
-    else:
-        if bool(secondsago) is True:
-            ts_start = _start_timestamp(secondsago)
-        else:
-            secondsago = 3600
-            ts_start = _start_timestamp(secondsago)
+    ts_start = _ts_start(secondsago, timestamp)
 
     # Get the agent ids assigned to each datapoint
     mapping = db_multitable.datapoint_summary()
@@ -99,7 +85,7 @@ def id_agents():
 
         # Track summary data for each id_agent
         agent_data[
-            id_agent]['name'] = mapping[idx_datapoint]['name']
+            id_agent]['agent'] = mapping[idx_datapoint]['agent']
         agent_data[
             id_agent]['devicename'] = mapping[idx_datapoint]['devicename']
 
@@ -111,7 +97,7 @@ def id_agents():
             new_dict['timeseries'][agent_label] = value_dict
 
         # Assign more new_dict values
-        new_dict['name'] = agent_data[id_agent]['name']
+        new_dict['agent'] = agent_data[id_agent]['agent']
         new_dict['devicename'] = agent_data[id_agent]['devicename']
         new_dict['id_agent'] = id_agent
 
@@ -141,10 +127,7 @@ def deviceagents(value):
     # Get starting timestamp
     secondsago = general.integerize(request.args.get('secondsago'))
     timestamp = general.integerize(request.args.get('ts_start'))
-    if bool(timestamp) is True:
-        ts_start = _start_timestamp(timestamp, relative=False)
-    else:
-        ts_start = _start_timestamp(secondsago)
+    ts_start = _ts_start(secondsago, timestamp)
 
     # Get data
     data = db_data.last_contacts_by_device(idx_deviceagent, ts_start)
@@ -154,7 +137,8 @@ def deviceagents(value):
 
 
 @LASTCONTACTS.route(
-    'lastcontacts/devicenames/<string:devicename>/id_agents/<string:id_agent>')
+    '/lastcontacts/devicenames/<string:devicename>/'
+    'id_agents/<string:id_agent>')
 @CACHE.cached()
 def devicename_agents(devicename, id_agent):
     """Get last contact data from the DB.
@@ -173,10 +157,7 @@ def devicename_agents(devicename, id_agent):
     # Get starting timestamp
     secondsago = general.integerize(request.args.get('secondsago'))
     timestamp = general.integerize(request.args.get('ts_start'))
-    if bool(timestamp) is True:
-        ts_start = _start_timestamp(timestamp, relative=False)
-    else:
-        ts_start = _start_timestamp(secondsago)
+    ts_start = _ts_start(secondsago, timestamp)
 
     # Get idx_device and idx_agent
     device = db_device.GetDevice(devicename)
@@ -202,7 +183,31 @@ def devicename_agents(devicename, id_agent):
     return jsonify(data)
 
 
-def _start_timestamp(secondsago=None, relative=False):
+def _ts_start(secondsago, timestamp):
+    """Get the starting timestamp for a query.
+
+    Args:
+        secondsago: Value of secondsago query string
+        timestamp: Value of ts_start query string
+
+    Returns:
+        ts_start: Timestamp
+    """
+
+    if bool(timestamp) is True:
+        ts_start = _start_timestamp(timestamp, relative=False)
+    else:
+        if bool(secondsago) is True:
+            ts_start = _start_timestamp(secondsago)
+        else:
+            secondsago = 3600
+            ts_start = _start_timestamp(secondsago)
+
+    # Return
+    return ts_start
+
+
+def _start_timestamp(secondsago, relative=True):
     """Determine the default starting timestamp when not provided.
 
     Args:
@@ -213,15 +218,20 @@ def _start_timestamp(secondsago=None, relative=False):
 
     """
     # Provide a UTC timestamp 10x the configured interval
-    interval = CONFIG.interval()
+    ts_limit = int(datetime.utcnow().timestamp()) - (3600 * 12)
 
-    if (bool(secondsago) is False) or (secondsago < 0):
-        timestamp = int(datetime.utcnow().timestamp()) - (interval * 10)
+    # Correct secondsago if it is None
+    if bool(secondsago) is None:
+        secondsago = 0
+
+    # Calculate timing
+    if bool(relative) is True:
+        timestamp = int(datetime.utcnow().timestamp()) - abs(secondsago)
     else:
-        if bool(relative) is True:
-            timestamp = int(datetime.utcnow().timestamp()) - secondsago
-        else:
-            timestamp = abs(secondsago)
+        timestamp = abs(secondsago)
+
+    # Place a maximum value on timestamp to prevent DB overload
+    timestamp = max(timestamp, ts_limit)
 
     # Return
     ts_start = general.normalized_timestamp(timestamp)

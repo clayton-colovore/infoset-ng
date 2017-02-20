@@ -3,6 +3,8 @@
 
 import unittest
 import json
+from datetime import datetime
+
 from pprint import pprint
 
 from infoset.api import API, CACHE
@@ -25,6 +27,11 @@ class APITestCase(unittest.TestCase):
     expected = {}
     expected['values'] = database.values()
     expected['idx_device'] = database.idx_device()
+    expected['idx_deviceagent'] = database.idx_deviceagent()
+    expected['agent'] = database.agent()
+    expected['devicename'] = database.devicename()
+    expected['id_agent'] = database.id_agent()
+    expected['agent_label'] = database.agent_label()
 
     # Retrieve data
     test_object = db_device.GetIDXDevice(expected['idx_device'])
@@ -35,77 +42,573 @@ class APITestCase(unittest.TestCase):
         API.config['TESTING'] = True
         self.API = API.test_client()
 
-    def test_lastcontacts_1(self):
+    def test_lastcontacts(self):
         """Testing method / function lastcontacts."""
-        # Clear the memory cache
-        CACHE.clear()
-
         # Initialize key variables
         precision = 5
+
+        #######################################################################
+        # Try with secondsago = 3600
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
 
         # Get results for up to an hour ago
         uri = '/infoset/api/v1/lastcontacts?secondsago=3600'
         response = self.API.get(uri)
-        result = json.loads(response.get_data(as_text=True))
+        results = json.loads(response.get_data(as_text=True))
 
-        print('\n')
-        pprint(self.expected['values'])
-        print('\n')
-        pprint(result)
-        print('\n')
+        # Test
+        self.assertEqual(isinstance(results, list), True)
 
-        # Convert the list of expected values to an easy to compare dict
-        check_dict = {}
-        for item in self.expected['values']:
-            check_dict[str(item['timestamp'])] = item['value']
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
 
-        # Verify the expected data is there
-        for timestamp, value in sorted(result.items()):
-            if timestamp in check_dict:
-                self.assertEqual(
-                    round(result[timestamp], precision),
-                    round(check_dict[timestamp], precision))
-            else:
-                self.assertEqual(value, 0)
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
 
-    def test_lastcontacts_2(self):
-        """Testing method / function lastcontacts."""
+        #######################################################################
+        # Try with secondsago = 60 (No values expected)
+        #######################################################################
+
         # Clear the memory cache
         CACHE.clear()
 
-        # Initializing key variables
-        pass
+        # Get results for up to a minute ago
+        uri = '/infoset/api/v1/lastcontacts?secondsago=60'
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
+
+        #######################################################################
+        # Try with ts_start = 0
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results
+        uri = '/infoset/api/v1/lastcontacts?ts_start=0'
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = an hour ago
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 3600
+        uri = '/infoset/api/v1/lastcontacts?ts_start={}'.format(ts_start)
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = a minute ago
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 60
+        uri = '/infoset/api/v1/lastcontacts?ts_start={}'.format(ts_start)
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test type of result
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
 
     def test_id_agents(self):
         """Testing method / function id_agents."""
+        # Initialize key variables
+        precision = 5
+
+        #######################################################################
+        # Try with default values
+        #######################################################################
+
         # Clear the memory cache
         CACHE.clear()
 
-        # Initializing key variables
-        pass
+        # Get results for up to an hour ago
+        uri = '/infoset/api/v1/lastcontacts/id_agents'
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Further testing
+        result = results[0]
+        self.assertEqual(result['agent'], self.expected['agent'])
+        self.assertEqual(result['devicename'], self.expected['devicename'])
+        self.assertEqual(result['id_agent'], self.expected['id_agent'])
+        self.assertEqual('timeseries' in result, True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+
+        # We should only have a single result to test
+        for agent_label, data_dict in result['timeseries'].items():
+            # Test match for agent_label
+            self.assertEqual(agent_label, self.expected['agent_label'])
+
+            for key, value in data_dict.items():
+                # Test presence of timeseries values
+                if key == 'timestamp':
+                    self.assertEqual(value, expected['timestamp'])
+                elif key == 'value':
+                    self.assertEqual(
+                        round(value, precision),
+                        round(expected['value'], precision))
+
+        #######################################################################
+        # Try with secondsago = 3600
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = '/infoset/api/v1/lastcontacts/id_agents?secondsago=3600'
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Further testing
+        result = results[0]
+        self.assertEqual(result['agent'], self.expected['agent'])
+        self.assertEqual(result['devicename'], self.expected['devicename'])
+        self.assertEqual(result['id_agent'], self.expected['id_agent'])
+        self.assertEqual('timeseries' in result, True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+
+        # We should only have a single result to test
+        for agent_label, data_dict in result['timeseries'].items():
+            # Test match for agent_label
+            self.assertEqual(agent_label, self.expected['agent_label'])
+
+            for key, value in data_dict.items():
+                # Test presence of timeseries values
+                if key == 'timestamp':
+                    self.assertEqual(value, expected['timestamp'])
+                elif key == 'value':
+                    self.assertEqual(
+                        round(value, precision),
+                        round(expected['value'], precision))
+
+        #######################################################################
+        # Try with secondsago = 60 (No response expected)
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = '/infoset/api/v1/lastcontacts/id_agents?secondsago=60'
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
+
+        #######################################################################
+        # Try with ts_star = 0
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = '/infoset/api/v1/lastcontacts/id_agents?ts_start=0'
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Further testing
+        result = results[0]
+        self.assertEqual(result['agent'], self.expected['agent'])
+        self.assertEqual(result['devicename'], self.expected['devicename'])
+        self.assertEqual(result['id_agent'], self.expected['id_agent'])
+        self.assertEqual('timeseries' in result, True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+
+        # We should only have a single result to test
+        for agent_label, data_dict in result['timeseries'].items():
+            # Test match for agent_label
+            self.assertEqual(agent_label, self.expected['agent_label'])
+
+            for key, value in data_dict.items():
+                # Test presence of timeseries values
+                if key == 'timestamp':
+                    self.assertEqual(value, expected['timestamp'])
+                elif key == 'value':
+                    self.assertEqual(
+                        round(value, precision),
+                        round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = an hour ago
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 3600
+        uri = (
+            '/infoset/api/v1/lastcontacts/id_agents?ts_start={}'
+            ''.format(ts_start))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Further testing
+        result = results[0]
+        self.assertEqual(result['agent'], self.expected['agent'])
+        self.assertEqual(result['devicename'], self.expected['devicename'])
+        self.assertEqual(result['id_agent'], self.expected['id_agent'])
+        self.assertEqual('timeseries' in result, True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+
+        # We should only have a single result to test
+        for agent_label, data_dict in result['timeseries'].items():
+            # Test match for agent_label
+            self.assertEqual(agent_label, self.expected['agent_label'])
+
+            for key, value in data_dict.items():
+                # Test presence of timeseries values
+                if key == 'timestamp':
+                    self.assertEqual(value, expected['timestamp'])
+                elif key == 'value':
+                    self.assertEqual(
+                        round(value, precision),
+                        round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = 15 minutes ago (No values expected)
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 900
+        uri = (
+            '/infoset/api/v1/lastcontacts/id_agents?ts_start={}'
+            ''.format(ts_start))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
 
     def test_deviceagents(self):
         """Testing method / function deviceagents."""
+        # Initialize key variables
+        precision = 5
+
+        #######################################################################
+        # Try with secondsago = 3600
+        #######################################################################
+
         # Clear the memory cache
         CACHE.clear()
 
-        # Initializing key variables
-        pass
+        # Get results for up to an hour ago
+        uri = (
+            '/infoset/api/v1/lastcontacts/deviceagents/{}?secondsago=3600'
+            ''.format(self.expected['idx_deviceagent']))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with secondsago = 60 (No response expected)
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = (
+            '/infoset/api/v1/lastcontacts/deviceagents/{}?secondsago=60'
+            ''.format(self.expected['idx_deviceagent']))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
+
+        #######################################################################
+        # Try with ts_star = 0
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = (
+            '/infoset/api/v1/lastcontacts/deviceagents/{}?ts_start=0'
+            ''.format(self.expected['idx_deviceagent']))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = an hour ago
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 3600
+        uri = (
+            '/infoset/api/v1/lastcontacts/deviceagents/{}?ts_start={}'
+            ''.format(self.expected['idx_deviceagent'], ts_start))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = 15 minutes ago (No values expected)
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 900
+        uri = (
+            '/infoset/api/v1/lastcontacts/deviceagents/{}?ts_start={}'
+            ''.format(self.expected['idx_deviceagent'], ts_start))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
 
     def test_devicename_agents(self):
         """Testing method / function devicename_agents."""
+        # Initialize key variables
+        precision = 5
+
+        #######################################################################
+        # Try with secondsago = 3600
+        #######################################################################
+
         # Clear the memory cache
         CACHE.clear()
 
-        # Initializing key variables
-        pass
+        # Get results for up to an hour ago
+        uri = (
+            '/infoset/api/v1/lastcontacts/devicenames/{}/id_agents/{}'
+            '?secondsago=3600'
+            ''.format(self.expected['devicename'], self.expected['id_agent']))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with secondsago = 60 (No response expected)
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = (
+            '/infoset/api/v1/lastcontacts/devicenames/{}/id_agents/{}'
+            '?secondsago=60'
+            ''.format(self.expected['devicename'], self.expected['id_agent']))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
+
+        #######################################################################
+        # Try with ts_star = 0
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        uri = (
+            '/infoset/api/v1/lastcontacts/devicenames/{}/id_agents/{}'
+            '?ts_start=0'
+            ''.format(self.expected['devicename'], self.expected['id_agent']))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = an hour ago
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 3600
+        uri = (
+            '/infoset/api/v1/lastcontacts/devicenames/{}/id_agents/{}'
+            '?ts_start={}'
+            ''.format(
+                self.expected['devicename'],
+                self.expected['id_agent'],
+                ts_start))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+
+        # First item in expected should be the most recent contact.
+        # Expected['values'] is sorted by timestamp.
+        expected = self.expected['values'][0]
+        result = results[0]
+
+        self.assertEqual(result['timestamp'], expected['timestamp'])
+        self.assertEqual(
+            round(result['value'], precision),
+            round(expected['value'], precision))
+
+        #######################################################################
+        # Try with ts_start = 15 minutes ago (No values expected)
+        #######################################################################
+
+        # Clear the memory cache
+        CACHE.clear()
+
+        # Get results for up to an hour ago
+        ts_start = int(datetime.utcnow().timestamp()) - 900
+        uri = (
+            '/infoset/api/v1/lastcontacts/devicenames/{}/id_agents/{}'
+            '?ts_start={}'
+            ''.format(
+                self.expected['devicename'],
+                self.expected['id_agent'],
+                ts_start))
+        response = self.API.get(uri)
+        results = json.loads(response.get_data(as_text=True))
+
+        # Test
+        self.assertEqual(isinstance(results, list), True)
+        self.assertEqual(bool(results), False)
 
     def test__start_timestamp(self):
         """Testing method / function _start_timestamp."""
-        # Clear the memory cache
-        CACHE.clear()
-
-        # Initializing key variables
+        # Tested by other unittests here
         pass
 
 
