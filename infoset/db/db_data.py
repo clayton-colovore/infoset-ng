@@ -198,7 +198,7 @@ def last_contacts(ts_start):
     for instance in result:
         idx_datapoint = instance.idx_datapoint
         timestamp = instance.timestamp
-        value = instance.value
+        value = float(instance.value)
 
         # Update dictionary
         if idx_datapoint in last_contact:
@@ -265,7 +265,7 @@ def last_contacts_by_device(idx_deviceagent, ts_start):
     for instance in result:
         idx_datapoint = instance.idx_datapoint
         timestamp = instance.timestamp
-        value = instance.value
+        value = float(instance.value)
 
         # Update dictionary
         if idx_datapoint in last_contact:
