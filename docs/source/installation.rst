@@ -50,21 +50,27 @@ Select either of these commands to install MySQL server or MariaDB server
 Installation
 ------------
 
-Installation is simple. Follow these steps
+Installation is simple. There are three basic steps.
 
-Verify Dependencies
-~~~~~~~~~~~~~~~~~~~
 
-The first thing to do is verify that your system has the correct prerequisites. Run this command to make sure all is OK:
+1. Clone the Repository
+2. Setup the Database
+3. Run the Installation Script
+
+This will now be explained in more detail.
+
+
+Clone the Repository
+~~~~~~~~~~~~~~~~~~~~
+
+Now clone the repository and copy the sample configuration file to its
+final location.
 
 ::
 
-    $ pip3 install --user setuptools
-    $ bin/tools/prerequisites.py
+    $ git clone https://github.com/PalisadoesFoundation/infoset-ng
+    $ cd infoset-ng
 
-Do the appropriate remediation to fix any reported issues. Run any commands this script suggests.
-
-Be prepared to install ``infoset-ng`` on a newer version of your operating system.
 
 Setup the Database
 ~~~~~~~~~~~~~~~~~~
@@ -82,54 +88,18 @@ Next create the MySQL or MariaDB database. Make sure the database server is runn
 
 **Note** Remember the value you select for ``PASSWORD``. It will be required when you edit the ``infoset-ng`` configuration file later.
 
-Clone the Repository
-~~~~~~~~~~~~~~~~~~~~
-
-Now clone the repository and copy the sample configuration file to its
-final location.
-
-::
-
-    $ git clone https://github.com/PalisadoesFoundation/infoset-ng
-    $ cd infoset-ng
-
-
-Edit Configuration File
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Edit the database credential information in the server section of the ``etc/config.yaml`` file. Update the configured database ``PASSWORD`` that you saved previously.
-
-::
-
-    $ cp examples/etc/config.yaml etc/config.yaml
-    $ vim etc/config.yaml
-
-    main:
-        db_password: PASSWORD
 
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Run the installation script. There are two alternatives:
-
-:Run Interactively: This is the preferred method if you don't have ``root`` access to your system. ``infoset-ng`` `will not` automatically restart on reboot using this method. To make ``infoset-ng`` run with your username, then execute this command:
+Run this command and follow the prompts.
 
 ::
 
-    $ python3 setup.py
+    $ bin/infoset-ng-cli.py build
 
-:Run as System Daemon: If you want ``infoset-ng`` to be run as a system daemon, then execute these commands. ``infoset-ng`` `will` automatically restart on reboot using this installation method. (**Note**: Do not run setup using ``sudo``. Use ``sudo`` to become the root user first)
 
-This example assumes you have downloaded ``infoset-ng`` in the ``/home/infoset-ng`` directory. Change this to the appropiate directory in your case.
-
-::
-
-    $ pwd
-    /home/infoset-ng
-    $ sudo su -
-    # cd /home/infoset-ng
-    # python3 setup.py
-
+**Note** The setup script will make ``infoset-ng`` to be a system daemon if it is run as the ``root`` user (`System Daemon Mode`). If it is not run as root you will have to manually start the ``infoset-ng`` processes after each reboot. (`Interactive Mode`)
 
 
 Next Steps
