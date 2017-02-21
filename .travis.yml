@@ -24,7 +24,7 @@ before_install:
     - mysql -e 'CREATE DATABASE test_infoset;'
 
 # Install infoset-ng
-install: python3 setup.py
+install: python3 infoset/utils/setup.py
 
 # Run the unittest scripts
 script: infoset/test/_do_all_tests.py
