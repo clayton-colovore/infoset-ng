@@ -27,12 +27,13 @@ except ImportError:
     from sqlalchemy import create_engine
 
 # Try to create a working PYTHONPATH
-root_directory = os.path.dirname(os.path.realpath(__file__))
-if root_directory.endswith('/infoset-ng') is True:
-    sys.path.append(root_directory)
+_root_directory = os.path.dirname(os.path.realpath(__file__))
+if _root_directory.endswith('/infoset-ng/infoset/utils') is True:
+    sys.path.append(_root_directory)
 else:
     print(
-        'This script is not installed in the "infoset-ng/" directory. '
+        'This script is not installed in the '
+        '"infoset-ng/infoset/utils" directory. '
         'Please fix.')
     sys.exit(2)
 
@@ -60,7 +61,7 @@ from infoset.db import db_datapoint
 from infoset.db import db
 
 
-class _Database(object):
+class _DatabaseSetup(object):
     """Class to setup database."""
 
     def __init__(self):
@@ -204,7 +205,7 @@ class _Database(object):
                 database = db.Database()
                 database.add(record, 1108)
 
-    def setup(self):
+    def run(self):
         """Setup database.
 
         Args:
@@ -230,7 +231,7 @@ class _Database(object):
                 pool_size=pool_size, pool_recycle=3600)
 
             # Try to create the database
-            print('Attempting to create database tables')
+            _ok('Attempting to create database tables')
             try:
                 sql_string = (
                     'ALTER DATABASE %s CHARACTER SET utf8mb4 '
@@ -246,7 +247,7 @@ class _Database(object):
                 log.log2die(1036, log_message)
 
             # Apply schemas
-            print('Applying Schemas')
+            _ok('Applying Schemas.')
             BASE.metadata.create_all(engine)
 
             # Insert database entries
@@ -257,7 +258,7 @@ class _Database(object):
             self._insert_config()
 
 
-class _Configuration(object):
+class _ConfigSetup(object):
     """Class to setup configuration.
 
     NOTE! We cannot use the configuration.Config class here. The aim
@@ -281,7 +282,7 @@ class _Configuration(object):
         self.directories = general.config_directories()
         self.config = general.read_yaml_files(self.directories)
 
-    def setup(self):
+    def run(self):
         """Update the configuration with good defaults.
 
         Args:
@@ -372,7 +373,7 @@ class _Configuration(object):
         return (updated, config)
 
 
-class _Python(object):
+class _PythonSetup(object):
     """Class to setup Python."""
 
     def __init__(self):
@@ -405,7 +406,7 @@ class _Python(object):
                 ''.format(major, minor, major_installed, minor_installed))
             log.log2die_safe(1018, log_message)
 
-    def setup(self):
+    def run(self):
         """Setup Python.
 
         Args:
@@ -437,7 +438,7 @@ class _Python(object):
             return
 
         # Determine whether PIP3 exists
-        print('Installing required pip3 packages')
+        _ok('Installing required pip3 packages')
         pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
@@ -458,7 +459,7 @@ class _Python(object):
         general.run_script(script_name)
 
 
-class _Daemon(object):
+class _DaemonSetup(object):
     """Class to setup infoset-ng daemon."""
 
     def __init__(self):
@@ -500,7 +501,7 @@ class _Daemon(object):
                 ''.format(self.infoset_user))
             log.log2die_safe(1049, log_message)
 
-    def setup(self):
+    def run(self):
         """Setup daemon scripts and file permissions.
 
         Args:
@@ -510,9 +511,6 @@ class _Daemon(object):
             None
 
         """
-        # Set bashrc file
-        self._bashrc()
-
         # Return if not running script as root user
         if self.running_as_root is False:
             return
@@ -526,63 +524,6 @@ class _Daemon(object):
 
         # Setup systemd
         self._systemd()
-
-    def _bashrc(self):
-        """Set bashrc file environment variables.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        root_directory = self.root_directory
-
-        # Determine username to use
-        if self.running_as_root is True:
-            # Edit local user's bashrc file
-            username = self.infoset_user
-        else:
-            # Edit selected user's bashrc file
-            username = getpass.getuser()
-
-        # Read bashrc file
-        home_directory = os.path.expanduser('~{}'.format(username))
-        filepath = '{}/.bashrc'.format(home_directory)
-
-        # Do nothing if .bashrc file doesn't exist
-        if (os.path.isfile(filepath) is False) or (
-                os.path.exists(filepath) is False):
-            return
-
-        # Read contents of file
-        with open(filepath, 'r') as f_handle:
-            contents = f_handle.read()
-
-        # Create string to append to the end of the file
-        if 'PYTHONPATH' in contents:
-            export_string = """\
-
-# Automatically inserted by the infoset-ng installation script
-# It appended the requied PYTHONPATH to your your existing PYTHONPATH
-PYTHONPATH=$PYTHONPATH:{}
-export PYTHONPATH
-""".format(root_directory)
-        else:
-            export_string = """\
-
-# Automatically inserted by the infoset-ng installation script
-# It appended the requied PYTHONPATH to your your existing PYTHONPATH
-PYTHONPATH={}
-export PYTHONPATH
-""".format(root_directory)
-
-        # Append the PYTHONPATH to the end of the
-        contents = '{}{}'.format(contents, export_string)
-        with open(filepath, 'w') as f_handle:
-            f_handle.write(contents)
 
     def _file_permissions(self):
         """Set file permissions.
@@ -685,8 +626,22 @@ export PYTHONPATH
             general.run_script(system_command)
 
 
-def main():
-    """Process agent data.
+def _ok(message):
+    """Install python module using pip3.
+
+    Args:
+        module: module to install
+
+    Returns:
+        None
+
+    """
+    # Print message
+    print('OK - {}'.format(message))
+
+
+def run():
+    """Setup infoset-ng.
 
     Args:
         None
@@ -695,20 +650,27 @@ def main():
         None
 
     """
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        MESSAGE = (
+            'Cannot run setup using "sudo". Run as a regular user to '
+            'install in this directory or as user "root".')
+        log.log2die_safe(1078, MESSAGE)
+
     # Initialize key variables
     username = getpass.getuser()
 
     # Determine whether version of python is valid
-    _Python().setup()
+    _PythonSetup().run()
 
     # Do specific setups for root user
-    _Daemon().setup()
+    _DaemonSetup().run()
 
     # Update configuration if required
-    _Configuration().setup()
+    _ConfigSetup().run()
 
     # Run server setup
-    _Database().setup()
+    _DatabaseSetup().run()
 
     # Give suggestions as to what to do
     if username == 'root':
@@ -727,30 +689,10 @@ You can enable infoset-ng daemons to start on system boot with these commands:
 """
         print(suggestions)
 
-    # Outline the versions of MySQL and MariaDB that are required
-    suggestions = """\
-
-infoset-ng requires:
-
-    MySQL >= 5.5
-    MariaDB >= 10
-
-Please verify.
-
-"""
-    print(suggestions)
-
     # All done
-    print('\nOK\n')
+    _ok('Installation successful.')
 
 
 if __name__ == '__main__':
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        MESSAGE = (
-            'Cannot run setup using "sudo". Run as a regular user to '
-            'install in this directory or as user "root".')
-        log.log2die_safe(1078, MESSAGE)
-
-    # Run main
-    main()
+    # Run setup
+    run()
