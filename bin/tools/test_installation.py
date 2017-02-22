@@ -98,7 +98,7 @@ def main():
                     log_message = (
                         'Successfully retrieved test data for agent ID %s'
                         '') % (id_agent)
-                    log.log2see(1034, log_message)
+                    log.log2see(1132, log_message)
                     print('\nOK\n')
                 else:
                     log_message = (
@@ -107,7 +107,7 @@ def main():
                         'in the database. Ingester has not added agent to '
                         'the database'
                         '') % (id_agent)
-                    log.log2see(1035, log_message)
+                    log.log2see(1133, log_message)
                     print("""\
 OK, but Ingester has not updated the database yet. \
 Run test in a minute and this message should change. \
@@ -118,7 +118,7 @@ If not, the Ingester may not be running.
                     'Failed to retrieve posted data to the local infoset '
                     'server. Review the installation steps '
                     'and verify whether the API is running.')
-                log.log2die(1039, log_message)
+                log.log2die(1140, log_message)
                 print('\nFail\n')
 
         else:
@@ -126,7 +126,7 @@ If not, the Ingester may not be running.
                 'Failed to retrieve posted data to the local infoset '
                 'server. Review the installation steps '
                 'and verify whether the API is running.')
-            log.log2die(1039, log_message)
+            log.log2die(1141, log_message)
             print('\nFail\n')
 
     else:
@@ -134,7 +134,7 @@ If not, the Ingester may not be running.
             'Failed to post data to the local infoset server. '
             'Review the installation steps '
             'and verify whether the API is running.')
-        log.log2die(1039, log_message)
+        log.log2die(1142, log_message)
         print('\nFail\n')
 
 

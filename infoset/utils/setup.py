@@ -155,7 +155,7 @@ class _DatabaseSetup(object):
             record = AgentName(
                 name=general.encode(self.reserved))
             database = db.Database()
-            database.add(record, 1109)
+            database.add(record, 1019)
 
         # Add agent
         if db_agent.idx_agent_exists(idx_agent) is False:
@@ -231,7 +231,7 @@ class _DatabaseSetup(object):
                 pool_size=pool_size, pool_recycle=3600)
 
             # Try to create the database
-            _ok('Attempting to create database tables')
+            print_ok('Attempting to create database tables')
             try:
                 sql_string = (
                     'ALTER DATABASE %s CHARACTER SET utf8mb4 '
@@ -247,7 +247,7 @@ class _DatabaseSetup(object):
                 log.log2die(1036, log_message)
 
             # Apply schemas
-            _ok('Applying Schemas.')
+            print_ok('Applying Schemas.')
             BASE.metadata.create_all(engine)
 
             # Insert database entries
@@ -321,7 +321,7 @@ class _ConfigSetup(object):
             log_message = (
                 'Configuration files found in {} is invalid'
                 ''.format(self.directories))
-            log.log2die_safe(1007, log_message)
+            log.log2die_safe(1101, log_message)
 
         # Update configuration file if required
         if len(updated_list) == updated_list.count(True):
@@ -438,7 +438,7 @@ class _PythonSetup(object):
             return
 
         # Determine whether PIP3 exists
-        _ok('Installing required pip3 packages')
+        print_ok('Installing required pip3 packages')
         pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
@@ -626,7 +626,7 @@ class _DaemonSetup(object):
             general.run_script(system_command)
 
 
-def _ok(message):
+def print_ok(message):
     """Install python module using pip3.
 
     Args:
@@ -690,7 +690,7 @@ You can enable infoset-ng daemons to start on system boot with these commands:
         print(suggestions)
 
     # All done
-    _ok('Installation successful.')
+    print_ok('Installation successful.')
 
 
 if __name__ == '__main__':
