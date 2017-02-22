@@ -589,7 +589,9 @@ class _PreCheck(object):
             setup.print_ok(log_message)
 
             # install pip3 modules
-            modules = ['setuptools', 'PyYAML', 'PyMySQL']
+            modules = [
+                'setuptools', 'PyYAML', 'PyMySQL',
+                'SQLAlchemy', 'SQLAlchemy-Utils']
             for module in modules:
                 _pip3_install(module)
 
