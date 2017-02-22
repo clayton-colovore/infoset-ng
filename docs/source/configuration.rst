@@ -2,10 +2,9 @@ Configuration
 =============
 
 It is important to have a valid configuration file in the ``etc/``
-directory before starting data collection.
+directory before starting data collection. The installation automatically creates a default version that may need to be edited. This page explains the various configuration parameters.
 
-The ``examples/etc`` directory includes a sample file that can be copied
-to the ``/etc`` directory and edited.
+The ``examples/etc`` directory includes a sample reference file.
 
 
 infoset-ng Configuration Example
