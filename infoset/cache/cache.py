@@ -285,7 +285,7 @@ class _PrepareDatabase(object):
                 name=general.encode(agent_name))
             database = db.Database()
             try:
-                database.add(record, 1081)
+                database.add(record, 1145)
             except pymysql.IntegrityError:
                 # There may be a duplicate agent name if this is a brand
                 # new database and there is a flurry of updates from multiple

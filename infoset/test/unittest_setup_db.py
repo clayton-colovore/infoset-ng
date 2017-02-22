@@ -177,7 +177,7 @@ class TestData(object):
             idx_deviceagent=self.data['idx_deviceagent'],
             id_datapoint=self.data['id_datapoint'].encode())
         database = db.Database()
-        database.add_all([new_data], 1072)
+        database.add_all([new_data], 1144)
 
         # Insert timeseries data into database
         new_data_list = []
@@ -339,7 +339,7 @@ def _setup_db_deviceagent(data):
     record = AgentName(
         name=general.encode(agent))
     database = db.Database()
-    database.add(record, 1031)
+    database.add(record, 1130)
 
     # Add Agent record to the database
     record = Agent(
@@ -460,7 +460,7 @@ def setup_db_configuration():
         config_value=general.encode(expected['config_value']),
         enabled=expected['enabled'])
     database = db.Database()
-    database.add_all([data], 1045)
+    database.add_all([data], 1143)
 
     # Return
     return expected

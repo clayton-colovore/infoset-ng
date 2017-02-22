@@ -381,10 +381,10 @@ def delete_files(directory, extension='.yaml'):
         except Exception as exception_error:
             log_message = ('Error: deleting files in %s. Error: %s') % (
                 directory, exception_error)
-            log.log2die_safe(1014, log_message)
+            log.log2die_safe(1127, log_message)
         except:
             log_message = ('Unexpected error')
-            log.log2die_safe(1015, log_message)
+            log.log2die_safe(1128, log_message)
 
 
 def delete_yaml_files(directory):

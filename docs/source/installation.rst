@@ -96,7 +96,7 @@ Run this command and follow the prompts.
 
 ::
 
-    $ bin/infoset-ng-cli.py build
+    $ bin/infoset-ng-cli install
 
 
 **Note** The setup script will make ``infoset-ng`` to be a system daemon if it is run as the ``root`` user (`System Daemon Mode`). If it is not run as root you will have to manually start the ``infoset-ng`` processes after each reboot. (`Interactive Mode`)

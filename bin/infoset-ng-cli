@@ -74,8 +74,8 @@ class CLI(object):
         # Subparser for subcommands
         subparsers = self.parser.add_subparsers(dest='action')
 
-        # Parse build parameters
-        _Build(subparsers)
+        # Parse install parameters
+        _Install(subparsers)
 
         # Return the CLI arguments
         self.args = self.parser.parse_args()
@@ -95,8 +95,8 @@ class CLI(object):
         parser = self.parser
 
         # Process each option
-        if args.action == 'build':
-            self._build_cli()
+        if args.action == 'install':
+            self._install_cli()
             sys.exit(0)
         elif args.action == 'serve':
             self._serve_cli()
@@ -115,8 +115,8 @@ class CLI(object):
     def _logo(self):
         pass
 
-    def _build_cli(self):
-        """Build infoset-ng.
+    def _install_cli(self):
+        """Install infoset-ng.
 
         Args:
             None
@@ -140,6 +140,10 @@ class CLI(object):
         # Run setup
         setup.run()
 
+        # Start daemons
+        daemon = _Daemon()
+        daemon.start()
+
     def _serve_cli(self):
         pass
 
@@ -150,17 +154,136 @@ class CLI(object):
         print('Test')
 
 
-class _Build(object):
-    """Class processes CLI 'build' option."""
+class _Install(object):
+    """Class processes CLI 'install' option."""
 
     def __init__(self, subparsers, width=80):
         """Function for intializing the class."""
         # Initialize key variables
         subparsers.add_parser(
-            'build',
+            'install',
             help=textwrap.fill(
                 'Build and installs infoset-ng dependencies.', width=width)
         )
+
+
+class _Daemon(object):
+    """Class to start infoset-ng daemons."""
+
+    def __init__(self):
+        """Function for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+
+    def start(self):
+        """Write the config to file.
+
+        Args:
+            None
+
+
+        Returns:
+            None
+        """
+        # Get daemon status
+        daemons = ['infoset-ng-api', 'infoset-ng-ingester']
+        for daemon in daemons:
+
+            running = self._running(daemon)
+
+            # Prompt to restart if already running
+            if running is True:
+                restart = input(
+                    '\nINPUT - Daemon {} is running. Restart? [(Y)/N]'
+                    ''.format(daemon))
+                if bool(restart) is False:
+                    self._restart(daemon)
+                elif restart[0].lower() == 'n':
+                    self._restart(daemon)
+                setup.print_ok(
+                    'Successfully restarted daemon {}.'.format(daemon))
+            else:
+                self._start(daemon)
+                setup.print_ok(
+                    'Successfully started daemon {}.'.format(daemon))
+
+    def _restart(self, daemon):
+        """Start or restart daemon.
+
+        Args:
+            daemon: Name of daemon
+
+        Returns:
+            None
+
+        """
+        # restart
+        self._start(daemon, restart=True)
+
+    def _start(self, daemon, restart=False):
+        """Start or restart daemon.
+
+        Args:
+            daemon: Name of daemon
+            restart: Restart if True
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        running = False
+        if restart is True:
+            attempt = 'restart'
+        else:
+            attempt = 'start'
+
+        # Get status
+        _root_directory = general.root_directory()
+        if restart is False:
+            script_name = '{}/bin/{} --start'.format(_root_directory, daemon)
+        else:
+            script_name = '{}/bin/{} --restart'.format(_root_directory, daemon)
+
+        # Attempt to restart / start
+        response = _run_script(script_name)
+        if bool(response['error_code']) is True:
+            log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
+            log.log2see_safe(1032, log_message)
+
+        # Return
+        return running
+
+    def _running(self, daemon):
+        """Determine status of daemon.
+
+        Args:
+            daemon: Name of daemon
+
+        Returns:
+            running: True if running
+
+        """
+        # Initialize key variables
+        running = False
+
+        # Get status
+        _root_directory = general.root_directory()
+        script_name = '{}/bin/{} --status'.format(_root_directory, daemon)
+        response = _run_script(script_name)
+        for key, value in response.items():
+            if key == 'output':
+                if 'running' in str(value).lower():
+                    running = True
+
+        # Return
+        return running
 
 
 class _Config(object):
@@ -226,7 +349,7 @@ main:
             if _main != 'main':
                 log_message = (
                     'Invalid files found in configuration directory')
-                log.log2die_safe(1000, log_message)
+                log.log2die_safe(1033, log_message)
 
             for key, value in data_dict.items():
                 self.config_dict[_main][key] = value
@@ -274,7 +397,7 @@ main:
             yaml.dump(self.config_dict, outfile, default_flow_style=False)
 
             # Write status Update
-            _ok('Created configuration file {}.'.format(filepath))
+            setup.print_ok('Created configuration file {}.'.format(filepath))
 
     def _db_credentials(self):
         """Validate database credentials.
@@ -361,14 +484,14 @@ main:
         # Process validity
         if valid is True:
             log_message = 'Database connectivity successfully verified.'
-            _ok(log_message)
+            setup.print_ok(log_message)
         else:
             log_message = (
                 'Cannot connect to the database. Verify your credentials. '
                 'Database Hostname: "{}", Database Username: "{}", '
                 'Database Name: "{}", Database Password: "******"'
                 ''.format(db_hostname, db_username, db_name))
-            log.log2die_safe(1000, log_message)
+            log.log2die_safe(1067, log_message)
 
 
 class _PreCheck(object):
@@ -425,10 +548,10 @@ class _PreCheck(object):
         if bool(response['error_code']) is True:
             log_message = (
                 'memcached is not installed. infoset-ng runs best with it.')
-            log.log2see_safe(1000, log_message)
+            log.log2see_safe(1076, log_message)
         else:
             log_message = 'memcached executable found.'
-            _ok(log_message)
+            setup.print_ok(log_message)
 
             # Check whether the server is running
             cli_string = 'ps aux | grep /usr/bin/memcached | grep -v grep'
@@ -438,10 +561,10 @@ class _PreCheck(object):
             if response is False:
                 log_message = (
                     'memcached is not running. infoset-ng runs best with it.')
-                log.log2see_safe(1000, log_message)
+                log.log2see_safe(1077, log_message)
             else:
                 log_message = 'memcached is running.'
-                _ok(log_message)
+                setup.print_ok(log_message)
 
     def _pip(self):
         """Determine pip3 version.
@@ -460,10 +583,10 @@ class _PreCheck(object):
         # Not OK if not fount
         if bool(response['error_code']) is True:
             log_message = ('python pip3 not installed.')
-            log.log2die_safe(1000, log_message)
+            log.log2die_safe(1094, log_message)
         else:
             log_message = 'Python pip3 executable found.'
-            _ok(log_message)
+            setup.print_ok(log_message)
 
             # install pip3 modules
             modules = ['setuptools', 'PyYAML', 'PyMySQL']
@@ -499,12 +622,12 @@ class _PreCheck(object):
                 'Required python version must be >= {}.{}. '
                 'Python version {}.{} installed'
                 ''.format(major, minor, major_installed, minor_installed))
-            log.log2die_safe(1000, log_message)
+            log.log2die_safe(1095, log_message)
         else:
             log_message = (
                 'Python version {}.{}.'
                 ''.format(major_installed, minor_installed))
-            _ok(log_message)
+            setup.print_ok(log_message)
 
     def _mysql(self):
         """Determine MySQL version.
@@ -531,7 +654,7 @@ class _PreCheck(object):
         if bool(response['error_code']) is True:
             valid = False
             log_message = ('MySQL / MariaDB not installed.')
-            log.log2die_safe(1000, log_message)
+            log.log2die_safe(1096, log_message)
 
         else:
             # Determine major and minor versions of software
@@ -557,12 +680,12 @@ class _PreCheck(object):
                     log_message = (
                         'MariaDB version needs to be >= than {}.{}.'
                         ''.format(major, minor))
-                    log.log2die_safe(1000, log_message)
+                    log.log2die_safe(1097, log_message)
                 else:
                     log_message = (
                         'MariaDB version {}.{}.'
                         ''.format(major_installed, minor_installed))
-                    _ok(log_message)
+                    setup.print_ok(log_message)
 
             # We are running MySQL
             else:
@@ -581,12 +704,12 @@ class _PreCheck(object):
                     log_message = (
                         'MySQL version needs to be >= than {}.{}.'
                         ''.format(major, minor))
-                    log.log2die_safe(1000, log_message)
+                    log.log2die_safe(1098, log_message)
                 else:
                     log_message = (
                         'MySQL version {}.{}.'
                         ''.format(major_installed, minor_installed))
-                    _ok(log_message)
+                    setup.print_ok(log_message)
 
         # Check whether the server is running
         cli_string = 'ps aux | grep /usr/sbin/mysqld | grep -v grep'
@@ -595,24 +718,10 @@ class _PreCheck(object):
         # Not OK if not fount
         if response is False:
             log_message = ('MySQL / MariaDB is not running.')
-            log.log2die_safe(1000, log_message)
+            log.log2die_safe(1099, log_message)
         else:
             log_message = 'MySQL / MariaDB is running.'
-            _ok(log_message)
-
-
-def _ok(message):
-    """Install python module using pip3.
-
-    Args:
-        module: module to install
-
-    Returns:
-        None
-
-    """
-    # Print message
-    print('OK - {}'.format(message))
+            setup.print_ok(log_message)
 
 
 def _pip3_install(module):
@@ -645,14 +754,14 @@ def _pip3_install(module):
         # Fail if module cannot be installed
         if bool(response_install['error_code']) is True:
             log_message = ('python pip3 cannot install "{}".'.format(module))
-            log.log2die_safe(1000, log_message)
+            log.log2die_safe(1100, log_message)
         else:
             log_message = (
                 'Python module "{}" is installed.'.format(module))
-            _ok(log_message)
+            setup.print_ok(log_message)
     else:
         log_message = 'Python module "{}" is installed.'.format(module)
-        _ok(log_message)
+        setup.print_ok(log_message)
 
 
 def _run_script(cli_string, shell=False):
