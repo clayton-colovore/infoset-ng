@@ -200,14 +200,16 @@ class _Daemon(object):
             # Prompt to restart if already running
             if running is True:
                 restart = input(
-                    '\nINPUT - Daemon {} is running. Restart? [(Y)/N]'
+                    '\nINPUT - Daemon {} is running. Restart? [(Y)/N] '
                     ''.format(daemon))
                 if bool(restart) is False:
                     self._restart(daemon)
-                elif restart[0].lower() == 'n':
+                    setup.print_ok(
+                        'Successfully restarted daemon {}.'.format(daemon))
+                elif restart[0].lower() != 'n':
                     self._restart(daemon)
-                setup.print_ok(
-                    'Successfully restarted daemon {}.'.format(daemon))
+                    setup.print_ok(
+                        'Successfully restarted daemon {}.'.format(daemon))
             else:
                 self._start(daemon)
                 setup.print_ok(
