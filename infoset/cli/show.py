@@ -15,7 +15,7 @@ from infoset.utils import input_output
 from infoset.utils import general
 from infoset.main.agent import Agent, AgentAPI, AgentDaemon
 from infoset.constants import (
-    API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
+    API_EXECUTABLE, API_GUNICORN_AGENT, INGESTER_EXECUTABLE)
 
 
 def run(args):
@@ -35,8 +35,8 @@ def run(args):
     # Process 'show api' command
     if args.qualifier == 'api':
         api(args)
-    elif args.qualifier == 'poller':
-        poller(args)
+    elif args.qualifier == 'ingester':
+        ingester(args)
     elif args.qualifier == 'hostnames':
         _hostnames()
     elif args.qualifier == 'configuration':
@@ -125,8 +125,8 @@ def api(args):
     general.cli_help()
 
 
-def poller(args):
-    """Process 'show poller' commands.
+def ingester(args):
+    """Process 'show ingester' commands.
 
     Args:
         args: Argparse arguments
@@ -147,11 +147,11 @@ def poller(args):
 
     elif args.subqualifier == 'status':
         # Create agent objects
-        agent_poller = Agent(POLLER_EXECUTABLE)
+        agent_ingester = Agent(INGESTER_EXECUTABLE)
 
         # Get agent status
-        daemon_poller = AgentDaemon(agent_poller)
-        daemon_poller.status()
+        daemon_ingester = AgentDaemon(agent_ingester)
+        daemon_ingester.status()
 
         # Done
         sys.exit(0)

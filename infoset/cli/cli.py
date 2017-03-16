@@ -148,8 +148,8 @@ class _Show(object):
         # Parse "show API status", return object used for parser
         _Status(subparsers, width=width)
 
-    def poller(self, width=80):
-        """Process show poller CLI commands.
+    def ingester(self, width=80):
+        """Process show ingester CLI commands.
 
         Args:
             width: Width of the help text string to STDIO before wrapping
@@ -160,17 +160,17 @@ class _Show(object):
         """
         # Initialize key variables
         parser = self.subcommand.add_parser(
-            'poller',
-            help=textwrap.fill('Show poller status.', width=width)
+            'ingester',
+            help=textwrap.fill('Show ingester status.', width=width)
         )
 
         # Add subparser
         subparsers = parser.add_subparsers(dest='subqualifier')
 
-        # Parse "show poller logs", return object used for parser
+        # Parse "show ingester logs", return object used for parser
         _Logs(subparsers, width=width)
 
-        # Parse "show poller status", return object used for parser
+        # Parse "show ingester status", return object used for parser
         _Status(subparsers, width=width)
 
     def hostnames(self, width=80):
@@ -250,8 +250,8 @@ class _Start(object):
             help=textwrap.fill('Start API daemon.', width=width)
         )
 
-    def poller(self, width=80):
-        """Process start poller CLI commands.
+    def ingester(self, width=80):
+        """Process start ingester CLI commands.
 
         Args:
             width: Width of the help text string to STDIO before wrapping
@@ -262,8 +262,8 @@ class _Start(object):
         """
         # Initialize key variables
         self.subcommand.add_parser(
-            'poller',
-            help=textwrap.fill('Start poller daemon.', width=width)
+            'ingester',
+            help=textwrap.fill('Start ingester daemon.', width=width)
         )
 
 
@@ -321,8 +321,8 @@ class _Stop(object):
                 'Stops the agent daemon ungracefully when used', width=80)
         )
 
-    def poller(self, width=80):
-        """Process stop poller CLI commands.
+    def ingester(self, width=80):
+        """Process stop ingester CLI commands.
 
         Args:
             width: Width of the help text string to STDIO before wrapping
@@ -333,8 +333,8 @@ class _Stop(object):
         """
         # Initialize key variables
         parser = self.subcommand.add_parser(
-            'poller',
-            help=textwrap.fill('Stop poller status.', width=width)
+            'ingester',
+            help=textwrap.fill('Stop ingester status.', width=width)
         )
 
         # CLI argument for forced stopping
@@ -402,8 +402,8 @@ class _Restart(object):
                 'Restarts the agent daemon ungracefully when used', width=80)
         )
 
-    def poller(self, width=80):
-        """Process restart poller CLI commands.
+    def ingester(self, width=80):
+        """Process restart ingester CLI commands.
 
         Args:
             width: Width of the help text string to STDIO before wrapping
@@ -414,8 +414,8 @@ class _Restart(object):
         """
         # Initialize key variables
         parser = self.subcommand.add_parser(
-            'poller',
-            help=textwrap.fill('Restart poller status.', width=width)
+            'ingester',
+            help=textwrap.fill('Restart ingester status.', width=width)
         )
 
         # CLI argument for forced restartping
@@ -457,8 +457,8 @@ class _Test(object):
                 # Execute
                 attribute(width=width)
 
-    def poller(self, width=80):
-        """Process test poller CLI commands.
+    def ingester(self, width=80):
+        """Process test ingester CLI commands.
 
         Args:
             width: Width of the help text string to STDIO before wrapping
@@ -469,8 +469,8 @@ class _Test(object):
         """
         # Initialize key variables
         parser = self.subcommand.add_parser(
-            'poller',
-            help=textwrap.fill('Test poller.', width=width)
+            'ingester',
+            help=textwrap.fill('Test ingester.', width=width)
         )
 
         # CLI argument for forced testping

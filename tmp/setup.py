@@ -27,13 +27,14 @@ except ImportError:
     from sqlalchemy import create_engine
 
 # Try to create a working PYTHONPATH
-_root_directory = os.path.dirname(os.path.realpath(__file__))
-if _root_directory.endswith('/infoset-ng/infoset/utils') is True:
+_lib_directory = os.path.dirname(os.path.realpath(__file__))
+_infoset_directory = os.path.abspath(os.path.join(_lib_directory, os.pardir))
+_root_directory = os.path.abspath(os.path.join(_infoset_directory, os.pardir))
+if _root_directory.endswith('/infoset-ng') is True:
     sys.path.append(_root_directory)
 else:
     print(
-        'This script is not installed in the '
-        '"infoset-ng/infoset/utils" directory. '
+        'Infoset-NG is not installed in a "infoset-ng/" directory. '
         'Please fix.')
     sys.exit(2)
 

@@ -18,6 +18,20 @@ from infoset.utils import configuration
 from infoset import infoset
 
 
+def cli_help():
+    """Print help for CLI options.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    print('Try using command: {} --help'.format(' '.join(sys.argv)))
+    sys.exit(2)
+
+
 def root_directory():
     """Getermine the root directory in which infoset is installed.
 
@@ -348,7 +362,12 @@ def run_script(cli_string, shell=False, die=True):
             log.log2die(1074, log_message)
 
     # Return
-    return stdoutdata
+    data = {
+        'stdout': stdoutdata.decode(),
+        'stderr': stderrdata.decode(),
+        'returncode': returncode
+    }
+    return data
 
 
 def delete_files(directory, extension='.yaml'):

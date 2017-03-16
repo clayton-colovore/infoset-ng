@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """infoset CLI classes for 'test'.
 
-Functions to test poller
+Functions to test ingester
 
 """
 
@@ -63,7 +63,7 @@ def run(args):
 
 
 def test_hostname(hostname, snmp_config):
-    """Process 'test poller --hostname' commands.
+    """Process 'test ingester --hostname' commands.
 
     Args:
         args: Argparse arguments
