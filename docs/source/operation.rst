@@ -57,7 +57,7 @@ Refer to the Troubleshooting section of this page to rectify any issues.
 Stop After Successful Testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now that you have tested the functionality successsfully it is time to stop the interactive API session until you decide the best method to run ``infoset-ng``, either interactively as you did during the testing or as system daemons. 
+Now that you have tested the functionality successsfully it is time to stop the interactive API session until you decide the best method to run ``infoset-ng``, either interactively as you did during the testing or as system daemons.
 
 ::
 
@@ -107,7 +107,7 @@ You can get the ``ingester`` to automatically restart on boot like this:
 ::
 
     $ sudo systemctl enable infoset-ng-ingester.service
-    
+
 A sample system startup script can be found in the
 ``examples/linux/systemd/infoset-ng-ingester.service`` file. Follow the instructions in the file to make changes to the startup operation of the ``ingester`` daemon.
 
@@ -185,7 +185,7 @@ You can get the ``API`` to automatically restart on boot like this:
 ::
 
     $ sudo systemctl enable infoset-ng-api.service
-    
+
 A sample system startup script can be found in the
 ``examples/linux/systemd/infoset-ng-api.service`` file. Follow the instructions in the file to make changes to the startup operation of the ``API`` daemon.
 
@@ -222,4 +222,3 @@ You can get the status of the API like this:
 ::
 
     $ tail -f etc/api-web.log
-

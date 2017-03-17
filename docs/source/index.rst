@@ -21,6 +21,7 @@ The introduction will provide useful background information too.
    installation
    configuration
    operation
+   cli
    api
    troubleshooting
    bestpractices

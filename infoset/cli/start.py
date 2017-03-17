@@ -10,7 +10,7 @@ import sys
 
 # Infoset-NG imports
 from infoset.utils import general
-from infoset.main.agent import Agent, AgentAPI, AgentDaemon
+from infoset.agents.agent import Agent, AgentAPI, AgentDaemon
 from infoset.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, INGESTER_EXECUTABLE)
 

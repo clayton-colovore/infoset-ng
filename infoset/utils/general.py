@@ -2,6 +2,7 @@
 """Infoset general library."""
 
 import os
+import sys
 import subprocess
 import locale
 import hashlib

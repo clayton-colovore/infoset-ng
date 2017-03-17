@@ -25,6 +25,35 @@ class Config(object):
         # Initialize key variables
         directories = general.config_directories()
         self.config_dict = general.read_yaml_files(directories)
+        self.config_directory = directories[0]
+
+    def configuration_directory(self):
+        """Determine the configuration_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured configuration_directory
+
+        """
+        # Initialize key variables
+        value = self.config_directory
+        return value
+
+    def configuration(self):
+        """Return configuration.
+
+        Args:
+            None
+
+        Returns:
+            value: configuration
+
+        """
+        # Initialize key variables
+        value = self.config_dict
+        return value
 
     def ingest_cache_directory(self):
         """Determine the ingest_cache_directory.

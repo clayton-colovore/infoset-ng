@@ -23,13 +23,13 @@ The commands for installing the dependencies are:
 
     $ sudo apt-get -y install python3 python3-pip python3-dev memcached
 
-Select either of these commands to install MySQL server or MariaDB server 
+Select either of these commands to install MySQL server or MariaDB server
 
 ::
 
     $ sudo apt-get -y install mysql-server
     $ sudo apt-get -y install mariadb-server
-    
+
 
 Centos / Fedora
 ~~~~~~~~~~~~~~~
@@ -40,7 +40,7 @@ The commands for installing the dependencies are:
 
     $ sudo dnf -y install python3 python3-pip python3-dev memcached
 
-Select either of these commands to install MySQL server or MariaDB server 
+Select either of these commands to install MySQL server or MariaDB server
 
 ::
 
@@ -92,14 +92,33 @@ Next create the MySQL or MariaDB database. Make sure the database server is runn
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Run this command and follow the prompts.
+Run the installation script. There are two alternatives:
+
+**Installing as a regular user**
+
+There are some things to keep in mind when installing `switchmap-ng` as a regular user.
+
+1) Use this method if you don't have ``root`` access to your system.
+2) The ``switchmap-ng`` daemons `will not` automatically restart on reboot using this method.
+
+To make ``switchmap-ng`` run with your username, then execute this command:
 
 ::
 
-    $ bin/infoset-ng-cli install
+    $ maintenance/install.py
 
+**Installing as the "root" user**
 
-**Note** The setup script will make ``infoset-ng`` to be a system daemon if it is run as the ``root`` user (`System Daemon Mode`). If it is not run as root you will have to manually start the ``infoset-ng`` processes after each reboot. (`Interactive Mode`)
+There are some things to keep in mind when installing `switchmap-ng` as the `root` user.
+
+1) The ``switchmap-ng`` daemons `will` automatically restart on reboot using this installation method.
+2) **Note**: Do not run setup using ``sudo``. Use ``sudo`` to become the ``root`` user first.
+
+To install ``switchmap-ng`` as the ``root`` user execute this command:
+
+::
+
+    # maintenance/install.py
 
 
 Next Steps

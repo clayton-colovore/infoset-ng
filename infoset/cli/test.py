@@ -7,12 +7,13 @@ Functions to test ingester
 
 # Main python libraries
 import sys
+from collections import defaultdict
+from random import randint
 
 # Infoset-NG imports
 from infoset.utils import general
-from infoset.utils import configuration
 from infoset.utils import log
-from infoset.snmp import snmp_manager
+from infoset.reference import reference
 
 
 def run(args):
@@ -26,63 +27,103 @@ def run(args):
         None
 
     """
-    # Process the config
-    snmp_config = configuration.ConfigSNMP()
-    config = configuration.Config()
+    if args.action == 'test':
+        # Get configuration
+        config = reference.ReferenceSampleConfig()
+        api = reference.ReferenceSampleAPI(config)
+        agent_name = config.agent_name()
+        devicename = config.prefix
+        id_agent = reference.get_id_agent(agent_name, test=True)
 
-    # Show help if no arguments provided
-    if args.qualifier is None:
-        general.cli_help()
+        # Instantiate an agent
+        report = reference.ReferenceSampleAgent(config, devicename, test=True)
 
-    # Test a single host
-    if bool(args.hostname) is True:
-        hostname = args.hostname
-        test_hostname(hostname, snmp_config)
-        sys.exit(0)
+        # Populate data and post
+        report.populate_dict(_data2post())
+        success = report.post()
 
-    # Test all hosts
-    elif bool(args.all) is True:
-        hosts = config.hostnames()
-        if isinstance(hosts, list) is True:
-            if len(hosts) > 0:
-                for host in hosts:
-                    test_hostname(host, snmp_config)
-                sys.exit(0)
+        # Posting success
+        if success is True:
+            # Log success
+            log_message = (
+                'Successfully posted test data for agent ID %s'
+                '') % (id_agent)
+            log.log2see(1015, log_message)
+
+            # Try to retrieve data
+            uri = ('/agents?id_agent=%s') % (id_agent)
+            results = api.get(uri)
+
+            if bool(results) is True:
+                if isinstance(results, dict) is True:
+                    # print results
+                    if results['exists'] is True:
+                        log_message = (
+                            'Successfully retrieved test data for agent ID %s'
+                            '') % (id_agent)
+                        log.log2see(1132, log_message)
+                        print('\nOK\n')
+                    else:
+                        log_message = (
+                            'WARNING: Contacted this infoset server. '
+                            'The data for the test agent ID %s is not present '
+                            'in the database. Ingester has not added agent to '
+                            'the database'
+                            '') % (id_agent)
+                        log.log2see(1133, log_message)
+                        print("""\
+    OK, but Ingester has not updated the database yet. \
+    Run test in a minute and this message should change. \
+    If not, the Ingester may not be running.
+    """)
+                else:
+                    log_message = (
+                        'Failed to retrieve posted data to the local infoset '
+                        'server. Review the installation steps '
+                        'and verify whether the API is running.')
+                    log.log2die(1140, log_message)
+                    print('\nFail\n')
+
             else:
-                # No hosts found
-                log_message = 'No hosts found in configuration'
-                log.log2see(1038, log_message)
+                log_message = (
+                    'Failed to retrieve posted data to the local infoset '
+                    'server. Review the installation steps '
+                    'and verify whether the API is running.')
+                log.log2die(1141, log_message)
+                print('\nFail\n')
 
         else:
-            # No hosts found
-            log_message = 'No hosts found in configuration'
-            log.log2see(1039, log_message)
+            log_message = (
+                'Failed to post data to the local infoset server. '
+                'Review the installation steps '
+                'and verify whether the API is running.')
+            log.log2die(1142, log_message)
+            print('\nFail\n')
 
-    # Show help if there are no matches
-    general.cli_help()
+            # Exit OK
+            sys.exit(0)
+    else:
+        # Show help if there are no matches
+        general.cli_help()
 
 
-def test_hostname(hostname, snmp_config):
-    """Process 'test ingester --hostname' commands.
+def _data2post():
+    """Generate data to post.
 
     Args:
-        args: Argparse arguments
+        None
 
     Returns:
         None
 
     """
-    # Show host information
-    validate = snmp_manager.Validate(hostname, snmp_config.snmp_auth())
-    snmp_params = validate.credentials()
+    # Generate fake data
+    result = defaultdict(lambda: defaultdict(dict))
+    labels = ['_infoset_test_1_', '_infoset_test_2_']
+    sources = ['_source_1_', '_source_2_']
+    for label in labels:
+        for source in sources:
+            result[label][source] = randint(5, 10)
 
-    if bool(snmp_params) is True:
-        print(
-            'OK - Valid credentials found, successfully contacted: {}'
-            ''.format(hostname))
-    else:
-        # Error, host problems
-        log_message = (
-            'Uncontactable host %s or no valid SNMP '
-            'credentials found for it.') % (hostname)
-        log.log2see(1040, log_message)
+    # Return
+    return result

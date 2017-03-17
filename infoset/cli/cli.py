@@ -173,22 +173,6 @@ class _Show(object):
         # Parse "show ingester status", return object used for parser
         _Status(subparsers, width=width)
 
-    def hostnames(self, width=80):
-        """Process show hostnames CLI commands.
-
-        Args:
-            width: Width of the help text string to STDIO before wrapping
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.subcommand.add_parser(
-            'hostnames',
-            help=textwrap.fill('Show configured hostnames.', width=width)
-        )
-
     def configuration(self, width=80):
         """Process 'show configuration' CLI commands.
 
@@ -471,25 +455,6 @@ class _Test(object):
         parser = self.subcommand.add_parser(
             'ingester',
             help=textwrap.fill('Test ingester.', width=width)
-        )
-
-        # CLI argument for forced testping
-        parser.add_argument(
-            '--hostname',
-            required=False,
-            type=str,
-            help=textwrap.fill(
-                'Host to test', width=80)
-        )
-
-        # CLI argument for forced testping
-        parser.add_argument(
-            '--all',
-            required=False,
-            default=False,
-            action='store_true',
-            help=textwrap.fill(
-                'Test all hosts', width=80)
         )
 
 

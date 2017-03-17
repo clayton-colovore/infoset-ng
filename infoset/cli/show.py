@@ -13,7 +13,7 @@ from pprint import pprint
 from infoset.utils import configuration
 from infoset.utils import input_output
 from infoset.utils import general
-from infoset.main.agent import Agent, AgentAPI, AgentDaemon
+from infoset.agents.agent import Agent, AgentAPI, AgentDaemon
 from infoset.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, INGESTER_EXECUTABLE)
 
@@ -37,32 +37,11 @@ def run(args):
         api(args)
     elif args.qualifier == 'ingester':
         ingester(args)
-    elif args.qualifier == 'hostnames':
-        _hostnames()
     elif args.qualifier == 'configuration':
         _configuration()
 
     # Show help if there are no matches
     general.cli_help()
-
-
-def _hostnames():
-    """Process 'show hostnames' commands.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    config = configuration.Config()
-    _hostnames = config.hostnames()
-    for _hostname in _hostnames:
-        print(_hostname)
-
-    # Done
-    sys.exit(0)
 
 
 def _configuration():
