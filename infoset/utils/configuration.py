@@ -202,6 +202,26 @@ class Config(object):
             result = '0.0.0.0'
         return result
 
+    def username(self):
+        """Get username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = 'main'
+        sub_key = 'username'
+        result = _key_sub_key(key, sub_key, self.config_dict, die=False)
+
+        # Default to None
+        if result is None:
+            result = None
+        return result
+
     def interval(self):
         """Get interval.
 

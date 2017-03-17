@@ -460,7 +460,7 @@ class _PythonSetup(object):
 class _DaemonSetup(object):
     """Class to setup infoset-ng daemon."""
 
-    def __init__(self):
+    def __init__(self, username=None):
         """Function for intializing the class.
 
         Args:
@@ -471,26 +471,20 @@ class _DaemonSetup(object):
 
         """
         # Initialize key variables
-        username = getpass.getuser()
+        running_username = getpass.getuser()
         self.root_directory = general.root_directory()
         self.infoset_user_exists = True
         self.infoset_user = None
         self.running_as_root = False
 
-        # If running as the root user, then the infoset user needs to exist
-        if username == 'root':
-            self.running_as_root = True
-            try:
-                self.infoset_user = input(
-                    'Please enter the username under which '
-                    'infoset-ng will run: ')
-
-                # Get GID and UID for user
-                self.gid = getpwnam(self.infoset_user).pw_gid
-                self.uid = getpwnam(self.infoset_user).pw_uid
-            except KeyError:
-                self.infoset_user_exists = False
-            return
+        # Set the username we need to be running as
+        try:
+            # Get GID and UID for user
+            self.infoset_user = username
+            self.gid = getpwnam(self.infoset_user).pw_gid
+            self.uid = getpwnam(self.infoset_user).pw_uid
+        except KeyError:
+            self.infoset_user_exists = False
 
         # Die if user doesn't exist
         if self.infoset_user_exists is False:
@@ -498,6 +492,11 @@ class _DaemonSetup(object):
                 'User {} not found. Please try again.'
                 ''.format(self.infoset_user))
             log.log2die_safe(1049, log_message)
+
+        # If running as the root user, then the infoset user needs to exist
+        if running_username == 'root':
+            self.running_as_root = True
+            return
 
     def run(self):
         """Setup daemon scripts and file permissions.
@@ -650,11 +649,11 @@ def print_ok(message):
     print('OK - {}'.format(message))
 
 
-def run():
+def run(username=None):
     """Setup infoset-ng.
 
     Args:
-        None
+        username: Username to run as
 
     Returns:
         None
@@ -668,13 +667,16 @@ def run():
         log.log2die_safe(1078, log_message)
 
     # Initialize key variables
-    username = getpass.getuser()
+    if username is None:
+        daemon_username = getpass.getuser()
+    else:
+        daemon_username = username
 
     # Determine whether version of python is valid
     _PythonSetup().run()
 
     # Do specific setups for root user
-    _DaemonSetup().run()
+    _DaemonSetup(username=daemon_username).run()
 
     # Update configuration if required
     _ConfigSetup().run()

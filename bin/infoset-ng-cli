@@ -8,6 +8,7 @@ Manages the verification of required packages.
 # Main python libraries
 import sys
 import os
+import getpass
 
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
@@ -22,6 +23,8 @@ else:
 
 # Do infoset-ng imports
 from infoset.cli import cli
+from infoset.utils import log
+from infoset.utils import configuration
 
 
 def main():
@@ -34,6 +37,24 @@ def main():
         None
 
     """
+    # Initialize key variables
+    username = getpass.getuser()
+    config = configuration.Config()
+    configured_username = config.username()
+
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        log_message = (
+            'Cannot run script using "sudo".')
+        log.log2die(1078, log_message)
+
+    # Prevent others from running the script
+    if username != configured_username:
+        log_message = (
+            'You can only run this script as user \'{}\' '
+            'in the configuration file.').format(configured_username)
+        log.log2die(1078, log_message)
+
     # Run stuff
     commands = cli.CLI()
     commands.process()

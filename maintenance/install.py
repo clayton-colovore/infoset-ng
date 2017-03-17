@@ -10,6 +10,8 @@ import sys
 import getpass
 import os
 from collections import defaultdict
+from pwd import getpwnam
+
 
 # PIP3 libraries
 ###############################################################################
@@ -62,20 +64,47 @@ def run():
         None
 
     """
+    # Initialize key variables
+    username = getpass.getuser()
+
     #######################################################################
     # Check prerequisite package versions
     #######################################################################
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        log_message = (
+            'Cannot run installation using "sudo". Run as a regular user to '
+            'install in this directory or as user "root".')
+        log.log2die_safe(1078, log_message)
+
+    # If running as the root user, then the infoset user needs to exist
+    if username == 'root':
+        try:
+            daemon_username = input(
+                'Please enter the username under which '
+                'infoset-ng will run: ')
+
+            # Get GID and UID for user
+            _ = getpwnam(daemon_username).pw_gid
+        except:
+            log_message = (
+                'User {} not found. Please try again.'
+                ''.format(daemon_username))
+            log.log2die_safe(1049, log_message)
+    else:
+        daemon_username = username
+
     # Do precheck
     precheck = _PreCheck()
     precheck.validate()
 
     # Create a configuration
-    config = _Config()
+    config = _Config(username=daemon_username)
     config.validate()
     config.write()
 
     # Run setup
-    setup.run()
+    setup.run(username=daemon_username)
 
     # Start daemons
     daemon = _Daemon()
@@ -231,11 +260,11 @@ class _Daemon(object):
 class _Config(object):
     """Class to test setup."""
 
-    def __init__(self):
+    def __init__(self, username):
         """Function for intializing the class.
 
         Args:
-            None
+            username: Username to run scripts as
 
         Returns:
             None
@@ -260,7 +289,9 @@ main:
     db_username: infoset_ng
     db_password:
     db_name: infoset_ng
-""")
+    username: {}
+""").format(username)
+
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
 
