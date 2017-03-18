@@ -10,6 +10,7 @@ main:
     memcached_port: 11211
     sqlalchemy_pool_size: 10
     sqlalchemy_max_overflow: 10
+    username: USERNAME
     db_hostname: localhost
     db_username: infoset_ng
     db_password: PASSWORD

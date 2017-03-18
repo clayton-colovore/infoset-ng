@@ -20,31 +20,28 @@ try:
     from sqlalchemy import create_engine
 except ImportError:
     import pip
-    packages = ['yaml', 'sqlalchemy']
+    packages = ['PyYAML', 'sqlalchemy']
     for package in packages:
         pip.main(['install', '--user', package])
-    import yaml
-    from sqlalchemy import create_engine
+    print(
+        'New Python packages installed. Please run this script again to '
+        'complete the Infoset-NG installation.')
+    sys.exit(0)
 
 # Try to create a working PYTHONPATH
-_root_directory = os.path.dirname(os.path.realpath(__file__))
-if _root_directory.endswith('/infoset-ng/infoset/utils') is True:
+_maint_directory = os.path.dirname(os.path.realpath(__file__))
+_root_directory = os.path.abspath(
+    os.path.join(_maint_directory, os.pardir))
+if _root_directory.endswith('/infoset-ng') is True:
     sys.path.append(_root_directory)
 else:
     print(
-        'This script is not installed in the '
-        '"infoset-ng/infoset/utils" directory. '
+        'Infoset-NG is not installed in a "infoset-ng/" directory. '
         'Please fix.')
     sys.exit(2)
 
 # Infoset libraries
-try:
-    from infoset.utils import log
-except:
-    print(
-        'You need to set your PYTHONPATH to include the '
-        'infoset-ng root directory')
-    sys.exit(2)
+from infoset.utils import log
 from infoset.utils import configuration
 from infoset.utils import general
 from infoset.db.db_orm import BASE, Agent, Department, Device, Billcode
@@ -404,7 +401,7 @@ class _PythonSetup(object):
                 'Required python version must be >= {}.{}. '
                 'Python version {}.{} installed'
                 ''.format(major, minor, major_installed, minor_installed))
-            log.log2die_safe(1018, log_message)
+            log.log2die_safe(1027, log_message)
 
     def run(self):
         """Setup Python.
@@ -438,7 +435,8 @@ class _PythonSetup(object):
             return
 
         # Determine whether PIP3 exists
-        print_ok('Installing required pip3 packages')
+        print_ok(
+            'Installing required pip3 packages from requirements.txt file.')
         pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
@@ -462,7 +460,7 @@ class _PythonSetup(object):
 class _DaemonSetup(object):
     """Class to setup infoset-ng daemon."""
 
-    def __init__(self):
+    def __init__(self, username=None):
         """Function for intializing the class.
 
         Args:
@@ -473,26 +471,20 @@ class _DaemonSetup(object):
 
         """
         # Initialize key variables
-        username = getpass.getuser()
+        running_username = getpass.getuser()
         self.root_directory = general.root_directory()
         self.infoset_user_exists = True
         self.infoset_user = None
         self.running_as_root = False
 
-        # If running as the root user, then the infoset user needs to exist
-        if username == 'root':
-            self.running_as_root = True
-            try:
-                self.infoset_user = input(
-                    'Please enter the username under which '
-                    'infoset-ng will run: ')
-
-                # Get GID and UID for user
-                self.gid = getpwnam(self.infoset_user).pw_gid
-                self.uid = getpwnam(self.infoset_user).pw_uid
-            except KeyError:
-                self.infoset_user_exists = False
-            return
+        # Set the username we need to be running as
+        try:
+            # Get GID and UID for user
+            self.infoset_user = username
+            self.gid = getpwnam(self.infoset_user).pw_gid
+            self.uid = getpwnam(self.infoset_user).pw_uid
+        except KeyError:
+            self.infoset_user_exists = False
 
         # Die if user doesn't exist
         if self.infoset_user_exists is False:
@@ -500,6 +492,11 @@ class _DaemonSetup(object):
                 'User {} not found. Please try again.'
                 ''.format(self.infoset_user))
             log.log2die_safe(1049, log_message)
+
+        # If running as the root user, then the infoset user needs to exist
+        if running_username == 'root':
+            self.running_as_root = True
+            return
 
     def run(self):
         """Setup daemon scripts and file permissions.
@@ -577,20 +574,26 @@ class _DaemonSetup(object):
         groupname = grp.getgrgid(self.gid).gr_name
         system_directory = '/etc/systemd/system'
         system_command = '/bin/systemctl daemon-reload'
+        ingester_service = 'infoset-ng-ingester.service'
+        api_service = 'infoset-ng-api.service'
+
+        # Do nothing if systemd isn't installed
+        if os.path.isdir(system_directory) is False:
+            return
 
         # Copy system files to systemd directory and activate
-        service_ingester = (
-            '{}/examples/linux/systemd/infoset-ng-ingester.service'
-            ''.format(self.root_directory))
-        service_api = (
-            '{}/examples/linux/systemd/infoset-ng-api.service'
-            ''.format(self.root_directory))
+        ingester_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, ingester_service))
+        api_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, api_service))
 
         # Read in file
         # 1) Convert home directory to that of user
         # 2) Convert username in file
         # 3) Convert group in file
-        filenames = [service_ingester, service_api]
+        filenames = [ingester_startup_script, api_startup_script]
         for filename in filenames:
             # Read next file
             with open(filename, 'r') as f_handle:
@@ -625,6 +628,12 @@ class _DaemonSetup(object):
         if os.path.isdir(system_directory):
             general.run_script(system_command)
 
+        # Enable serices
+        services = [ingester_service, api_service]
+        for service in services:
+            enable_command = 'systemctl enable {}'.format(service)
+            general.run_script(enable_command)
+
 
 def print_ok(message):
     """Install python module using pip3.
@@ -640,11 +649,11 @@ def print_ok(message):
     print('OK - {}'.format(message))
 
 
-def run():
+def run(username=None):
     """Setup infoset-ng.
 
     Args:
-        None
+        username: Username to run as
 
     Returns:
         None
@@ -652,19 +661,22 @@ def run():
     """
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
-        MESSAGE = (
+        log_message = (
             'Cannot run setup using "sudo". Run as a regular user to '
             'install in this directory or as user "root".')
-        log.log2die_safe(1078, MESSAGE)
+        log.log2die_safe(1078, log_message)
 
     # Initialize key variables
-    username = getpass.getuser()
+    if username is None:
+        daemon_username = getpass.getuser()
+    else:
+        daemon_username = username
 
     # Determine whether version of python is valid
     _PythonSetup().run()
 
     # Do specific setups for root user
-    _DaemonSetup().run()
+    _DaemonSetup(username=daemon_username).run()
 
     # Update configuration if required
     _ConfigSetup().run()

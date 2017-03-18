@@ -2,6 +2,7 @@
 """Infoset general library."""
 
 import os
+import sys
 import subprocess
 import locale
 import hashlib
@@ -16,6 +17,20 @@ import yaml
 from infoset.utils import log
 from infoset.utils import configuration
 from infoset import infoset
+
+
+def cli_help():
+    """Print help for CLI options.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    print('Try using command: {} --help'.format(' '.join(sys.argv)))
+    sys.exit(2)
 
 
 def root_directory():
@@ -348,7 +363,12 @@ def run_script(cli_string, shell=False, die=True):
             log.log2die(1074, log_message)
 
     # Return
-    return stdoutdata
+    data = {
+        'stdout': stdoutdata.decode(),
+        'stderr': stderrdata.decode(),
+        'returncode': returncode
+    }
+    return data
 
 
 def delete_files(directory, extension='.yaml'):

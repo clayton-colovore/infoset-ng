@@ -32,6 +32,7 @@ The ``main`` section governs the general operation of ``infoset-ng``.
         db_username: infoset_ng
         db_password: PASSWORD
         db_name: infoset_ng
+        username: USERNAME
 
 An explanation of these fields follows:
 
@@ -54,6 +55,8 @@ Parameter                           Description
 ``db_username:``                    The database username
 ``db_password:``                    The database password
 ``db_name:``                        The name of the database
+``username:``                       The username that scripts should run as
+
 =================================== ========
 
 
