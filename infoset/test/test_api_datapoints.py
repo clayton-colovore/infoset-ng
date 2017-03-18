@@ -4,6 +4,20 @@
 import unittest
 import json
 from datetime import datetime
+import os
+import sys
+
+# Try to create a working PYTHONPATH
+_test_directory = os.path.dirname(os.path.realpath(__file__))
+_lib_directory = os.path.abspath(os.path.join(_test_directory, os.pardir))
+_root_directory = os.path.abspath(os.path.join(_lib_directory, os.pardir))
+if _test_directory.endswith('/infoset-ng/infoset/test') is True:
+    sys.path.append(_root_directory)
+else:
+    print(
+        'This script is not installed in the "infoset-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
 
 from infoset.api import API, CACHE
 from infoset.db import db_datapoint
@@ -237,7 +251,7 @@ class APITestCase(unittest.TestCase):
         # Clear the memory cache
         CACHE.clear()
 
-        # Get results 
+        # Get results
         uri = (
             '/infoset/api/v1/datapoints/{}/data?secondsago=900'
             ''.format(self.expected['idx_datapoint']))

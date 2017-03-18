@@ -32,6 +32,7 @@ You will need to create a test database named ``test_infoset`` with a username `
 ::
 
     create database test_infoset;
+    grant all privileges on test_infoset.* to travis@"localhost" identified by '123';
     grant all privileges on test_infoset.* to travis@"localhost" identified by password '';
     flush privileges;
 
@@ -42,10 +43,9 @@ Running Tests
 
 There are some important things to know beforehand.
 
-1. Run the ``infoset/test/create_test_config.py`` script once before running the unittests. This will create a temporary test configuration in a directory referenced by the system environment variable ``INFOSET_CONFIGDIR``. The script will tell you how to set this correctly.
-2. You can run all tests by running ``_do_all_tests.py`` from the
+1. You can run all tests by running ``_do_all_tests.py`` from the
    ``infoset/test`` directory
-3. The database tests are destructive. You will need to create a
+2. The database tests are destructive. You will need to create a
    separate ``infoset-ng`` database to run the tests. The database name
    ``test_infoset`` must be used.
 

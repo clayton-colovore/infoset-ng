@@ -1,11 +1,24 @@
 #!/usr/bin/env python3
 """Test the db_agent library in the infoset.db module."""
 
-import os
 import os.path
 import tempfile
 import unittest
 import yaml
+import os
+import sys
+
+# Try to create a working PYTHONPATH
+_test_directory = os.path.dirname(os.path.realpath(__file__))
+_lib_directory = os.path.abspath(os.path.join(_test_directory, os.pardir))
+_root_directory = os.path.abspath(os.path.join(_lib_directory, os.pardir))
+if _test_directory.endswith('/infoset-ng/infoset/test') is True:
+    sys.path.append(_root_directory)
+else:
+    print(
+        'This script is not installed in the "infoset-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
 
 from infoset.utils import configuration
 
