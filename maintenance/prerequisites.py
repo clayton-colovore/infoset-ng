@@ -13,7 +13,7 @@ import os
 
 # PIP3 libraries
 ###############################################################################
-# YAML needs to be installed for the general library to be used
+# Install all prerequisite packages for infoset-ng to be successfully installed
 ###############################################################################
 try:
     import yaml
@@ -114,6 +114,69 @@ class _PreCheck(object):
         # Test MySQL version
         self._memcached()
 
+        # Create a blank configuration
+        self._blank_configuration()
+
+    def _blank_configuration(self):
+        """Determine if systemd is installed.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Verify
+        found = False
+        root_directory = general.root_directory()
+        config_directory = '{}/etc'.format(root_directory)
+
+        # Do nothing if running Travis CI
+        if 'INFOSET_CONFIGDIR' in os.environ:
+            return
+
+        # Find yaml files in config_directory
+        filenames = [
+            filename for filename in os.listdir(
+                config_directory) if os.path.isfile(
+                    os.path.join(config_directory, filename))]
+        for filename in filenames:
+            if filename.lower().endswith('.yaml'):
+                found = True
+                break
+
+        # Create a blank config if none are found
+        if found is False:
+            config_yaml = ("""\
+main:
+    log_directory:
+    log_level:
+    ingest_cache_directory:
+    ingest_pool_size:
+    listen_address:
+    bind_port:
+    interval:
+    memcached_hostname:
+    memcached_port:
+    sqlalchemy_pool_size:
+    sqlalchemy_max_overflow:
+    db_hostname:
+    db_username:
+    db_password:
+    db_name:
+    username:
+""")
+
+            # Write config back to directory
+            config_dict = yaml.load(config_yaml)
+            filepath = ('%s/config.yaml') % (config_directory)
+            with open(filepath, 'w') as outfile:
+                yaml.dump(config_dict, outfile, default_flow_style=False)
+
+
+
+
     def _systemd(self):
         """Determine if systemd is installed.
 
@@ -124,7 +187,7 @@ class _PreCheck(object):
             None
 
         """
-        # install pip3 modules
+        # Verify
         username = getpass.getuser()
         system_directory = '/etc/systemd/system'
         if username == 'root':
