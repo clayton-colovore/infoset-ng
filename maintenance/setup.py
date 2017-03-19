@@ -684,20 +684,23 @@ class _DaemonSetup(object):
         self.running_as_root = False
 
         # Set the username we need to be running as
-        try:
-            # Get GID and UID for user
-            self.infoset_user = username
-            self.gid = getpwnam(self.infoset_user).pw_gid
-            self.uid = getpwnam(self.infoset_user).pw_uid
-        except KeyError:
-            self.infoset_user_exists = False
+        if running_username == 'root':
+            try:
+                # Get GID and UID for user
+                self.infoset_user = username
+                self.gid = getpwnam(self.infoset_user).pw_gid
+                self.uid = getpwnam(self.infoset_user).pw_uid
+            except KeyError:
+                self.infoset_user_exists = False
 
-        # Die if user doesn't exist
-        if self.infoset_user_exists is False:
-            log_message = (
-                'User {} not found. Please try again.'
-                ''.format(self.infoset_user))
-            log.log2die_safe(1049, log_message)
+            # Die if user doesn't exist
+            if self.infoset_user_exists is False:
+                log_message = (
+                    'User {} not found. Please try again.'
+                    ''.format(self.infoset_user))
+                log.log2die_safe(1049, log_message)
+        else:
+            self.infoset_user = username
 
         # If running as the root user, then the infoset user needs to exist
         if running_username == 'root':
