@@ -464,7 +464,7 @@ class _DaemonSetup(object):
         """Function for intializing the class.
 
         Args:
-            None
+            username: Username to run as
 
         Returns:
             None
