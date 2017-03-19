@@ -887,15 +887,11 @@ def run():
         config.validate()
         config.write()
 
-    # Get username to run as daemon
-    config = configuration.Config()
-    username = config.username()
-
     # Determine whether version of python is valid
     _PythonSetupPackages().run()
 
     # Do specific setups for root user
-    _DaemonSetup(username).run()
+    _DaemonSetup(daemon_username).run()
 
     # Update configuration if required
     _ConfigSetup().run()
