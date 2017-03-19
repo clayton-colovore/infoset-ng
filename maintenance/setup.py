@@ -540,6 +540,10 @@ class _ConfigSetup(object):
             with open(filepath, 'w') as outfile:
                 yaml.dump(config, outfile, default_flow_style=False)
 
+        # Print status
+        misc.print_ok(
+            'Configuration setup complete.')
+
     def _create_directory_entries(self, key, config):
         """Update the configuration with good defaults for directories.
 
@@ -665,6 +669,10 @@ class _PythonSetupPackages(object):
                 '') % (requirements_file)
         general.run_script(script_name)
 
+        # Status message
+        misc.print_ok(
+            'pip3 packages installation complete.')
+
 
 class _DaemonSetup(object):
     """Class to setup infoset-ng daemon."""
@@ -682,7 +690,7 @@ class _DaemonSetup(object):
         # Initialize key variables
         running_username = getpass.getuser()
         self.root_directory = general.root_directory()
-        self.infoset_user_exists = True
+        infoset_user_exists = True
         self.infoset_user = None
         self.running_as_root = False
 
@@ -694,10 +702,10 @@ class _DaemonSetup(object):
                 self.gid = getpwnam(self.infoset_user).pw_gid
                 self.uid = getpwnam(self.infoset_user).pw_uid
             except KeyError:
-                self.infoset_user_exists = False
+                infoset_user_exists = False
 
             # Die if user doesn't exist
-            if self.infoset_user_exists is False:
+            if infoset_user_exists is False:
                 log_message = (
                     'User {} not found. Please try again.'
                     ''.format(self.infoset_user))
@@ -724,15 +732,15 @@ class _DaemonSetup(object):
         if self.running_as_root is False:
             return
 
-        # Return if user prompted doesn't exist
-        if self.infoset_user_exists is False:
-            return
-
         # Set file permissions
         self._file_permissions()
 
         # Setup systemd
         self._systemd()
+
+        # Determine whether PIP3 exists
+        misc.print_ok(
+            'Daemon setup complete.')
 
     def _file_permissions(self):
         """Set file permissions.
