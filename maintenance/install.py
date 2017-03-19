@@ -49,7 +49,7 @@ else:
 
 # Do infoset-ng imports
 from infoset.utils import log
-from maintenance import setup
+from maintenance import _setup
 from infoset.utils import general
 from infoset.utils import daemon as daemon_lib
 
@@ -101,7 +101,7 @@ def run():
     config.write()
 
     # Run setup
-    setup.run(username=daemon_username)
+    _setup.run(username=daemon_username)
 
     # Start daemons
     daemon = _Daemon()
