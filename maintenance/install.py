@@ -21,8 +21,6 @@ else:
         'Please fix.')
     sys.exit(2)
 
-# Do infoset-ng imports
-from infoset.utils import general
 
 def run():
     """Do the installation.
