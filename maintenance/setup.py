@@ -666,11 +666,11 @@ class _PythonSetupPackages(object):
 class _DaemonSetup(object):
     """Class to setup infoset-ng daemon."""
 
-    def __init__(self, username):
+    def __init__(self, daemon_username):
         """Function for intializing the class.
 
         Args:
-            username: Username to run as
+            daemon_username: Username to run as
 
         Returns:
             None
@@ -687,7 +687,7 @@ class _DaemonSetup(object):
         if running_username == 'root':
             try:
                 # Get GID and UID for user
-                self.infoset_user = username
+                self.infoset_user = daemon_username
                 self.gid = getpwnam(self.infoset_user).pw_gid
                 self.uid = getpwnam(self.infoset_user).pw_uid
             except KeyError:
@@ -700,7 +700,7 @@ class _DaemonSetup(object):
                     ''.format(self.infoset_user))
                 log.log2die_safe(1049, log_message)
         else:
-            self.infoset_user = username
+            self.infoset_user = daemon_username
 
         # If running as the root user, then the infoset user needs to exist
         if running_username == 'root':
