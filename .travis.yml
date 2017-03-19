@@ -13,8 +13,7 @@ branches:
 
 # Setup global environmental variables
 env:
-    - PYTHONPATH=./ 
-#    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
+    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
 #  global:
 #    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
 
