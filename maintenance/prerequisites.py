@@ -19,11 +19,12 @@ from pwd import getpwnam
 ###############################################################################
 try:
     import yaml
+    import pymysql
     from sqlalchemy import create_engine
 except ImportError:
     import pip
     _username = getpass.getuser()
-    _PACKAGES = ['PyYAML', 'sqlalchemy', 'setuptools']
+    _PACKAGES = ['PyYAML', 'sqlalchemy', 'setuptools', 'pymysql']
     for _PACKAGE in _PACKAGES:
         # Install package globally if user 'root'
         if _username == 'root':
@@ -256,9 +257,6 @@ main:
             None
 
         """
-        # Do key imports
-        import pymysql
-
         # Initialize key variables
         valid = False
         db_hostname = self.config_dict['main']['db_hostname']
@@ -364,7 +362,7 @@ class _PreCheck(object):
                 log.log2die_safe(1048, log_message)
             else:
                 log_message = ('systemd installed')
-                misc.print_ok(log_message)        
+                misc.print_ok(log_message)
 
     def _pip(self):
         """Determine pip3 version.
