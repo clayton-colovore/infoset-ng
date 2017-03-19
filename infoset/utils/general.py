@@ -3,6 +3,7 @@
 
 import os
 import sys
+import getpass
 import subprocess
 import locale
 import hashlib
@@ -17,6 +18,41 @@ import yaml
 from infoset.utils import log
 from infoset.utils import configuration
 from infoset import infoset
+
+
+def check_user():
+    """Check to make sure the user environment is correct.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    username = getpass.getuser()
+    config = configuration.Config()
+    configured_username = config.username()
+
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        log_message = (
+            'Cannot run script using "sudo".')
+        log.log2die(1078, log_message)
+
+    # Prevent others from running the script
+    if username != configured_username:
+        log_message = (
+            'You can only run this script as user \'{}\' '
+            'in the configuration file. Try running the command like this:\n'
+            '').format(configured_username)
+        print(log_message)
+        fixed_command = (
+            '$ su -c \'{}\' {}\n'.format(
+                ' '.join(sys.argv[:]), configured_username))
+        print(fixed_command)
+        sys.exit(2)
 
 
 def cli_help():
