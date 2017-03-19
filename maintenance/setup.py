@@ -318,14 +318,17 @@ main:
                 valid_directories, die=False)
 
         # Populate config_dict with any values found in directory_dict
-        for _main, data_dict in directory_dict.items():
-            if _main != 'main':
-                log_message = (
-                    'Invalid files found in configuration directory')
-                log.log2die_safe(1033, log_message)
+        # Only if the directory has valid files in it.
+        if bool(directory_dict) is True:
+            for _main, data_dict in directory_dict.items():
+                if _main != 'main':
+                    log_message = (
+                        'Invalid files found in configuration directory')
+                    log.log2die_safe(1033, log_message)
 
-            for key, value in data_dict.items():
-                self.config_dict[_main][key] = value
+                for key, value in data_dict.items():
+                    self.config_dict[_main][key] = value
+
 
     def validate(self):
         """Validate all pre-requisites are OK.
