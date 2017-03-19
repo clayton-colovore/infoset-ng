@@ -309,7 +309,8 @@ main:
                     valid_directories.append(config_directory)
 
         if bool(valid_directories) is True:
-            directory_dict = general.read_yaml_files(valid_directories)
+            directory_dict = general.read_yaml_files(
+                valid_directories, die=False)
 
         # Populate config_dict with any values found in directory_dict
         for _main, data_dict in directory_dict.items():

@@ -222,11 +222,12 @@ def normalized_timestamp(timestamp=None):
     return value
 
 
-def read_yaml_files(directories):
+def read_yaml_files(directories, die=True):
     """Read the contents of all yaml files in a directory.
 
     Args:
         directories: List of directory names with configuration files
+        die: Die if no files found
 
     Returns:
         config_dict: Dict of yaml read
@@ -270,10 +271,11 @@ def read_yaml_files(directories):
 
         # Verify YAML files found in directory
         if yaml_found is False:
-            log_message = (
-                'No files found in directory "%s" with ".yaml" '
-                'extension.') % (config_directory)
-            log.log2die_safe(1010, log_message)
+            if die is True:
+                log_message = (
+                    'No files found in directory "%s" with ".yaml" '
+                    'extension.') % (config_directory)
+                log.log2die_safe(1010, log_message)
 
     # Return
     config_dict = yaml.load(all_yaml_read)
