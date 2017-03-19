@@ -161,10 +161,10 @@ main:
     memcached_port:
     sqlalchemy_pool_size:
     sqlalchemy_max_overflow:
-    db_hostname:
-    db_username:
+    db_hostname: localhost
+    db_username: infoset_ng
     db_password:
-    db_name:
+    db_name: infoset_ng
     username:
 """)
 
