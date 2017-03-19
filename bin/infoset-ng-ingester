@@ -33,6 +33,7 @@ from infoset.utils import daemon
 from infoset.utils import log
 from infoset.utils import configuration
 from infoset.utils import general
+from infoset.constants import INGESTER_EXECUTABLE
 
 
 class PollingAgent(object):
@@ -61,7 +62,7 @@ class PollingAgent(object):
 
         """
         # Initialize key variables
-        self.agent_name = 'ingestd'
+        self.agent_name = INGESTER_EXECUTABLE
 
     def name(self):
         """Return agent name.

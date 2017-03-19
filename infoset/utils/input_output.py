@@ -96,7 +96,7 @@ class File(object):
         # Check if file
         if os.path.isfile(file_) is False:
             log_message = '{} is not a file.'.format(file_)
-            log.log2die(1035, log_message)
+            log.log2die(1014, log_message)
 
         # Check if readable
         if not os.access(file_, os.R_OK):
