@@ -8,13 +8,12 @@ Serves as a Gunicorn WSGI entry point for infoset-ng-api
 # Standard libraries
 import sys
 import os
-import getpass
 
 # Try to create a working PYTHONPATH
-_script_directory = os.path.dirname(os.path.realpath(__file__))
-_root_directory = os.path.abspath(os.path.join(_script_directory, os.pardir))
-if _script_directory.endswith('/infoset-ng/bin') is True:
-    sys.path.append(_root_directory)
+_BIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
+if _BIN_DIRECTORY.endswith('/infoset-ng/bin') is True:
+    sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'This script is not installed in the "infoset-ng/bin" directory. '
@@ -25,29 +24,13 @@ else:
 from infoset.agents import agent
 from infoset.agents.agent import Agent, AgentAPI
 from infoset.constants import API_EXECUTABLE, API_GUNICORN_AGENT
-from infoset.utils import log
-from infoset.utils import configuration
+from infoset.utils import general
 
 
 def main():
     """Main function to start the Gunicorn WSGI."""
-    # Initialize key variables
-    username = getpass.getuser()
-    config = configuration.Config()
-    configured_username = config.username()
-
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run script using "sudo".')
-        log.log2die(1078, log_message)
-
-    # Prevent others from running the script
-    if username != configured_username:
-        log_message = (
-            'You can only run this script as user \'{}\' '
-            'in the configuration file.').format(configured_username)
-        log.log2die(1078, log_message)
+    # Check user
+    general.check_user()
 
     # Get PID filenename for Gunicorn
     agent_gunicorn = Agent(API_GUNICORN_AGENT)

@@ -67,9 +67,6 @@ def run():
     # Initialize key variables
     username = getpass.getuser()
 
-    #######################################################################
-    # Check prerequisite package versions
-    #######################################################################
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
         log_message = (
@@ -260,7 +257,7 @@ class _Daemon(object):
 class _Config(object):
     """Class to test setup."""
 
-    def __init__(self, username):
+    def __init__(self, username=None):
         """Function for intializing the class.
 
         Args:

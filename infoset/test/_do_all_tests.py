@@ -16,9 +16,21 @@
 """
 
 import locale
+import subprocess
 import os
 import sys
-import subprocess
+
+# Try to create a working PYTHONPATH
+_TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_LIB_DIRECTORY = os.path.abspath(os.path.join(_TEST_DIRECTORY, os.pardir))
+_ROOT_DIRECTORY = os.path.abspath(os.path.join(_LIB_DIRECTORY, os.pardir))
+if _TEST_DIRECTORY.endswith('/infoset-ng/infoset/test') is True:
+    sys.path.append(_ROOT_DIRECTORY)
+else:
+    print(
+        'This script is not installed in the "infoset-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
 
 # Infoset libraries
 try:
