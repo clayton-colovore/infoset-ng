@@ -20,7 +20,6 @@ env:
 # Install PIP packages and create a temporary config file before installing
 before_install:
     - pip install -r requirements.txt
-    - infoset/test/create_test_config.py
     - mysql -e 'CREATE DATABASE test_infoset;'
 
 # Install infoset-ng
