@@ -687,8 +687,6 @@ class _DaemonSetup(object):
         try:
             # Get GID and UID for user
             self.infoset_user = username
-            print('"{}"'.format(username))
-            print('"{}"'.format(running_username))
             self.gid = getpwnam(self.infoset_user).pw_gid
             self.uid = getpwnam(self.infoset_user).pw_uid
         except KeyError:
@@ -880,10 +878,11 @@ def run():
     else:
         daemon_username = username
 
-    # Create a configuration
-    config = _ConfigCreate(daemon_username)
-    config.validate()
-    config.write()
+    # Create a configuration only if unittests are not being run
+    if 'INFOSET_CONFIGDIR' not in os.environ:
+        config = _ConfigCreate(daemon_username)
+        config.validate()
+        config.write()
 
     # Get username to run as daemon
     config = configuration.Config()
