@@ -13,13 +13,15 @@ branches:
 
 # Setup global environmental variables
 env:
-    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
+    - PYTHONPATH=./ 
+#    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
 #  global:
 #    - PYTHONPATH=./ INFOSET_CONFIGDIR=$HOME/.infoset_unittests/config
 
 # Install PIP packages and create a temporary config file before installing
 before_install:
     - pip install -r requirements.txt
+    - infoset/test/_travis_ci_setup.py
     - mysql -e 'CREATE DATABASE test_infoset;'
 
 # Install infoset-ng
