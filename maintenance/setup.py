@@ -481,6 +481,8 @@ class _DaemonSetup(object):
         try:
             # Get GID and UID for user
             self.infoset_user = username
+            print('"{}"'.format(username))
+            print('"{}"'.format(running_username))
             self.gid = getpwnam(self.infoset_user).pw_gid
             self.uid = getpwnam(self.infoset_user).pw_uid
         except KeyError:
