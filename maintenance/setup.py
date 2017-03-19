@@ -13,27 +13,30 @@ from pwd import getpwnam
 import grp
 import copy
 import re
+from collections import defaultdict
 
 # PIP3 imports
 try:
     import yaml
     from sqlalchemy import create_engine
+    import pymysql
 except ImportError:
     import pip
-    packages = ['PyYAML', 'sqlalchemy']
-    for package in packages:
-        pip.main(['install', '--user', package])
+    _PACKAGES = ['PyYAML', 'sqlalchemy', 'pymysql']
+    for _PACKAGE in _PACKAGES:
+        pip.main(['install', '--user', _PACKAGE])
     print(
         'New Python packages installed. Please run this script again to '
         'complete the Infoset-NG installation.')
-    sys.exit(0)
+    # Must exit abnormally as the script didn't complete
+    sys.exit(2)
 
 # Try to create a working PYTHONPATH
-_maint_directory = os.path.dirname(os.path.realpath(__file__))
-_root_directory = os.path.abspath(
-    os.path.join(_maint_directory, os.pardir))
-if _root_directory.endswith('/infoset-ng') is True:
-    sys.path.append(_root_directory)
+_MAINT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_ROOT_DIRECTORY = os.path.abspath(
+    os.path.join(_MAINT_DIRECTORY, os.pardir))
+if _ROOT_DIRECTORY.endswith('/infoset-ng') is True:
+    sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'Infoset-NG is not installed in a "infoset-ng/" directory. '
@@ -57,6 +60,7 @@ from infoset.db import db_deviceagent
 from infoset.db import db_datapoint
 from infoset.db import db
 from maintenance import misc
+
 
 class _DatabaseSetup(object):
     """Class to setup database."""
@@ -255,6 +259,208 @@ class _DatabaseSetup(object):
             self._insert_config()
 
 
+class _ConfigCreate(object):
+    """Class to test setup."""
+
+    def __init__(self, username):
+        """Function for intializing the class.
+
+        Args:
+            username: Username to run scripts as
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        valid_directories = []
+        config = ("""\
+main:
+    log_directory:
+    log_level: debug
+    ingest_cache_directory:
+    ingest_pool_size: 20
+    listen_address: 0.0.0.0
+    bind_port: 6000
+    interval: 300
+    memcached_hostname: localhost
+    memcached_port: 11211
+    sqlalchemy_pool_size: 10
+    sqlalchemy_max_overflow: 10
+    db_hostname: localhost
+    db_username: infoset_ng
+    db_password:
+    db_name: infoset_ng
+    username: {}
+""").format(username)
+
+        self.config_dict = yaml.load(config)
+        directory_dict = defaultdict(lambda: defaultdict(dict))
+
+        # Read yaml files from configuration directory
+        self.directories = general.config_directories()
+
+        # Check each directory in sequence
+        for config_directory in self.directories:
+            # Check if config_directory exists
+            if os.path.isdir(config_directory) is False:
+                continue
+
+            # Cycle through list of files in directory
+            for filename in os.listdir(config_directory):
+                # Examine all the '.yaml' files in directory
+                if filename.endswith('.yaml'):
+                    # YAML files found
+                    valid_directories.append(config_directory)
+
+        if bool(valid_directories) is True:
+            directory_dict = general.read_yaml_files(
+                valid_directories, die=False)
+
+        # Populate config_dict with any values found in directory_dict
+        for _main, data_dict in directory_dict.items():
+            if _main != 'main':
+                log_message = (
+                    'Invalid files found in configuration directory')
+                log.log2die_safe(1033, log_message)
+
+            for key, value in data_dict.items():
+                self.config_dict[_main][key] = value
+
+    def validate(self):
+        """Validate all pre-requisites are OK.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Verify db credentials
+        self._db_credentials()
+
+        # Attempt to connect to the MySQL database
+        self._db_connectivity()
+
+    def write(self):
+        """Write the config to file.
+
+        Args:
+            None
+
+
+        Returns:
+            None
+        """
+        # Initialize key variables
+        directory = self.directories[0]
+
+        # Update configuration file if required
+        for next_directory in self.directories:
+            # Delete all YAML files in the configuration directory
+            general.delete_yaml_files(next_directory)
+
+        # Write config back to directory
+        filepath = ('%s/config.yaml') % (directory)
+        with open(filepath, 'w') as outfile:
+            yaml.dump(self.config_dict, outfile, default_flow_style=False)
+
+            # Write status Update
+            misc.print_ok('Created configuration file {}.'.format(filepath))
+
+    def _db_credentials(self):
+        """Validate database credentials.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        missing = False
+        parameters = [
+            'db_hostname', 'db_password', 'db_username', 'db_password']
+
+        # Give warning message if no parameters found
+        for parameter in parameters:
+            if bool(self.config_dict['main'][parameter]) is False:
+                missing = True
+        if missing is True:
+            print('\nMISSING - Database parameters need to be updated.')
+
+        # Prompt for any missing database parameters
+        for parameter in sorted(parameters):
+            if bool(self.config_dict['main'][parameter]) is False:
+                if parameter != 'db_password':
+                    self.config_dict['main'][parameter] = input(
+                        'Input database {}: '.format(parameter[3:]))
+                else:
+                    self.config_dict['main'][parameter] = getpass.getpass(
+                        'Input database password: ')
+
+        # Print a space
+        if missing is True:
+            print('')
+
+    def _db_connectivity(self):
+        """Validate we can connect to the database.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        valid = False
+        db_hostname = self.config_dict['main']['db_hostname']
+        db_password = self.config_dict['main']['db_password']
+        db_username = self.config_dict['main']['db_username']
+        db_name = self.config_dict['main']['db_name']
+
+        # Do test
+        try:
+            # Open database connection. Prepare cursor
+            database = pymysql.connect(
+                host=db_hostname,
+                user=db_username,
+                passwd=db_password,
+                db=db_name)
+            cursor = database.cursor()
+
+            # Do a basic check
+            cursor.execute('SELECT VERSION()')
+            results = cursor.fetchone()
+
+            # Check result
+            valid = bool(results)
+
+            # disconnect from server
+            database.close()
+
+        except Exception as _:
+            valid = False
+
+        except:
+            valid = False
+
+        # Process validity
+        if valid is True:
+            log_message = 'Database connectivity successfully verified.'
+            misc.print_ok(log_message)
+        else:
+            log_message = (
+                'Cannot connect to the database. Verify your credentials. '
+                'Database Hostname: "{}", Database Username: "{}", '
+                'Database Name: "{}", Database Password: "******"'
+                ''.format(db_hostname, db_username, db_name))
+            log.log2die_safe(1067, log_message)
+
+
 class _ConfigSetup(object):
     """Class to setup configuration.
 
@@ -370,7 +576,7 @@ class _ConfigSetup(object):
         return (updated, config)
 
 
-class _PythonSetup(object):
+class _PythonSetupPackages(object):
     """Class to setup Python."""
 
     def __init__(self):
@@ -647,6 +853,9 @@ def run():
         None
 
     """
+    # Initialize key variables
+    username = getpass.getuser()
+
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
         log_message = (
@@ -654,12 +863,34 @@ def run():
             'install in this directory or as user "root".')
         log.log2die_safe(1032, log_message)
 
+    # If running as the root user, then the infoset user needs to exist
+    if username == 'root':
+        try:
+            daemon_username = input(
+                'Please enter the username under which '
+                'infoset-ng will run: ')
+
+            # Get GID and UID for user
+            _ = getpwnam(daemon_username).pw_gid
+        except:
+            log_message = (
+                'User {} not found. Please try again.'
+                ''.format(daemon_username))
+            log.log2die_safe(1022, log_message)
+    else:
+        daemon_username = username
+
+    # Create a configuration
+    config = _ConfigCreate(daemon_username)
+    config.validate()
+    config.write()
+
     # Get username to run as daemon
     config = configuration.Config()
     username = config.username()
 
     # Determine whether version of python is valid
-    _PythonSetup().run()
+    _PythonSetupPackages().run()
 
     # Do specific setups for root user
     _DaemonSetup(username).run()
