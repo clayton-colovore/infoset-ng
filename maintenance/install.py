@@ -38,12 +38,10 @@ def run():
     # Continue
     for script in scripts:
         executable = 'python3 {}/{}'.format(_MAINT_DIRECTORY, script)
+        print(executable)
         returncode = os.system(executable)
         if bool(returncode) is True:
             sys.exit(2)
-
-    # End normally
-    sys.exit(0)
 
 
 if __name__ == '__main__':
