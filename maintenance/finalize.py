@@ -11,6 +11,7 @@ import getpass
 import os
 import grp
 import re
+from pwd import getpwnam
 
 
 # Try to create a working PYTHONPATH
