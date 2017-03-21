@@ -47,18 +47,6 @@ else:
 from infoset.utils import log
 from infoset.utils import configuration
 from infoset.utils import general
-from infoset.db.db_orm import BASE, Agent, Department, Device, Billcode
-from infoset.db.db_orm import Configuration, DeviceAgent, Datapoint, AgentName
-from infoset.db import URL
-from infoset.db import db_configuration
-from infoset.db import db_billcode
-from infoset.db import db_department
-from infoset.db import db_device
-from infoset.db import db_agent
-from infoset.db import db_agentname
-from infoset.db import db_deviceagent
-from infoset.db import db_datapoint
-from infoset.db import db
 from maintenance import misc
 
 
@@ -75,6 +63,25 @@ class _DatabaseSetup(object):
             None
 
         """
+        #######################################################################
+        # Import libraries only when required.
+        # The configuration needs to be valid before these importations will
+        # work properly
+        #######################################################################
+        from infoset.db.db_orm import (
+            BASE, Agent, Department, Device, Billcode, Configuration,
+            DeviceAgent, Datapoint, AgentName)
+        from infoset.db import URL
+        from infoset.db import db_configuration
+        from infoset.db import db_billcode
+        from infoset.db import db_department
+        from infoset.db import db_device
+        from infoset.db import db_agent
+        from infoset.db import db_agentname
+        from infoset.db import db_deviceagent
+        from infoset.db import db_datapoint
+        from infoset.db import db
+
         # Initialize key variables
         self.reserved = '_SYSTEM_RESERVED_'
         self.config = configuration.Config()
@@ -903,6 +910,8 @@ def run():
 
     # Do specific setups for root user
     _DaemonSetup(daemon_username).run()
+
+    print('boo')
 
     # Update configuration if required
     _ConfigSetup().run()
