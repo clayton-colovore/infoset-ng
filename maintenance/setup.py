@@ -724,6 +724,9 @@ You can enable infoset-ng daemons to start on system boot with these commands:
     # All done
     misc.print_ok('Installation successful.')
 
+    # End normally
+    sys.exit(0)
+    
 
 if __name__ == '__main__':
     # Run setup
