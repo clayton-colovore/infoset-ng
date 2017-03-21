@@ -9,6 +9,8 @@ Manages the verification of required packages.
 import sys
 import getpass
 import os
+import grp
+import re
 
 
 # Try to create a working PYTHONPATH
@@ -29,6 +31,7 @@ else:
 from infoset.utils import log
 from maintenance import misc
 from infoset.utils import general
+from infoset.utils import configuration
 from infoset.utils import daemon as daemon_lib
 
 
@@ -42,6 +45,9 @@ def run():
         None
 
     """
+    # Initialize key variables
+    running_username = getpass.getuser()
+
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
         log_message = (
@@ -49,16 +55,202 @@ def run():
             'install in this directory or as user "root".')
         log.log2die_safe(1029, log_message)
 
+    # Do specific setups for root user
+    if running_username != 'root':
+        _DaemonSystemD().enable()
+
     # Start daemons
-    daemon = _Daemon()
-    daemon.start()
+    _Daemons().start()
 
     # Run the post check
     postcheck = _PostCheck()
     postcheck.validate()
 
 
-class _Daemon(object):
+class _DaemonSystemD(object):
+    """Class to setup infoset-ng daemon."""
+
+    def __init__(self):
+        """Function for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        running_username = getpass.getuser()
+        daemon_username = configuration.Config().username()
+
+        self.root_directory = general.root_directory()
+        infoset_user_exists = True
+        self.infoset_user = None
+        self.running_as_root = False
+
+        # Set the username we need to be running as
+        if running_username == 'root':
+            try:
+                # Get GID and UID for user
+                self.infoset_user = daemon_username
+                self.gid = getpwnam(self.infoset_user).pw_gid
+                self.uid = getpwnam(self.infoset_user).pw_uid
+            except KeyError:
+                infoset_user_exists = False
+
+            # Die if user doesn't exist
+            if infoset_user_exists is False:
+                log_message = (
+                    'User {} not found. Please try again.'
+                    ''.format(self.infoset_user))
+                log.log2die_safe(1049, log_message)
+        else:
+            self.infoset_user = daemon_username
+
+        # If running as the root user, then the infoset user needs to exist
+        if running_username == 'root':
+            self.running_as_root = True
+            return
+
+    def enable(self):
+        """Enable systemd.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Return if not running script as root user
+        if self.running_as_root is False:
+            return
+
+        # Set file permissions
+        self._file_permissions()
+
+        # Setup systemd
+        self._systemd()
+
+        # Determine whether PIP3 exists
+        misc.print_ok(
+            'Daemon setup complete.')
+
+    def _file_permissions(self):
+        """Set file permissions.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        infoset_user = self.infoset_user
+        root_directory = self.root_directory
+
+        # Prompt to change ownership of root_directory
+        groupname = grp.getgrgid(self.gid).gr_name
+        response = input(
+            'Change ownership of {} directory to user:{} group:{} (y,N) ?: '
+            ''.format(root_directory, infoset_user, groupname))
+
+        # Abort if necessary
+        if response.lower() != 'y':
+            log_message = ('Aborting as per user request.')
+            log.log2die_safe(1050, log_message)
+
+        # Change ownership of files under root_directory
+        for parent_directory, directories, files in os.walk(root_directory):
+            for directory in directories:
+                os.chown(os.path.join(
+                    parent_directory, directory), self.uid, self.gid)
+            for next_file in files:
+                os.chown(os.path.join(
+                    parent_directory, next_file), self.uid, self.gid)
+
+        # Change ownership of root_directory
+        os.chown(root_directory, self.uid, self.gid)
+
+    def _systemd(self):
+        """Setup systemd configuration.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        username = self.infoset_user
+        groupname = grp.getgrgid(self.gid).gr_name
+        system_directory = '/etc/systemd/system'
+        system_command = '/bin/systemctl daemon-reload'
+        ingester_service = 'infoset-ng-ingester.service'
+        api_service = 'infoset-ng-api.service'
+
+        # Do nothing if systemd isn't installed
+        if os.path.isdir(system_directory) is False:
+            return
+
+        # Copy system files to systemd directory and activate
+        ingester_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, ingester_service))
+        api_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, api_service))
+
+        # Read in file
+        # 1) Convert home directory to that of user
+        # 2) Convert username in file
+        # 3) Convert group in file
+        filenames = [ingester_startup_script, api_startup_script]
+        for filename in filenames:
+            # Read next file
+            with open(filename, 'r') as f_handle:
+                contents = f_handle.read()
+
+            # Substitute home directory
+            contents = re.sub(
+                r'/home/infoset-ng',
+                self.root_directory,
+                contents)
+
+            # Substitute username
+            contents = re.sub(
+                'User=infoset-ng',
+                'User={}'.format(username),
+                contents)
+
+            # Substitute group
+            contents = re.sub(
+                'Group=infoset-ng',
+                'Group={}'.format(groupname),
+                contents)
+
+            # Write contents
+            filepath = (
+                '{}/{}'.format(system_directory, os.path.basename(filename)))
+            if os.path.isdir(system_directory):
+                with open(filepath, 'w') as f_handle:
+                    f_handle.write(contents)
+
+        # Make systemd recognize new files
+        if os.path.isdir(system_directory):
+            general.run_script(system_command)
+
+        # Enable serices
+        services = [ingester_service, api_service]
+        for service in services:
+            enable_command = 'systemctl enable {}'.format(service)
+            general.run_script(enable_command)
+
+
+class _Daemons(object):
     """Class to start infoset-ng daemons."""
 
     def __init__(self):

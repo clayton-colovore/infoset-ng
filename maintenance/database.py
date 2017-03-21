@@ -269,10 +269,7 @@ def run():
     # All done
     misc.print_ok('Database installation successful.')
 
-    # End normally
-    sys.exit(0)
 
-    
 if __name__ == '__main__':
     # Run setup
     run()
