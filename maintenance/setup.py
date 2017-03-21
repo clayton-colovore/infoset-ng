@@ -262,11 +262,11 @@ class _DatabaseSetup(object):
 class _ConfigCreate(object):
     """Class to test setup."""
 
-    def __init__(self, username):
+    def __init__(self, daemon_username):
         """Function for intializing the class.
 
         Args:
-            username: Username to run scripts as
+            daemon_username: Username to run scripts as
 
         Returns:
             None
@@ -292,7 +292,7 @@ main:
     db_password:
     db_name: infoset_ng
     username: {}
-""").format(username)
+""").format(daemon_username)
 
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
@@ -327,8 +327,8 @@ main:
                     log.log2die_safe(1033, log_message)
 
                 for key, value in data_dict.items():
-                    self.config_dict[_main][key] = value
-
+                    if value is not None:
+                        self.config_dict[_main][key] = value
 
     def validate(self):
         """Validate all pre-requisites are OK.

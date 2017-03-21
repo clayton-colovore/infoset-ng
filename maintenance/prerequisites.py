@@ -9,7 +9,7 @@ Manages the verification of required packages.
 import sys
 import getpass
 import os
-from shutil import copyfile
+
 
 # PIP3 libraries
 ###############################################################################
@@ -115,10 +115,10 @@ class _PreCheck(object):
         self._memcached()
 
         # Create a blank configuration
-        self._starter_configuration()
+        self._blank_configuration()
 
-    def _starter_configuration(self):
-        """Create a starter configuration.
+    def _blank_configuration(self):
+        """Determine if systemd is installed.
 
         Args:
             None
@@ -143,15 +143,42 @@ class _PreCheck(object):
                     os.path.join(config_directory, filename))]
         for filename in filenames:
             if filename.lower().endswith('.yaml'):
+                log_message = ('Configuration file found')
+                misc.print_ok(log_message)
                 found = True
                 break
 
         # Create a blank config if none are found
         if found is False:
+            config_yaml = ("""\
+main:
+    log_directory:
+    log_level:
+    ingest_cache_directory:
+    ingest_pool_size:
+    listen_address:
+    bind_port:
+    interval:
+    memcached_hostname:
+    memcached_port:
+    sqlalchemy_pool_size:
+    sqlalchemy_max_overflow:
+    db_hostname:
+    db_username:
+    db_password:
+    db_name:
+    username:
+""")
+
             # Write config back to directory
-            destination = ('{}/config.yaml').format(config_directory)
-            source = ('{}/examples/etc/config.yaml').format(root_directory)
-            copyfile(source, destination)
+            config_dict = yaml.load(config_yaml)
+            filepath = ('%s/config.yaml') % (config_directory)
+            with open(filepath, 'w') as outfile:
+                yaml.dump(config_dict, outfile, default_flow_style=False)
+
+            # Message
+            log_message = ('Created blank starter configuration')
+            misc.print_ok(log_message)
 
     def _systemd(self):
         """Determine if systemd is installed.
