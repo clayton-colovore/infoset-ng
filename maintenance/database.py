@@ -53,7 +53,7 @@ from infoset.db import db_agentname
 from infoset.db import db_deviceagent
 from infoset.db import db_datapoint
 from infoset.db import db
-from maintenance import misc
+from maintenance import shared
 
 
 class _DatabaseSetup(object):
@@ -226,7 +226,7 @@ class _DatabaseSetup(object):
                 pool_size=pool_size, pool_recycle=3600)
 
             # Try to create the database
-            misc.print_ok('Attempting to create database tables')
+            shared.print_ok('Attempting to create database tables')
             try:
                 sql_string = (
                     'ALTER DATABASE %s CHARACTER SET utf8mb4 '
@@ -242,7 +242,7 @@ class _DatabaseSetup(object):
                 log.log2die(1046, log_message)
 
             # Apply schemas
-            misc.print_ok('Applying Schemas.')
+            shared.print_ok('Applying Schemas.')
             BASE.metadata.create_all(engine)
 
             # Insert database entries
@@ -267,7 +267,7 @@ def run():
     _DatabaseSetup().run()
 
     # All done
-    misc.print_ok('Database installation successful.')
+    shared.print_ok('Database installation successful.')
 
 
 if __name__ == '__main__':

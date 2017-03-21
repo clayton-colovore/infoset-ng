@@ -45,7 +45,7 @@ else:
 from infoset.utils import log
 from infoset.utils import configuration
 from infoset.utils import general
-from maintenance import misc
+from maintenance import shared
 
 
 class _ConfigCreate(object):
@@ -159,7 +159,7 @@ main:
             yaml.dump(self.config_dict, outfile, default_flow_style=False)
 
             # Write status Update
-            misc.print_ok('Created configuration file {}.'.format(filepath))
+            shared.print_ok('Created configuration file {}.'.format(filepath))
 
     def _db_credentials(self):
         """Validate database credentials.
@@ -243,7 +243,7 @@ main:
         # Process validity
         if valid is True:
             log_message = 'Database connectivity successfully verified.'
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
         else:
             log_message = (
                 'Cannot connect to the database. Verify your credentials. '
@@ -330,7 +330,7 @@ class _ConfigSetup(object):
                 yaml.dump(config, outfile, default_flow_style=False)
 
         # Print status
-        misc.print_ok(
+        shared.print_ok(
             'Configuration setup complete.')
 
     def _create_directory_entries(self, key, config):
@@ -437,7 +437,7 @@ class _PythonSetupPackages(object):
             return
 
         # Determine whether PIP3 exists
-        misc.print_ok(
+        shared.print_ok(
             'Installing required pip3 packages from requirements.txt file.')
         pip3 = general.search_file('pip3')
         if pip3 is None:
@@ -459,7 +459,7 @@ class _PythonSetupPackages(object):
         general.run_script(script_name)
 
         # Status message
-        misc.print_ok(
+        shared.print_ok(
             'pip3 packages installation complete.')
 
 
@@ -512,7 +512,11 @@ def run():
     # Update configuration if required
     _ConfigSetup().run()
 
-    # Create database with newly configuration
+    ###########################################################################
+    # Create database with newly created configuration
+    # The database libraries cannot be imported if there
+    # isn't a valid configuration
+    ###########################################################################
     executable = 'python3 {}/{}'.format(_MAINT_DIRECTORY, 'database.py')
     returncode = os.system(executable)
     if bool(returncode) is True:

@@ -30,8 +30,8 @@ except ImportError:
         else:
             pip.main(['install', '--user', _PACKAGE])
     print(
-        'New Python packages installed. Please run this script again to '
-        'complete the Infoset-NG installation.')
+        '\nNew Python packages installed. Please run this script again to '
+        'complete the Infoset-NG installation.\n')
     # Must exit abnormally as the script didn't complete
     sys.exit(2)
 
@@ -50,7 +50,7 @@ else:
 # Do infoset-ng imports
 from infoset.utils import log
 from infoset.utils import general
-from maintenance import misc
+from maintenance import shared
 
 
 def run():
@@ -144,7 +144,7 @@ class _PreCheck(object):
         for filename in filenames:
             if filename.lower().endswith('.yaml'):
                 log_message = ('Configuration file found')
-                misc.print_ok(log_message)
+                shared.print_ok(log_message)
                 found = True
                 break
 
@@ -178,7 +178,7 @@ main:
 
             # Message
             log_message = ('Created blank starter configuration')
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
 
     def _systemd(self):
         """Determine if systemd is installed.
@@ -200,7 +200,7 @@ main:
                 log.log2die_safe(1048, log_message)
             else:
                 log_message = ('systemd installed')
-                misc.print_ok(log_message)
+                shared.print_ok(log_message)
 
     def _pip(self):
         """Determine pip3 version.
@@ -251,7 +251,7 @@ main:
             log_message = (
                 'Python version {}.{}.'
                 ''.format(major_installed, minor_installed))
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
 
     def _memcached(self):
         """Determine pip3 version.
@@ -274,7 +274,7 @@ main:
             log.log2see_safe(1076, log_message)
         else:
             log_message = 'memcached executable found.'
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
 
             # Check whether the server is running
             cli_string = 'ps aux | grep /usr/bin/memcached | grep -v grep'
@@ -287,7 +287,7 @@ main:
                 log.log2see_safe(1077, log_message)
             else:
                 log_message = 'memcached is running.'
-                misc.print_ok(log_message)
+                shared.print_ok(log_message)
 
     def _mysql(self):
         """Determine MySQL version.
@@ -345,7 +345,7 @@ main:
                     log_message = (
                         'MariaDB version {}.{}.'
                         ''.format(major_installed, minor_installed))
-                    misc.print_ok(log_message)
+                    shared.print_ok(log_message)
 
             # We are running MySQL
             else:
@@ -369,7 +369,7 @@ main:
                     log_message = (
                         'MySQL version {}.{}.'
                         ''.format(major_installed, minor_installed))
-                    misc.print_ok(log_message)
+                    shared.print_ok(log_message)
 
         # Check whether the server is running
         cli_string = 'ps aux | grep /usr/sbin/mysqld | grep -v grep'
@@ -381,7 +381,7 @@ main:
             log.log2die_safe(1099, log_message)
         else:
             log_message = 'MySQL / MariaDB is running.'
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
 
 
 def _pip3_install(module):
@@ -404,7 +404,7 @@ def _pip3_install(module):
         log.log2die_safe(1041, log_message)
     else:
         log_message = 'Python pip3 executable found.'
-        misc.print_ok(log_message)
+        shared.print_ok(log_message)
 
     # Determine version of pip3
     cli_string = 'pip3 --version'
@@ -430,10 +430,10 @@ def _pip3_install(module):
         else:
             log_message = (
                 'Python module "{}" is installed.'.format(module))
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
     else:
         log_message = 'Python module "{}" is installed.'.format(module)
-        misc.print_ok(log_message)
+        shared.print_ok(log_message)
 
 
 if __name__ == '__main__':

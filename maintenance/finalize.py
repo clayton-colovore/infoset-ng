@@ -30,7 +30,7 @@ else:
 
 # Do infoset-ng imports
 from infoset.utils import log
-from maintenance import misc
+from maintenance import shared
 from infoset.utils import general
 from infoset.utils import configuration
 from infoset.utils import daemon as daemon_lib
@@ -135,7 +135,7 @@ class _DaemonSystemD(object):
         self._systemd()
 
         # Determine whether PIP3 exists
-        misc.print_ok(
+        shared.print_ok(
             'Daemon setup complete.')
 
     def _file_permissions(self):
@@ -290,21 +290,21 @@ class _Daemons(object):
                 if bool(restart) is False:
                     success = self._restart(daemon)
                     if success is True:
-                        misc.print_ok(
+                        shared.print_ok(
                             'Successfully restarted daemon {}.'.format(daemon))
                 elif restart[0].lower() != 'n':
                     success = self._restart(daemon)
                     if success is True:
-                        misc.print_ok(
+                        shared.print_ok(
                             'Successfully restarted daemon {}.'.format(daemon))
                 else:
-                    misc.print_ok(
+                    shared.print_ok(
                         'Leaving daemon {} unchanged.'.format(daemon))
                     success = True
             else:
                 success = self._start(daemon)
                 if success is True:
-                    misc.print_ok(
+                    shared.print_ok(
                         'Successfully started daemon {}.'.format(daemon))
 
             # Message if no success
@@ -440,7 +440,7 @@ class _PostCheck(object):
             print('{}\n{}\n{}'.format(line, suggestions, line))
 
         # All done
-        misc.print_ok(
+        shared.print_ok(
             'Installation complete, pending changes mentioned above.')
 
 
@@ -464,7 +464,7 @@ def _pip3_install(module):
         log.log2die_safe(1041, log_message)
     else:
         log_message = 'Python pip3 executable found.'
-        misc.print_ok(log_message)
+        shared.print_ok(log_message)
 
     # Determine version of pip3
     cli_string = 'pip3 --version'
@@ -490,10 +490,10 @@ def _pip3_install(module):
         else:
             log_message = (
                 'Python module "{}" is installed.'.format(module))
-            misc.print_ok(log_message)
+            shared.print_ok(log_message)
     else:
         log_message = 'Python module "{}" is installed.'.format(module)
-        misc.print_ok(log_message)
+        shared.print_ok(log_message)
 
 
 if __name__ == '__main__':
