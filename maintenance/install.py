@@ -42,6 +42,9 @@ def run():
         if bool(returncode) is True:
             sys.exit(2)
 
+    # End normally
+    sys.exit(0)
+
 
 if __name__ == '__main__':
     # Run main
