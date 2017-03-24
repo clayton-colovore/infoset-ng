@@ -49,17 +49,24 @@ def api():
         None
 
     """
-    # Create agent objects
-    agent_gunicorn = Agent(API_GUNICORN_AGENT)
-    agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+    # Check existence of systemd file
+    if general.systemd_exists(API_EXECUTABLE) is True:
+        general.systemd_daemon(API_EXECUTABLE, action='start')
+    else:
+        # Check user
+        general.check_user()
 
-    # Start daemons (API first, Gunicorn second)
-    daemon_api = AgentDaemon(agent_api)
-    daemon_api.start()
-    daemon_gunicorn = AgentDaemon(agent_gunicorn)
-    daemon_gunicorn.start()
-    # Done
-    sys.exit(0)
+        # Create agent objects
+        agent_gunicorn = Agent(API_GUNICORN_AGENT)
+        agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+
+        # Start daemons (API first, Gunicorn second)
+        daemon_api = AgentDaemon(agent_api)
+        daemon_api.start()
+        daemon_gunicorn = AgentDaemon(agent_gunicorn)
+        daemon_gunicorn.start()
+        # Done
+        sys.exit(0)
 
 
 def ingester():
@@ -72,12 +79,19 @@ def ingester():
         None
 
     """
-    # Create agent object
-    agent_ingester = Agent(INGESTER_EXECUTABLE)
+    # Check existence of systemd file
+    if general.systemd_exists(INGESTER_EXECUTABLE) is True:
+        general.systemd_daemon(INGESTER_EXECUTABLE, action='start')
+    else:
+        # Check user
+        general.check_user()
 
-    # Start agent
-    daemon_ingester = AgentDaemon(agent_ingester)
-    daemon_ingester.start()
+        # Create agent object
+        agent_ingester = Agent(INGESTER_EXECUTABLE)
+
+        # Start agent
+        daemon_ingester = AgentDaemon(agent_ingester)
+        daemon_ingester.start()
 
     # Done
     sys.exit(0)

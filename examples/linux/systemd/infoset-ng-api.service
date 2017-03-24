@@ -19,9 +19,9 @@ User=infoset-ng
 Group=infoset-ng
 Environment=PYTHONPATH=/home/infoset-ng START=--start STOP=--stop RESTART=--restart
 ExecStart=
-ExecStart=/home/infoset-ng/bin/infoset-ng-api $START
-ExecStop=/home/infoset-ng/bin/infoset-ng-api $STOP
-ExecReload=/home/infoset-ng/bin/infoset-ng-api $RESTART
+ExecStart=/home/infoset-ng/bin/systemd/infoset-ng-api $START
+ExecStop=/home/infoset-ng/bin/systemd/infoset-ng-api $STOP
+ExecReload=/home/infoset-ng/bin/systemd/infoset-ng-api $RESTART
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking

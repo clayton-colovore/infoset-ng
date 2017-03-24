@@ -8,6 +8,7 @@ Manages the verification of required packages.
 # Main python libraries
 import sys
 import os
+import getpass
 
 # Try to create a working PYTHONPATH
 _MAINT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))

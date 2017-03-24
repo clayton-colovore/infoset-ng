@@ -24,9 +24,9 @@ User=infoset-ng
 Group=infoset-ng
 Environment=PYTHONPATH=/home/infoset-ng START=--start STOP=--stop RESTART=--restart
 ExecStart=
-ExecStart=/home/infoset-ng/bin/infoset-ng-ingester $START
-ExecStop=/home/infoset-ng/bin/infoset-ng-ingester $STOP
-ExecReload=/home/infoset-ng/bin/infoset-ng-ingester $RESTART
+ExecStart=/home/infoset-ng/bin/systemd/infoset-ng-ingester $START
+ExecStop=/home/infoset-ng/bin/systemd/infoset-ng-ingester $STOP
+ExecReload=/home/infoset-ng/bin/systemd/infoset-ng-ingester $RESTART
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking

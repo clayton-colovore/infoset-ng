@@ -53,28 +53,6 @@ from infoset.utils import general
 from maintenance import shared
 
 
-def run():
-    """Do the installation.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run installation using "sudo". Run as a regular user to '
-            'install in this directory or as user "root".')
-        log.log2die_safe(1029, log_message)
-
-    # Do precheck
-    precheck = _PreCheck()
-    precheck.validate()
-
-
 class _PreCheck(object):
     """Class to test setup."""
 
@@ -190,17 +168,21 @@ main:
             None
 
         """
-        # Verify
+        # Initialize key variables.
+        directory = '/etc/systemd/system'
+
+        # Do nothing if this is not the root user.
         username = getpass.getuser()
-        system_directory = '/etc/systemd/system'
-        if username == 'root':
-            if os.path.isdir(system_directory) is False:
-                log_message = (
-                    'The systemd package isn\'t installed on this system.')
-                log.log2die_safe(1048, log_message)
-            else:
-                log_message = ('systemd installed')
-                shared.print_ok(log_message)
+        if username != 'root':
+            return
+
+        # Test
+        if os.path.isdir(directory) is True:
+            shared.print_ok('Systemd installed.')
+        else:
+            log_message = (
+                'The systemd package isn\'t installed on this system.')
+            log.log2die_safe(1048, log_message)
 
     def _pip(self):
         """Determine pip3 version.
@@ -434,6 +416,63 @@ def _pip3_install(module):
     else:
         log_message = 'Python module "{}" is installed.'.format(module)
         shared.print_ok(log_message)
+
+
+def _system_daemon_prompt():
+    """Prompt user to see whether they want to run as a system daemon.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    running_username = getpass.getuser()
+
+    # Return if running as root. We'll run as a daemon
+    if running_username == 'root':
+        return
+
+    # Get the user's intention
+    prompt = input(
+        'Do you want switchmap-ng to start automatically '
+        'after a reboot?: (Y, N) ')
+    intention = prompt.strip()
+    if bool(intention) is True and len(intention) == 1:
+        response = intention.lower()[0]
+        if response == 'n':
+            return
+        elif response == 'y':
+            log_message = (
+                'Run this script as the "root" user to '
+                'get the automatic functionality.')
+            log.log2die_safe(1128, log_message)
+
+    log_message = 'Please answer "Y" or "N", and try again.'
+    log.log2die_safe(1128, log_message)
+
+
+def run():
+    """Do the installation.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Make sure we are not running as sudo
+    general.check_sudo()
+
+    # Ask about daemon status
+    _system_daemon_prompt()
+
+    # Do precheck
+    precheck = _PreCheck()
+    precheck.validate()
 
 
 if __name__ == '__main__':

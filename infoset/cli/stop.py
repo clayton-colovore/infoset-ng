@@ -49,18 +49,25 @@ def api(args):
         None
 
     """
-    # Create agent objects
-    agent_gunicorn = Agent(API_GUNICORN_AGENT)
-    agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+    # Check existence of systemd file
+    if general.systemd_exists(API_EXECUTABLE) is True:
+        general.systemd_daemon(API_EXECUTABLE, action='stop')
+    else:
+        # Check user
+        general.check_user()
 
-    # Stop daemons
-    daemon_gunicorn = AgentDaemon(agent_gunicorn)
-    daemon_api = AgentDaemon(agent_api)
-    if args.force is True:
-        daemon_gunicorn.force()
-        daemon_api.force()
-    daemon_gunicorn.stop()
-    daemon_api.stop()
+        # Create agent objects
+        agent_gunicorn = Agent(API_GUNICORN_AGENT)
+        agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+
+        # Stop daemons
+        daemon_gunicorn = AgentDaemon(agent_gunicorn)
+        daemon_api = AgentDaemon(agent_api)
+        if args.force is True:
+            daemon_gunicorn.force()
+            daemon_api.force()
+        daemon_gunicorn.stop()
+        daemon_api.stop()
 
     # Done
     sys.exit(0)
@@ -76,14 +83,21 @@ def ingester(args):
         None
 
     """
-    # Create agent object
-    agent_ingester = Agent(INGESTER_EXECUTABLE)
+    # Check existence of systemd file
+    if general.systemd_exists(INGESTER_EXECUTABLE) is True:
+        general.systemd_daemon(INGESTER_EXECUTABLE, action='stop')
+    else:
+        # Check user
+        general.check_user()
 
-    # Stop daemon
-    daemon_ingester = AgentDaemon(agent_ingester)
-    if args.force is True:
-        daemon_ingester.force()
-    daemon_ingester.stop()
+        # Create agent object
+        agent_ingester = Agent(INGESTER_EXECUTABLE)
+
+        # Stop daemon
+        daemon_ingester = AgentDaemon(agent_ingester)
+        if args.force is True:
+            daemon_ingester.force()
+        daemon_ingester.stop()
 
     # Done
     sys.exit(0)
