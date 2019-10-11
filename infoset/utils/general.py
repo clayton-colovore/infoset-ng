@@ -351,7 +351,7 @@ def read_yaml_files(directories, die=True):
                 log.log2die_safe(1010, log_message)
 
     # Return
-    config_dict = yaml.safe_load_all(all_yaml_read)
+    config_dict = list(yaml.safe_load_all(all_yaml_read))[0]
     return config_dict
 
 
