@@ -149,7 +149,7 @@ main:
 """)
 
             # Write config back to directory
-            config_dict = yaml.load(config_yaml)
+            config_dict = yaml.safe_load(config_yaml)
             filepath = ('%s/config.yaml') % (config_directory)
             with open(filepath, 'w') as outfile:
                 yaml.dump(config_dict, outfile, default_flow_style=False)
