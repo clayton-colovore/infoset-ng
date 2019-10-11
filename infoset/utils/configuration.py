@@ -474,7 +474,7 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     # Verify config_dict is indeed a dict.
     # Die safely as log_directory is not defined
     if isinstance(config_dict, dict) is False:
-        log.log2die_safe(1021, 'Invalid configuration file. YAML not found')
+        log.log2die_safe(1021, 'Invalid configuration file. config_dict: {}'.format(config_dict))
 
     # Get new result
     if key in config_dict:
