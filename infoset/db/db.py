@@ -200,10 +200,7 @@ def connectivity():
     session = database.session()
 
     try:
-        result = session.query(Agent.id_agent).filter(
-            and_(Agent.id_agent == '-1'.encode(), Agent.idx_agent == -1))
-        for _ in result:
-            break
+        session.query("1").from_statement("SELECT 1").all()
         valid = True
     except:
         pass
