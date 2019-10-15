@@ -70,9 +70,13 @@ def main():
             autocommit=False,
             bind=db_engine
         )
+        log.log2debug(1085, "POOL is username {} hostname {} dbname {}"
+        "".format(config.db_username(), config.db_hostname(), config.db_name()))
 
     else:
         POOL = None
+        log.log2debug(1085, "POOL is None")
+
 
     # Populate the test engine if this is a test database
     if config.db_name().startswith('test_') is True:
