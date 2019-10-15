@@ -202,9 +202,8 @@ def connectivity():
     try:
         session.query("1").from_statement("SELECT 1").all()
         valid = True
-    except:
-        log.log2debug(1087, "connectivity() test failed")
-        pass
+    except Exception as ex:
+        log.log2debug(1087, "connectivity() test failed because {}".format(ex))
 
     database.close()
 
