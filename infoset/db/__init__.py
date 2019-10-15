@@ -75,7 +75,7 @@ def main():
 
     else:
         POOL = None
-        log.log2debug(1085, "POOL is None")
+        log.log2debug(1086, "POOL is None")
 
 
     # Populate the test engine if this is a test database
