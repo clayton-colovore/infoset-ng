@@ -239,7 +239,7 @@ class _DatabaseSetup(object):
                     'Verify database is created. '
                     'Verify that the configured database authentication '
                     'is correct.') % (config.db_name())
-                log.log2die(1046, log_message)
+                log.log2die(1136, log_message)
 
             # Apply schemas
             shared.print_ok('Applying Schemas.')

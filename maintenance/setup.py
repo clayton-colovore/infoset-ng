@@ -403,7 +403,7 @@ class _PythonSetupPackages(object):
                 'Required python version must be >= {}.{}. '
                 'Python version {}.{} installed'
                 ''.format(major, minor, major_installed, minor_installed))
-            log.log2die_safe(1027, log_message)
+            log.log2die_safe(1135, log_message)
 
     def run(self):
         """Setup Python.
@@ -496,7 +496,7 @@ def run():
             log_message = (
                 'User {} not found. Please try again.'
                 ''.format(daemon_username))
-            log.log2die_safe(1022, log_message)
+            log.log2die_safe(1105, log_message)
     else:
         daemon_username = username
 

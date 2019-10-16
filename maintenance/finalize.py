@@ -54,7 +54,7 @@ def run():
         log_message = (
             'Cannot run installation using "sudo". Run as a regular user to '
             'install in this directory or as user "root".')
-        log.log2die_safe(1029, log_message)
+        log.log2die_safe(1090, log_message)
 
     # Do specific setups for root user
     if running_username != 'root':
@@ -310,7 +310,7 @@ class _Daemons(object):
             # Message if no success
             if success is False:
                 log_message = ('Failed to start daemon {}.'.format(daemon))
-                log.log2see_safe(1008, log_message)
+                log.log2see_safe(1078, log_message)
 
     def _restart(self, daemon):
         """Start or restart daemon.
@@ -366,7 +366,7 @@ class _Daemons(object):
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1012, log_message)
+            log.log2see_safe(1089, log_message)
 
         # Return after waiting for daemons to startup properly
         running = self._running(daemon)
@@ -461,7 +461,7 @@ def _pip3_install(module):
     # Not OK if not fount
     if bool(response['returncode']) is True:
         log_message = ('python pip3 not installed.')
-        log.log2die_safe(1041, log_message)
+        log.log2die_safe(1091, log_message)
     else:
         log_message = 'Python pip3 executable found.'
         shared.print_ok(log_message)
@@ -486,7 +486,7 @@ def _pip3_install(module):
         # Fail if module cannot be installed
         if bool(response_install['returncode']) is True:
             log_message = ('python pip3 cannot install "{}".'.format(module))
-            log.log2die_safe(1100, log_message)
+            log.log2die_safe(1103, log_message)
         else:
             log_message = (
                 'Python module "{}" is installed.'.format(module))

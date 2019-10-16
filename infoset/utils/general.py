@@ -40,12 +40,12 @@ def systemd_daemon(agent_name, action=None):
     running_username = getpass.getuser()
     if running_username != 'root':
         log_message = 'You can only run this command as the \'root\' user.'
-        log.log2die(1133, log_message)
+        log.log2die(1134, log_message)
 
     # Check if agent exists
     if systemd_exists(agent_name) is False:
         log_message = 'systemd not configured for daemon {}'.format(agent_name)
-        log.log2die(1026, log_message)
+        log.log2die(1122, log_message)
 
     # Process request
     if fixed_action in options:
@@ -56,7 +56,7 @@ def systemd_daemon(agent_name, action=None):
         log_message = (
             'Invalid action "{}" for systemd daemon {}'
             ''.format(action, agent_name))
-        log.log2die(1126, log_message)
+        log.log2die(1037, log_message)
 
 
 def systemd_exists(agent_name):
@@ -93,7 +93,7 @@ def check_sudo():
     if 'SUDO_UID' in os.environ:
         log_message = (
             'Cannot run script using "sudo".')
-        log.log2die(1132, log_message)
+        log.log2die(1131, log_message)
 
 
 def check_user():
@@ -515,7 +515,7 @@ def delete_files(directory, extension='.yaml'):
             log.log2die_safe(1127, log_message)
         except:
             log_message = ('Unexpected error')
-            log.log2die_safe(1128, log_message)
+            log.log2die_safe(1038, log_message)
 
 
 def delete_yaml_files(directory):

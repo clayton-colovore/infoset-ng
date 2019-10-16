@@ -448,7 +448,7 @@ def _system_daemon_prompt():
             log_message = (
                 'Run this script as the "root" user to '
                 'get the automatic functionality.')
-            log.log2die_safe(1128, log_message)
+            log.log2die_safe(1125, log_message)
 
     log_message = 'Please answer "Y" or "N", and try again.'
     log.log2die_safe(1128, log_message)

@@ -347,7 +347,7 @@ class _PrepareDatabase(object):
             new_record = DeviceAgent(
                 idx_device=idx_device, idx_agent=idx_agent)
             database = db.Database()
-            database.add(new_record, 1038)
+            database.add(new_record, 1094)
 
         # Return
         return idx_device
@@ -637,7 +637,7 @@ class _UpdateDB(object):
                         data_dict)
 
             # Commit data
-            database.commit(session, 1037)
+            database.commit(session, 1092)
 
             # Return
             return success
