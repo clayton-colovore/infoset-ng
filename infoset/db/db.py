@@ -2,13 +2,11 @@
 
 """Class to process connection."""
 
-from sqlalchemy import and_
 from sqlalchemy import text
 
 # Infoset libraries
 from infoset.utils import log
 from infoset.db import POOL
-from infoset.db.db_orm import Agent
 
 
 class Database(object):
@@ -204,7 +202,7 @@ def connectivity():
         session.query("1").from_statement(text("SELECT 1")).all()
         valid = True
     except Exception as ex:
-        log.log2debug(1087, "connectivity() test failed because {}".format(ex))
+        log.log2debug(1088, "connectivity() test failed because {}".format(ex))
 
     database.close()
 
