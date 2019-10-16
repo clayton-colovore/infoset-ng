@@ -3,6 +3,7 @@
 """Class to process connection."""
 
 from sqlalchemy import and_
+from sqlalchemy import text
 
 # Infoset libraries
 from infoset.utils import log
@@ -200,7 +201,7 @@ def connectivity():
     session = database.session()
 
     try:
-        session.query("1").from_statement("SELECT 1").all()
+        session.query("1").from_statement(text("SELECT 1")).all()
         valid = True
     except Exception as ex:
         log.log2debug(1087, "connectivity() test failed because {}".format(ex))
